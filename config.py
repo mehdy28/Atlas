@@ -1,8 +1,12 @@
 
 DATA_DIR = "/content/drive/MyDrive/AtlasData"
 VIDEO_DIR = f"{DATA_DIR}/storage/videos"
+THUMBNAIL_DIR = f"{DATA_DIR}/storage/thumbnails"
 DB_PATH = f"{DATA_DIR}/atlas.db"
 
 IA_RESULTS_PER_QUERY = 20
 IA_MAX_FILESIZE_MB = 80
-IA_MAX_DURATION_SECONDS = 600  # skip anything over 10 minutes
+IA_MAX_DURATION_SECONDS = 600
+
+SCENE_THRESHOLD = 27.0
+MIN_SCENE_LEN_SECONDS = 1.0
