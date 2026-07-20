@@ -80,6 +80,6 @@ class ArchiveOrgCollector(BaseCollector):
         if duration_seconds is not None and duration_seconds > max_duration_seconds:
             return None
 
-        filename = f"{identifier}_{chosen[\'name\']}".replace("/", "_")
-        url = f"https://{server}{dir_path}/{chosen[\'name\']}"
+        filename = f"{identifier}_{chosen['name']}".replace("/", "_")
+        url = f"https://{server}{dir_path}/{chosen['name']}"
         return url, filename, round(filesize_mb, 2), duration_seconds

@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS assets (
 """)
 conn.commit()
 
-# Migrate old DBs that don\'t have duration_seconds yet
+# Migrate old DBs that do not have duration_seconds yet
 cur.execute("PRAGMA table_info(assets)")
 cols = [row[1] for row in cur.fetchall()]
 if "duration_seconds" not in cols:
@@ -44,11 +44,8 @@ collector = ArchiveOrgCollector()
 with open("/content/Atlas/keywords.txt") as f:
     keywords = [line.strip() for line in f if line.strip()]
 
-skipped_size = 0
-skipped_duration = 0
-
 for keyword in keywords:
-    print(f"\\nSearching: {keyword}")
+    print(f"\nSearching: {keyword}")
     try:
         results = collector.search(keyword, rows=IA_RESULTS_PER_QUERY)
     except Exception as e:
@@ -65,7 +62,7 @@ for keyword in keywords:
                 max_duration_seconds=IA_MAX_DURATION_SECONDS
             )
         except Exception as e:
-            print(f"Metadata failed for {item.get(\'identifier\')}: {e}")
+            print(f"Metadata failed for {item.get('identifier')}: {e}")
             continue
 
         if not resolved:
@@ -103,4 +100,4 @@ for keyword in keywords:
             print(f"Failed {filename}: {e}")
 
 conn.close()
-print("\\nDone.")
+print("\nDone.")
