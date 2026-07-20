@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.append("/content/Atlas")
 
-from config import VIDEO_DIR, DB_PATH, IA_RESULTS_PER_QUERY, IA_MAX_FILESIZE_MB
+from config import VIDEO_DIR, DB_PATH, IA_RESULTS_PER_QUERY, IA_MAX_FILESIZE_MB, IA_MAX_DURATION_SECONDS
 from collectors.archive_org import ArchiveOrgCollector
 
 Path(VIDEO_DIR).mkdir(parents=True, exist_ok=True)
@@ -25,19 +25,30 @@ CREATE TABLE IF NOT EXISTS assets (
     title TEXT,
     description TEXT,
     filesize_mb REAL,
+    duration_seconds REAL,
     url TEXT,
     filepath TEXT
 )
 """)
 conn.commit()
 
+# Migrate old DBs that don\'t have duration_seconds yet
+cur.execute("PRAGMA table_info(assets)")
+cols = [row[1] for row in cur.fetchall()]
+if "duration_seconds" not in cols:
+    cur.execute("ALTER TABLE assets ADD COLUMN duration_seconds REAL")
+    conn.commit()
+
 collector = ArchiveOrgCollector()
 
 with open("/content/Atlas/keywords.txt") as f:
     keywords = [line.strip() for line in f if line.strip()]
 
+skipped_size = 0
+skipped_duration = 0
+
 for keyword in keywords:
-    print(f"\nSearching: {keyword}")
+    print(f"\\nSearching: {keyword}")
     try:
         results = collector.search(keyword, rows=IA_RESULTS_PER_QUERY)
     except Exception as e:
@@ -48,15 +59,19 @@ for keyword in keywords:
 
     for item in results:
         try:
-            resolved = collector.resolve_download(item, max_filesize_mb=IA_MAX_FILESIZE_MB)
+            resolved = collector.resolve_download(
+                item,
+                max_filesize_mb=IA_MAX_FILESIZE_MB,
+                max_duration_seconds=IA_MAX_DURATION_SECONDS
+            )
         except Exception as e:
-            print(f"Metadata failed for {item.get('identifier')}: {e}")
+            print(f"Metadata failed for {item.get(\'identifier\')}: {e}")
             continue
 
         if not resolved:
             continue
 
-        url, filename, filesize_mb = resolved
+        url, filename, filesize_mb, duration_seconds = resolved
 
         cur.execute("SELECT id FROM assets WHERE filename=?", (filename,))
         if cur.fetchone():
@@ -73,18 +88,19 @@ for keyword in keywords:
 
             cur.execute("""
                 INSERT INTO assets(source, keyword, identifier, filename, title,
-                                    description, filesize_mb, url, filepath)
-                VALUES (?,?,?,?,?,?,?,?,?)
+                                    description, filesize_mb, duration_seconds, url, filepath)
+                VALUES (?,?,?,?,?,?,?,?,?,?)
             """, (
                 "archive.org", keyword, item.get("identifier"), filename,
                 item.get("title", ""), item.get("description", ""),
-                filesize_mb, url, filepath
+                filesize_mb, duration_seconds, url, filepath
             ))
             conn.commit()
-            print(f"Saved {filename} ({filesize_mb:.1f} MB)")
+            dur_str = f"{duration_seconds:.0f}s" if duration_seconds else "unknown"
+            print(f"Saved {filename} ({filesize_mb:.1f} MB, {dur_str})")
 
         except Exception as e:
             print(f"Failed {filename}: {e}")
 
 conn.close()
-print("\nDone.")
+print("\\nDone.")
