@@ -5,7 +5,7 @@ THUMBNAIL_DIR = f"{DATA_DIR}/storage/thumbnails"
 
 DRIVE_DB_PATH = f"{DATA_DIR}/atlas.db"
 LOCAL_DB_PATH = "/content/atlas_local.db"
-DB_PATH = DRIVE_DB_PATH  # kept for main.py (Module 1), unaffected by this fix
+DB_PATH = DRIVE_DB_PATH
 
 IA_RESULTS_PER_QUERY = 20
 IA_MAX_FILESIZE_MB = 80
@@ -13,4 +13,9 @@ IA_MAX_DURATION_SECONDS = 600
 
 SCENE_THRESHOLD = 27.0
 MIN_SCENE_LEN_SECONDS = 1.0
-CHECKPOINT_EVERY = 10  # sync local DB back to Drive every N processed assets
+CHECKPOINT_EVERY = 10
+
+CAPTION_MIN_DURATION = 0.5
+CAPTION_MAX_DURATION = 60.0
+CAPTION_BATCH_SIZE = 16
+CAPTION_CHECKPOINT_EVERY_BATCHES = 5
