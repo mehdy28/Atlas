@@ -22,14 +22,48 @@ def sync_to_drive():
     os.replace(tmp_path, DRIVE_DB_PATH)
 
 
-if os.path.exists(DRIVE_DB_PATH):
-    shutil.copy2(DRIVE_DB_PATH, LOCAL_DB_PATH)
-    print(f"Loaded existing DB from Drive ({os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB)")
-else:
-    raise SystemExit("No atlas.db found on Drive. Run Module 1 and 2 first.")
+def safe_load_db():
+    """
+    Never blindly trust or overwrite. Only pull Drive down to local if
+    Drive genuinely looks like the better copy (bigger, and has the
+    tables we expect). Otherwise, refuse and let the human decide.
+    """
+    drive_exists = os.path.exists(DRIVE_DB_PATH)
+    local_exists = os.path.exists(LOCAL_DB_PATH)
+
+    if not drive_exists and not local_exists:
+        raise SystemExit("No DB found on Drive or locally. Run Module 1 and 2 first.")
+
+    drive_size = os.path.getsize(DRIVE_DB_PATH) if drive_exists else 0
+    local_size = os.path.getsize(LOCAL_DB_PATH) if local_exists else 0
+
+    print(f"Drive DB: {drive_size/1024:.1f} KB | Local DB: {local_size/1024:.1f} KB")
+
+    if local_exists and local_size > drive_size:
+        print("WARNING: local copy is larger than Drive copy. Keeping local, NOT overwriting.")
+        print("You may want to manually sync local -> Drive after this run.")
+        return
+
+    if drive_exists:
+        shutil.copy2(DRIVE_DB_PATH, LOCAL_DB_PATH)
+        print(f"Loaded Drive copy to local ({drive_size/1024:.1f} KB).")
+
+
+safe_load_db()
 
 conn = sqlite3.connect(LOCAL_DB_PATH)
 cur = conn.cursor()
+
+# Hard guard: refuse to proceed if the scenes table is missing entirely,
+# instead of silently creating an empty one and masking data loss.
+cur.execute("SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'scenes\'")
+if cur.fetchone() is None:
+    conn.close()
+    raise SystemExit(
+        "scenes table not found in the loaded DB. Refusing to proceed - "
+        "this usually means Module 2 has not run successfully yet, or the "
+        "wrong DB got loaded. Re-check before running this script again."
+    )
 
 cur.execute("PRAGMA table_info(scenes)")
 cols = [row[1] for row in cur.fetchall()]
@@ -39,7 +73,6 @@ if "caption_status" not in cols:
     cur.execute("ALTER TABLE scenes ADD COLUMN caption_status TEXT DEFAULT \'pending\'")
 conn.commit()
 
-# Permanently skip out-of-range scenes so they never get reconsidered
 cur.execute("""
     UPDATE scenes SET caption_status = \'skipped_duration\'
     WHERE (caption_status IS NULL OR caption_status = \'pending\')
@@ -111,12 +144,13 @@ try:
         batches_since_sync += 1
         if batches_since_sync >= CAPTION_CHECKPOINT_EVERY_BATCHES:
             sync_to_drive()
+            print(f"Checkpoint synced. Drive size now: {os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB")
             batches_since_sync = 0
 
 finally:
     conn.commit()
     sync_to_drive()
     conn.close()
-    print(f"\nSynced to Drive. DB size: {os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB")
+    print(f"\nFinal sync to Drive. DB size: {os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB")
 
 print("Done.")
