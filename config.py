@@ -25,7 +25,13 @@ FAISS_INDEX_PATH = f"{DATA_DIR}/atlas.faiss"
 FAISS_IDS_PATH = f"{DATA_DIR}/atlas_faiss_ids.npy"
 EMBED_BATCH_SIZE = 64
 
-# Scoring weights for clip selection (Module 4+ search)
 RELEVANCE_WEIGHT = 1.0
-USAGE_PENALTY_WEIGHT = 0.15   # subtracted per prior use
-RECENCY_PENALTY_WEIGHT = 0.10 # extra subtraction if used very recently
+USAGE_PENALTY_WEIGHT = 0.15
+RECENCY_PENALTY_WEIGHT = 0.10
+
+PRODUCTION_DIR = f"{DATA_DIR}/production"
+SCRIPT_PATH = f"{PRODUCTION_DIR}/script.txt"
+WHISPER_MODEL_SIZE = "medium"
+TIMELINE_OUTPUT_PATH = f"{PRODUCTION_DIR}/timeline.json"
+MIN_CLIP_DURATION_SECONDS = 1.5   # never use a clip shorter than this in the final edit
+MAX_CLIPS_PER_PARAGRAPH = 6       # safety cap so one long paragraph can't chain forever
