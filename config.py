@@ -37,3 +37,10 @@ TIMELINE_OUTPUT_PATH = f"{PRODUCTION_DIR}/timeline.json"
 MIN_CLIP_DURATION_SECONDS = 1.5
 MAX_CLIPS_PER_PARAGRAPH = 6
 SEARCH_CANDIDATES_PER_PARAGRAPH = 15
+
+EDITED_TIMELINE_PATH = f"{PRODUCTION_DIR}/timeline_edited.json"
+KEN_BURNS_MIN_ZOOM = 1.0
+KEN_BURNS_MAX_ZOOM = 1.12          # max 12% zoom over the clip's duration
+KEN_BURNS_MAX_PAN_FRACTION = 0.08  # max 8% of frame width/height for pan drift
+CROSSFADE_DURATION_SECONDS = 0.4
+MIN_DURATION_FOR_PAN = 3.0         # clips shorter than this get zoom-only, no pan (too subtle to read)
