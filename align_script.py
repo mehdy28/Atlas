@@ -30,10 +30,13 @@ aligned = align_paragraphs_to_audio(paragraphs, whisper_words)
 
 print("\nAlignment results:")
 for a in aligned:
-    dur = (a["end_seconds"] - a["start_seconds"]) if (a["start_seconds"] is not None and a["end_seconds"] is not None) else None
+    idx = a["paragraph_index"]
+    start = a["start_seconds"]
+    end = a["end_seconds"]
+    dur = (end - start) if (start is not None and end is not None) else None
     dur_str = f"{dur:.1f}s" if dur is not None else "UNRESOLVED"
     preview = a["text"][:60] + ("..." if len(a["text"]) > 60 else "")
-    print(f"  [{a[\'paragraph_index\']}] {a[\'start_seconds\']} -> {a[\'end_seconds\']} ({dur_str}) | {preview}")
+    print(f"  [{idx}] {start} -> {end} ({dur_str}) | {preview}")
 
 unresolved = [a for a in aligned if a["start_seconds"] is None or a["end_seconds"] is None]
 if unresolved:
