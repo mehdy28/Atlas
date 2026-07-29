@@ -40,7 +40,13 @@ SEARCH_CANDIDATES_PER_PARAGRAPH = 15
 
 EDITED_TIMELINE_PATH = f"{PRODUCTION_DIR}/timeline_edited.json"
 KEN_BURNS_MIN_ZOOM = 1.0
-KEN_BURNS_MAX_ZOOM = 1.12          # max 12% zoom over the clip's duration
-KEN_BURNS_MAX_PAN_FRACTION = 0.08  # max 8% of frame width/height for pan drift
+KEN_BURNS_MAX_ZOOM = 1.12
+KEN_BURNS_MAX_PAN_FRACTION = 0.08
 CROSSFADE_DURATION_SECONDS = 0.4
-MIN_DURATION_FOR_PAN = 3.0         # clips shorter than this get zoom-only, no pan (too subtle to read)
+MIN_DURATION_FOR_PAN = 3.0
+
+RENDER_WORK_DIR = "/content/render_work"
+RENDER_WIDTH = 1920
+RENDER_HEIGHT = 1080
+RENDER_FPS = 30
+FINAL_VIDEO_PATH = f"{PRODUCTION_DIR}/video.mp4"
