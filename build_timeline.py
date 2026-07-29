@@ -42,7 +42,11 @@ for p in paragraphs:
 
     print(f"[{idx}] target={target_duration:.1f}s covered={covered:.1f}s clips={len(clips)} gap={gap:.1f}s")
     for c in clips:
-        print(f"     -> \"{c[\'caption\']}\" ({c[\'use_duration_seconds\']:.1f}s, rel={c[\'relevance\']:.2f})")
+        caption = c["caption"]
+        clip_dur = c["use_duration_seconds"]
+        clip_rel = c["relevance"]
+        line = "     -> " + repr(caption) + " (" + str(round(clip_dur, 1)) + "s, rel=" + str(round(clip_rel, 2)) + ")"
+        print(line)
 
     timeline.append({
         "paragraph_index": idx,
@@ -57,6 +61,6 @@ for p in paragraphs:
 with open(TIMELINE_OUTPUT_PATH, "w") as f:
     json.dump(timeline, f, indent=2)
 
-print(f"\nTotal uncovered gap across all paragraphs: {total_gap:.1f}s")
-print(f"Saved timeline to {TIMELINE_OUTPUT_PATH}")
+print("\nTotal uncovered gap across all paragraphs: " + str(round(total_gap, 1)) + "s")
+print("Saved timeline to " + TIMELINE_OUTPUT_PATH)
 print("Done.")
