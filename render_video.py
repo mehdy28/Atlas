@@ -10,9 +10,12 @@ sys.path.append("/content/Atlas")
 
 from config import (
     EDITED_TIMELINE_PATH, RENDER_WORK_DIR, RENDER_WIDTH, RENDER_HEIGHT,
-    RENDER_FPS, FINAL_VIDEO_PATH, PRODUCTION_DIR
+    RENDER_FPS, FINAL_VIDEO_PATH, PRODUCTION_DIR,
+    GRADE_CONTRAST, GRADE_SATURATION, GRADE_BRIGHTNESS, GRADE_VIGNETTE_STRENGTH,
+    TITLE_TEXT_PATH, TITLE_CARD_DURATION_SECONDS, TITLE_FONT_PATH, TITLE_FONT_SIZE
 )
 from renderer.clip_renderer import render_clip, freeze_extend_clip
+from renderer.title_card import render_title_card_clip
 
 if os.path.exists(RENDER_WORK_DIR):
     shutil.rmtree(RENDER_WORK_DIR)
@@ -25,6 +28,25 @@ ordered_clip_paths = []
 failures = []
 seq = 0
 
+# --- Title card first ---
+if os.path.exists(TITLE_TEXT_PATH):
+    with open(TITLE_TEXT_PATH) as f:
+        title_text = f.read().strip()
+
+    title_out = os.path.join(RENDER_WORK_DIR, "title_card.mp4")
+    ok, err = render_title_card_clip(
+        title_text, title_out, RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS,
+        TITLE_CARD_DURATION_SECONDS, TITLE_FONT_PATH, TITLE_FONT_SIZE
+    )
+    if ok:
+        ordered_clip_paths.append(title_out)
+        print("Title card rendered.")
+    else:
+        print("Title card FAILED: " + err[:500])
+else:
+    print("No title.txt found, skipping title card.")
+
+# --- Main body clips ---
 for paragraph in timeline:
     p_idx = paragraph["paragraph_index"]
     clips = paragraph["clips"]
@@ -43,6 +65,8 @@ for paragraph in timeline:
             motion=clip["motion"],
             output_path=out_path,
             width=RENDER_WIDTH, height=RENDER_HEIGHT, fps=RENDER_FPS,
+            grade_contrast=GRADE_CONTRAST, grade_saturation=GRADE_SATURATION,
+            grade_brightness=GRADE_BRIGHTNESS, grade_vignette=GRADE_VIGNETTE_STRENGTH,
         )
         if not ok:
             print("FAILED clip render (paragraph " + str(p_idx) + "): " + err[:300])
@@ -94,10 +118,22 @@ if not audio_candidates:
     raise SystemExit("No narration audio found in " + PRODUCTION_DIR)
 audio_path = audio_candidates[0]
 
+# Silence padding equal to title card duration, so narration starts exactly when body clips start
+delayed_audio_path = os.path.join(RENDER_WORK_DIR, "narration_delayed.aac")
+title_delay_ms = int(TITLE_CARD_DURATION_SECONDS * 1000) if os.path.exists(TITLE_TEXT_PATH) else 0
+
+cmd = [
+    "ffmpeg", "-y", "-loglevel", "error",
+    "-i", audio_path,
+    "-af", "adelay=" + str(title_delay_ms) + "|" + str(title_delay_ms),
+    delayed_audio_path,
+]
+subprocess.run(cmd, capture_output=True, text=True)
+
 cmd = [
     "ffmpeg", "-y", "-loglevel", "error",
     "-i", silent_video_path,
-    "-i", audio_path,
+    "-i", delayed_audio_path,
     "-map", "0:v:0", "-map", "1:a:0",
     "-c:v", "copy", "-c:a", "aac",
     "-shortest",

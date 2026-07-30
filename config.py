@@ -33,6 +33,7 @@ PRODUCTION_DIR = f"{DATA_DIR}/production"
 SCRIPT_PATH = f"{PRODUCTION_DIR}/script.txt"
 WHISPER_MODEL_SIZE = "medium"
 PARAGRAPH_TIMINGS_PATH = f"{PRODUCTION_DIR}/paragraph_timings.json"
+WHISPER_WORDS_PATH = f"{PRODUCTION_DIR}/whisper_words.json"
 TIMELINE_OUTPUT_PATH = f"{PRODUCTION_DIR}/timeline.json"
 MIN_CLIP_DURATION_SECONDS = 1.5
 MAX_CLIPS_PER_PARAGRAPH = 6
@@ -50,3 +51,16 @@ RENDER_WIDTH = 1920
 RENDER_HEIGHT = 1080
 RENDER_FPS = 30
 FINAL_VIDEO_PATH = f"{PRODUCTION_DIR}/video.mp4"
+
+# Documentary style grading: slightly desaturated, higher contrast, subtle vignette
+GRADE_CONTRAST = 1.08
+GRADE_SATURATION = 0.92
+GRADE_BRIGHTNESS = -0.02
+GRADE_VIGNETTE_STRENGTH = 0.25
+
+TITLE_TEXT_PATH = f"{PRODUCTION_DIR}/title.txt"
+TITLE_CARD_DURATION_SECONDS = 4.0
+TITLE_FONT_PATH = "/content/Atlas/assets/fonts/Anton-Regular.ttf"
+TITLE_FONT_SIZE = 90
+SUBTITLE_FONT_PATH = "/content/Atlas/assets/fonts/Montserrat-SemiBold.ttf"
+SUBTITLE_FONT_SIZE = 48

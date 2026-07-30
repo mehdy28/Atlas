@@ -17,14 +17,23 @@ def build_zoompan_filter(zoom_start, zoom_end, pan_start, pan_end, duration_seco
     return "zoompan=z=\'" + zoom_expr + "\':x=\'" + pan_x_expr + "\':y=\'" + pan_y_expr + "\':d=1:s={w}x{h}:fps=" + str(fps)
 
 
-def render_clip(video_path, source_start, use_duration, motion, output_path, width, height, fps):
+def build_grade_filter(contrast, saturation, brightness, vignette_strength):
+    eq = "eq=contrast=" + str(contrast) + ":saturation=" + str(saturation) + ":brightness=" + str(brightness)
+    vignette = "vignette=PI/" + str(round(4 / max(vignette_strength, 0.01), 3))
+    return eq + "," + vignette
+
+
+def render_clip(video_path, source_start, use_duration, motion, output_path, width, height, fps,
+                 grade_contrast, grade_saturation, grade_brightness, grade_vignette):
     zoompan = build_zoompan_filter(
         motion["zoom_start"], motion["zoom_end"],
         tuple(motion["pan_start_fraction"]), tuple(motion["pan_end_fraction"]),
         use_duration, fps
     ).format(w=width, h=height)
 
-    vf = "scale=3840:2160," + zoompan + ",format=yuv420p"
+    grade = build_grade_filter(grade_contrast, grade_saturation, grade_brightness, grade_vignette)
+
+    vf = "scale=3840:2160," + zoompan + "," + grade + ",format=yuv420p"
 
     cmd = [
         "ffmpeg", "-y", "-loglevel", "error",
@@ -42,10 +51,6 @@ def render_clip(video_path, source_start, use_duration, motion, output_path, wid
 
 
 def freeze_extend_clip(input_path, output_path, extra_seconds, fps):
-    """
-    Extends a rendered clip by freezing its final frame for extra_seconds.
-    Used to close small paragraph-level timing gaps.
-    """
     cmd = [
         "ffmpeg", "-y", "-loglevel", "error",
         "-i", input_path,
