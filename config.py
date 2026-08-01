@@ -52,15 +52,10 @@ RENDER_HEIGHT = 1080
 RENDER_FPS = 30
 FINAL_VIDEO_PATH = f"{PRODUCTION_DIR}/video.mp4"
 
-# Documentary style grading: slightly desaturated, higher contrast, subtle vignette
 GRADE_CONTRAST = 1.08
 GRADE_SATURATION = 0.92
 GRADE_BRIGHTNESS = -0.02
 GRADE_VIGNETTE_STRENGTH = 0.25
 
-TITLE_TEXT_PATH = f"{PRODUCTION_DIR}/title.txt"
-TITLE_CARD_DURATION_SECONDS = 4.0
-TITLE_FONT_PATH = "/content/Atlas/assets/fonts/Anton-Regular.ttf"
-TITLE_FONT_SIZE = 90
-SUBTITLE_FONT_PATH = "/content/Atlas/assets/fonts/Montserrat-SemiBold.ttf"
-SUBTITLE_FONT_SIZE = 48
+GEMINI_MODEL_NAME = "gemini-2.5-flash"
+GRAPHICS_PLAN_PATH = f"{PRODUCTION_DIR}/graphics_plan.json"
