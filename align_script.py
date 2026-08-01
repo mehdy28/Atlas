@@ -7,7 +7,7 @@ import sqlite3
 
 sys.path.append("/content/Atlas")
 
-from config import DRIVE_DB_PATH, PRODUCTION_DIR, SCRIPT_PATH, WHISPER_MODEL_SIZE
+from config import DRIVE_DB_PATH, PRODUCTION_DIR, SCRIPT_PATH, WHISPER_MODEL_SIZE, WHISPER_WORDS_PATH
 from alignment.aligner import transcribe_with_word_timestamps, load_script_paragraphs, align_paragraphs_to_audio
 
 audio_candidates = glob.glob(f"{PRODUCTION_DIR}/narration.*")
@@ -25,6 +25,10 @@ print(f"Loaded {len(paragraphs)} paragraphs from script.")
 print("Transcribing audio with Whisper (this can take a few minutes for longer audio)...")
 whisper_words = transcribe_with_word_timestamps(audio_path, model_size=WHISPER_MODEL_SIZE)
 print(f"Transcribed {len(whisper_words)} words from audio.")
+
+with open(WHISPER_WORDS_PATH, "w") as f:
+    json.dump(whisper_words, f, indent=2)
+print(f"Saved raw word-level timestamps to {WHISPER_WORDS_PATH}")
 
 aligned = align_paragraphs_to_audio(paragraphs, whisper_words)
 
