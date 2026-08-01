@@ -10,16 +10,15 @@ sys.path.append("/content/Atlas")
 
 from config import (
     GRAPHICS_PLAN_TIMED_PATH, GRAPHICS_WORK_DIR, RENDER_WORK_DIR,
-    GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION,
-    GRAPHICS_MARGIN_X, GRAPHICS_MARGIN_Y,
+    GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION, GRAPHICS_SLIDE_DURATION,
     TITLE_FONT_PATH, BODY_FONT_PATH,
-    CARD_BG_COLOR, CARD_ACCENT_COLOR, CARD_TEXT_COLOR, CARD_SUBTEXT_COLOR,
-    CARD_ACCENT_WIDTH, CARD_CORNER_RADIUS,
+    PANEL_WIDTH, PANEL_BG_COLOR, PANEL_ACCENT_COLOR, PANEL_TEXT_COLOR, PANEL_SUBTEXT_COLOR, PANEL_ACCENT_WIDTH,
+    SCRIM_COLOR, SCRIM_TEXT_COLOR, SCRIM_SUBTEXT_COLOR, SCRIM_ACCENT_COLOR,
     RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS,
     FINAL_VIDEO_PATH, PRODUCTION_DIR
 )
 from editor.graphics_cards import generate_card_image
-from editor.overlay_renderer import render_alpha_clip, overlay_clip_onto_video
+from editor.overlay_renderer import render_all_graphics_single_pass
 
 if os.path.exists(GRAPHICS_WORK_DIR):
     shutil.rmtree(GRAPHICS_WORK_DIR)
@@ -30,47 +29,43 @@ if not os.path.exists(silent_video_path):
     raise SystemExit("silent_full.mp4 not found. Run render_video.py first.")
 
 with open(GRAPHICS_PLAN_TIMED_PATH) as f:
-    graphics = json.load(f)
+    graphics_plan = json.load(f)
 
-current_video = silent_video_path
-applied = 0
-failed = 0
-
-for i, g in enumerate(graphics):
+prepared = []
+for i, g in enumerate(graphics_plan):
     png_path = os.path.join(GRAPHICS_WORK_DIR, "card_" + str(i).zfill(3) + ".png")
-    mov_path = os.path.join(GRAPHICS_WORK_DIR, "card_" + str(i).zfill(3) + ".mov")
+    enter_from_left = (i % 2 == 0)
 
-    width, height = generate_card_image(
+    variant, w, h = generate_card_image(
         g, png_path, TITLE_FONT_PATH, BODY_FONT_PATH,
-        CARD_BG_COLOR, CARD_ACCENT_COLOR, CARD_TEXT_COLOR, CARD_SUBTEXT_COLOR,
-        CARD_ACCENT_WIDTH, CARD_CORNER_RADIUS
+        PANEL_WIDTH, PANEL_BG_COLOR, PANEL_ACCENT_COLOR, PANEL_TEXT_COLOR, PANEL_SUBTEXT_COLOR, PANEL_ACCENT_WIDTH,
+        SCRIM_COLOR, SCRIM_TEXT_COLOR, SCRIM_SUBTEXT_COLOR, SCRIM_ACCENT_COLOR,
+        RENDER_WIDTH, RENDER_HEIGHT, enter_from_left
     )
 
-    ok, err = render_alpha_clip(png_path, mov_path, GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION, RENDER_FPS)
-    if not ok:
-        print("Card render FAILED for graphic " + str(i) + " (" + g["type"] + "): " + err[:300])
-        failed += 1
-        continue
+    prepared.append({
+        "png_path": png_path,
+        "variant": variant,
+        "start_seconds": g["trigger_start_seconds"],
+        "panel_width": PANEL_WIDTH,
+        "enter_from_left": enter_from_left,
+    })
+    print("Prepared graphic " + str(i) + ": " + g["type"] + " (" + variant + ") at " + str(g["trigger_start_seconds"]) + "s")
 
-    pos_x = GRAPHICS_MARGIN_X
-    pos_y = RENDER_HEIGHT - height - GRAPHICS_MARGIN_Y
+print("\nCompositing all " + str(len(prepared)) + " graphics in a single pass...")
 
-    output_path = os.path.join(GRAPHICS_WORK_DIR, "composited_" + str(i).zfill(3) + ".mp4")
+composited_path = os.path.join(GRAPHICS_WORK_DIR, "composited_full.mp4")
+ok, err = render_all_graphics_single_pass(
+    silent_video_path, prepared, composited_path,
+    RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS,
+    GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION, GRAPHICS_SLIDE_DURATION
+)
 
-    ok, err = overlay_clip_onto_video(
-        current_video, mov_path, g["trigger_start_seconds"], GRAPHICS_DISPLAY_DURATION,
-        pos_x, pos_y, output_path
-    )
-    if not ok:
-        print("Overlay FAILED for graphic " + str(i) + " (" + g["type"] + "): " + err[:300])
-        failed += 1
-        continue
+if not ok:
+    print("Single-pass compositing FAILED: " + err[:2000])
+    raise SystemExit("Compositing failed.")
 
-    current_video = output_path
-    applied += 1
-    print("Applied graphic " + str(i) + ": " + g["type"] + " at " + str(g["trigger_start_seconds"]) + "s")
-
-print("\nApplied: " + str(applied) + " | Failed: " + str(failed))
+print("Compositing succeeded.")
 
 audio_candidates = glob.glob(PRODUCTION_DIR + "/narration.*")
 if not audio_candidates:
@@ -79,11 +74,10 @@ audio_path = audio_candidates[0]
 
 cmd = [
     "ffmpeg", "-y", "-loglevel", "error",
-    "-i", current_video,
+    "-i", composited_path,
     "-i", audio_path,
     "-map", "0:v:0", "-map", "1:a:0",
     "-c:v", "copy", "-c:a", "aac",
-    "-shortest",
     FINAL_VIDEO_PATH,
 ]
 result = subprocess.run(cmd, capture_output=True, text=True)
