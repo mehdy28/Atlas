@@ -1,6 +1,7 @@
 
 import sys
 import json
+import getpass
 
 sys.path.append("/content/Atlas")
 
@@ -8,7 +9,7 @@ from config import SCRIPT_PATH, GRAPHICS_PLAN_PATH, GEMINI_MODEL_NAME
 from director.gemini_director import generate_script_and_graphics
 
 topic = input("Enter the video topic: ").strip()
-api_key = input("Enter your Gemini API key (from aistudio.google.com/apikey): ").strip()
+api_key = getpass.getpass("Enter your Gemini API key (hidden input, from aistudio.google.com/apikey): ").strip()
 
 print("\nCalling Gemini (" + GEMINI_MODEL_NAME + ")...")
 result = generate_script_and_graphics(topic, api_key, GEMINI_MODEL_NAME)
