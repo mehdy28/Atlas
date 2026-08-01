@@ -22,9 +22,6 @@ def _normalize_word(w):
 
 
 def transcribe_with_word_timestamps(audio_path, model_size="medium"):
-    """
-    Returns a list of (normalized_word, start_seconds, end_seconds).
-    """
     model = _load_whisper(model_size)
     segments, _ = model.transcribe(audio_path, word_timestamps=True)
 
@@ -38,10 +35,6 @@ def transcribe_with_word_timestamps(audio_path, model_size="medium"):
 
 
 def load_script_paragraphs(script_path):
-    """
-    Splits script.txt into paragraphs on blank lines.
-    Returns list of paragraph text strings, in order.
-    """
     with open(script_path, "r", encoding="utf-8") as f:
         raw = f.read()
 
@@ -50,28 +43,26 @@ def load_script_paragraphs(script_path):
     return paragraphs
 
 
-def align_paragraphs_to_audio(paragraphs, whisper_words):
-    """
-    Aligns script paragraphs against the whisper word-level transcript
-    using sequence matching on normalized words. Returns a list of dicts:
-    {paragraph_index, text, start_seconds, end_seconds}
-    """
-    script_word_norms = []
-    script_word_paragraph_idx = []
-
-    for p_idx, paragraph in enumerate(paragraphs):
+def _build_script_word_list(paragraphs):
+    """Returns (normalized_words, paragraph_idx_per_word, raw_words)."""
+    norms, p_idx, raw = [], [], []
+    for p_i, paragraph in enumerate(paragraphs):
         for raw_word in paragraph.split():
             norm = _normalize_word(raw_word)
             if norm:
-                script_word_norms.append(norm)
-                script_word_paragraph_idx.append(p_idx)
+                norms.append(norm)
+                p_idx.append(p_i)
+                raw.append(raw_word)
+    return norms, p_idx, raw
 
+
+def align_paragraphs_to_audio(paragraphs, whisper_words):
+    script_word_norms, script_word_paragraph_idx, _ = _build_script_word_list(paragraphs)
     whisper_word_norms = [w[0] for w in whisper_words]
 
     matcher = difflib.SequenceMatcher(None, script_word_norms, whisper_word_norms, autojunk=False)
     matching_blocks = matcher.get_matching_blocks()
 
-    # script_index -> whisper_index, for words that matched directly
     script_to_whisper = {}
     for block in matching_blocks:
         for offset in range(block.size):
@@ -80,7 +71,6 @@ def align_paragraphs_to_audio(paragraphs, whisper_words):
     matched_script_indices = sorted(script_to_whisper.keys())
 
     def nearest_whisper_time(script_idx, want_start):
-        """Falls back to nearest matched neighbor if this exact word did not match."""
         if not matched_script_indices:
             return None
         import bisect
@@ -128,3 +118,78 @@ def align_paragraphs_to_audio(paragraphs, whisper_words):
         })
 
     return results
+
+
+def build_word_level_times(paragraphs, whisper_words):
+    """
+    Returns a list of dicts, one per script word, in order:
+    {paragraph_index, word_norm, start_seconds, end_seconds}
+    Unmatched words get interpolated times between nearest matched
+    neighbors, so every word has a usable timestamp.
+    """
+    script_word_norms, script_word_paragraph_idx, _ = _build_script_word_list(paragraphs)
+    whisper_word_norms = [w[0] for w in whisper_words]
+
+    matcher = difflib.SequenceMatcher(None, script_word_norms, whisper_word_norms, autojunk=False)
+    matching_blocks = matcher.get_matching_blocks()
+
+    script_to_whisper = {}
+    for block in matching_blocks:
+        for offset in range(block.size):
+            script_to_whisper[block.a + offset] = block.b + offset
+
+    matched_indices = sorted(script_to_whisper.keys())
+
+    word_times = []
+    for i, norm in enumerate(script_word_norms):
+        if i in script_to_whisper:
+            w_idx = script_to_whisper[i]
+            start, end = whisper_words[w_idx][1], whisper_words[w_idx][2]
+        else:
+            import bisect
+            pos = bisect.bisect_left(matched_indices, i)
+            before = matched_indices[pos - 1] if pos > 0 else None
+            after = matched_indices[pos] if pos < len(matched_indices) else None
+
+            if before is not None and after is not None:
+                t0 = whisper_words[script_to_whisper[before]][2]
+                t1 = whisper_words[script_to_whisper[after]][1]
+                frac = (i - before) / max(1, (after - before))
+                start = end = t0 + (t1 - t0) * frac
+            elif before is not None:
+                start = end = whisper_words[script_to_whisper[before]][2]
+            elif after is not None:
+                start = end = whisper_words[script_to_whisper[after]][1]
+            else:
+                start = end = 0.0
+
+        word_times.append({
+            "paragraph_index": script_word_paragraph_idx[i],
+            "word_norm": norm,
+            "start_seconds": round(start, 2),
+            "end_seconds": round(end, 2),
+        })
+
+    return word_times
+
+
+def resolve_trigger_phrase_time(word_times, paragraph_index, trigger_phrase):
+    """
+    Finds the trigger_phrase as a contiguous run of words within the
+    given paragraph and returns (start_seconds, end_seconds) spanning it.
+    Returns None if the phrase cannot be located.
+    """
+    phrase_norms = [_normalize_word(w) for w in trigger_phrase.split()]
+    phrase_norms = [w for w in phrase_norms if w]
+    if not phrase_norms:
+        return None
+
+    paragraph_words = [w for w in word_times if w["paragraph_index"] == paragraph_index]
+
+    n = len(phrase_norms)
+    for start_i in range(len(paragraph_words) - n + 1):
+        window = paragraph_words[start_i:start_i + n]
+        if [w["word_norm"] for w in window] == phrase_norms:
+            return window[0]["start_seconds"], window[-1]["end_seconds"]
+
+    return None
