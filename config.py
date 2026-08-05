@@ -63,21 +63,15 @@ GRAPHICS_PLAN_TIMED_PATH = f"{PRODUCTION_DIR}/graphics_plan_timed.json"
 
 GRAPHICS_WORK_DIR = "/content/graphics_work"
 GRAPHICS_DISPLAY_DURATION = 4.5
-GRAPHICS_FADE_DURATION = 0.4
-GRAPHICS_SLIDE_DURATION = 0.5
 
 TITLE_FONT_PATH = "/content/Atlas/assets/fonts/Anton-Regular.ttf"
 BODY_FONT_PATH = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 BODY_FONT_REGULAR_PATH = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+SERIF_FONT_PATH = "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf"
 
-PANEL_WIDTH = 680
-PANEL_BG_COLOR = (14, 14, 16, 240)
-PANEL_ACCENT_COLOR = (200, 40, 40, 255)
-PANEL_ACCENT_WIDTH = 10
-PANEL_TEXT_COLOR = (255, 255, 255, 255)
-PANEL_SUBTEXT_COLOR = (195, 195, 195, 255)
-
-SCRIM_COLOR = (8, 8, 10, 200)
-SCRIM_TEXT_COLOR = (255, 255, 255, 255)
-SCRIM_SUBTEXT_COLOR = (210, 210, 210, 255)
-SCRIM_ACCENT_COLOR = (200, 40, 40, 255)
+NAVY_DEEP = (6, 14, 36, 255)
+NAVY_PANEL = (8, 18, 44, 222)
+GFX_WHITE = (255, 255, 255, 255)
+GFX_OFFWHITE = (225, 231, 242, 255)
+GFX_ORANGE = (255, 138, 24, 255)
+GFX_SHADOW = (0, 0, 0, 150)

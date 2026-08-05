@@ -10,15 +10,14 @@ sys.path.append("/content/Atlas")
 
 from config import (
     GRAPHICS_PLAN_TIMED_PATH, GRAPHICS_WORK_DIR, RENDER_WORK_DIR,
-    GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION, GRAPHICS_SLIDE_DURATION,
-    TITLE_FONT_PATH, BODY_FONT_PATH,
-    PANEL_WIDTH, PANEL_BG_COLOR, PANEL_ACCENT_COLOR, PANEL_TEXT_COLOR, PANEL_SUBTEXT_COLOR, PANEL_ACCENT_WIDTH,
-    SCRIM_COLOR, SCRIM_TEXT_COLOR, SCRIM_SUBTEXT_COLOR, SCRIM_ACCENT_COLOR,
+    GRAPHICS_DISPLAY_DURATION,
+    TITLE_FONT_PATH, BODY_FONT_PATH, BODY_FONT_REGULAR_PATH, SERIF_FONT_PATH,
+    NAVY_DEEP, NAVY_PANEL, GFX_WHITE, GFX_OFFWHITE, GFX_ORANGE, GFX_SHADOW,
     RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS,
     FINAL_VIDEO_PATH, PRODUCTION_DIR
 )
-from editor.graphics_cards import generate_card_image
-from editor.overlay_renderer import render_all_graphics_single_pass
+from editor.graphics_styles import select_style_fn
+from editor.overlay_renderer import render_graphic_alpha_clip, render_all_graphics_single_pass
 
 if os.path.exists(GRAPHICS_WORK_DIR):
     shutil.rmtree(GRAPHICS_WORK_DIR)
@@ -31,35 +30,37 @@ if not os.path.exists(silent_video_path):
 with open(GRAPHICS_PLAN_TIMED_PATH) as f:
     graphics_plan = json.load(f)
 
+fonts = {"title": TITLE_FONT_PATH, "bold": BODY_FONT_PATH, "reg": BODY_FONT_REGULAR_PATH, "serif": SERIF_FONT_PATH}
+palette = {
+    "navy_deep": NAVY_DEEP, "navy_panel": NAVY_PANEL, "white": GFX_WHITE,
+    "offwhite": GFX_OFFWHITE, "orange": GFX_ORANGE, "shadow": GFX_SHADOW,
+}
+
 prepared = []
 for i, g in enumerate(graphics_plan):
-    png_path = os.path.join(GRAPHICS_WORK_DIR, "card_" + str(i).zfill(3) + ".png")
-    enter_from_left = (i % 2 == 0)
+    style_fn = select_style_fn(g)
+    mov_path = os.path.join(GRAPHICS_WORK_DIR, "gfx_" + str(i).zfill(3) + ".mov")
 
-    variant, w, h = generate_card_image(
-        g, png_path, TITLE_FONT_PATH, BODY_FONT_PATH,
-        PANEL_WIDTH, PANEL_BG_COLOR, PANEL_ACCENT_COLOR, PANEL_TEXT_COLOR, PANEL_SUBTEXT_COLOR, PANEL_ACCENT_WIDTH,
-        SCRIM_COLOR, SCRIM_TEXT_COLOR, SCRIM_SUBTEXT_COLOR, SCRIM_ACCENT_COLOR,
-        RENDER_WIDTH, RENDER_HEIGHT, enter_from_left
+    ok, err = render_graphic_alpha_clip(
+        style_fn, g.get("content", {}), g, mov_path,
+        RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS, GRAPHICS_DISPLAY_DURATION,
+        fonts, palette
     )
+    if not ok:
+        print("FAILED rendering graphic " + str(i) + " (" + g["type"] + " / " + style_fn.__name__ + "): " + err[:400])
+        continue
 
     prepared.append({
-        "png_path": png_path,
-        "variant": variant,
+        "mov_path": mov_path,
         "start_seconds": g["trigger_start_seconds"],
-        "panel_width": PANEL_WIDTH,
-        "enter_from_left": enter_from_left,
+        "duration_seconds": GRAPHICS_DISPLAY_DURATION,
     })
-    print("Prepared graphic " + str(i) + ": " + g["type"] + " (" + variant + ") at " + str(g["trigger_start_seconds"]) + "s")
+    print("Prepared graphic " + str(i) + ": " + g["type"] + " -> " + style_fn.__name__ + " at " + str(g["trigger_start_seconds"]) + "s")
 
-print("\nCompositing all " + str(len(prepared)) + " graphics in a single pass...")
+print("\nCompositing " + str(len(prepared)) + " graphics in a single pass...")
 
 composited_path = os.path.join(GRAPHICS_WORK_DIR, "composited_full.mp4")
-ok, err = render_all_graphics_single_pass(
-    silent_video_path, prepared, composited_path,
-    RENDER_WIDTH, RENDER_HEIGHT, RENDER_FPS,
-    GRAPHICS_DISPLAY_DURATION, GRAPHICS_FADE_DURATION, GRAPHICS_SLIDE_DURATION
-)
+ok, err = render_all_graphics_single_pass(silent_video_path, prepared, composited_path, RENDER_FPS)
 
 if not ok:
     print("Single-pass compositing FAILED: " + err[:2000])
