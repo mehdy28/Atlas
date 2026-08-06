@@ -1,12 +1,24 @@
 
 import os
 import sys
+import subprocess
 
 ATLAS_DIR = "/content/Atlas"
 
-# Clear any stale cached modules from this project before running, so
-# edits made earlier in the session (e.g. to config.py) are always
-# picked up fresh rather than silently reusing an outdated cached version.
+print("Installing/verifying dependencies from requirements.txt...")
+result = subprocess.run(
+    ["pip", "install", "-q", "-r", os.path.join(ATLAS_DIR, "requirements.txt")],
+    capture_output=True, text=True
+)
+if result.returncode != 0:
+    print("WARNING: pip install had issues:")
+    print(result.stderr[-2000:])
+else:
+    print("Dependencies installed.\n")
+
+# Also handle system-level packages pip cannot install
+subprocess.run(["apt-get", "-y", "-qq", "install", "ffmpeg"], capture_output=True)
+
 _project_prefixes = (
     "config", "director", "voice", "alignment", "timeline",
     "editor", "renderer", "search", "collectors", "splitter", "captioner",

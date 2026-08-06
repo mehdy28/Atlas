@@ -1,3 +1,14 @@
 requests
 tqdm
 scenedetect[opencv]
+transformers
+accelerate
+sentence-transformers
+faiss-cpu
+faster-whisper
+google-genai
+Pillow
+matplotlib
+qwen-tts
+soundfile
+pydub
