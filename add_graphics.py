@@ -37,7 +37,10 @@ palette = {
 }
 
 prepared = []
+import time
+graphics_stage_start = time.time()
 for i, g in enumerate(graphics_plan):
+    _gfx_t0 = time.time()
     style_fn = select_style_fn(g)
     mov_path = os.path.join(GRAPHICS_WORK_DIR, "gfx_" + str(i).zfill(3) + ".mov")
 
@@ -55,8 +58,10 @@ for i, g in enumerate(graphics_plan):
         "start_seconds": g["trigger_start_seconds"],
         "duration_seconds": GRAPHICS_DISPLAY_DURATION,
     })
-    print("Prepared graphic " + str(i) + ": " + g["type"] + " -> " + style_fn.__name__ + " at " + str(g["trigger_start_seconds"]) + "s")
+    print("Prepared graphic " + str(i) + ": " + g["type"] + " -> " + style_fn.__name__ + " at " + str(g["trigger_start_seconds"]) + "s (" + str(round(time.time()-_gfx_t0,1)) + "s to render)")
 
+print("\nAll graphics rendered in " + str(round(time.time()-graphics_stage_start,1)) + "s total")
+compositing_start = time.time()
 print("\nCompositing " + str(len(prepared)) + " graphics in a single pass...")
 
 composited_path = os.path.join(GRAPHICS_WORK_DIR, "composited_full.mp4")
@@ -66,7 +71,7 @@ if not ok:
     print("Single-pass compositing FAILED: " + err[:2000])
     raise SystemExit("Compositing failed.")
 
-print("Compositing succeeded.")
+print("Compositing succeeded in " + str(round(time.time()-compositing_start,1)) + "s")
 
 audio_candidates = glob.glob(PRODUCTION_DIR + "/narration.*")
 if not audio_candidates:

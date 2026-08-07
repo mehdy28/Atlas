@@ -44,15 +44,17 @@ def render_clip(video_path, source_start, use_duration, motion, output_path, wid
            "-ss", str(source_start), "-t", str(use_duration), "-i", video_path,
            "-vf", vf, "-an", "-r", str(fps)] + _video_codec_args(use_nvenc) + [output_path]
 
+    encoder_used = "nvenc" if use_nvenc else "libx264"
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0 and use_nvenc:
-        # NVENC unavailable on this runtime - retry once with software encode
+        print("NVENC failed for this clip, falling back to software encode. Error: " + result.stderr[-200:])
         cmd_fallback = ["ffmpeg", "-y", "-loglevel", "error",
                          "-ss", str(source_start), "-t", str(use_duration), "-i", video_path,
                          "-vf", vf, "-an", "-r", str(fps)] + _video_codec_args(False) + [output_path]
         result = subprocess.run(cmd_fallback, capture_output=True, text=True)
+        encoder_used = "libx264 (fallback)"
 
-    return result.returncode == 0, result.stderr
+    return result.returncode == 0, result.stderr, encoder_used
 
 
 def freeze_extend_clip(input_path, output_path, extra_seconds, fps, use_nvenc=True):

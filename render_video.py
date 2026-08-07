@@ -52,7 +52,7 @@ def do_render(job):
     except Exception as e:
         return idx, out_path, False, str(e)
 
-    ok, err = render_clip(
+    ok, err, encoder_used = render_clip(
         video_path=local_video,
         source_start=clip["source_start_seconds"],
         use_duration=clip["use_duration_seconds"],
@@ -63,14 +63,16 @@ def do_render(job):
         grade_brightness=GRADE_BRIGHTNESS, grade_vignette=GRADE_VIGNETTE_STRENGTH,
         use_nvenc=USE_NVENC,
     )
-    return idx, out_path, ok, err
+    return idx, out_path, ok, err, encoder_used
 
 
 results = {}
+import time
+render_stage_start = time.time()
 with ThreadPoolExecutor(max_workers=RENDER_PARALLELISM) as executor:
-    for idx, out_path, ok, err in executor.map(do_render, jobs):
+    for idx, out_path, ok, err, encoder_used in executor.map(do_render, jobs):
         results[idx] = (out_path, ok, err)
-        status = "OK" if ok else "FAILED: " + str(err)[:200]
+        status = ("OK (" + encoder_used + ")") if ok else "FAILED: " + str(err)[:200]
         print("Clip " + str(idx) + "/" + str(len(jobs)) + ": " + status)
 
 ordered_clip_paths = []
@@ -98,7 +100,8 @@ for paragraph in timeline:
     ordered_clip_paths.extend(paragraph_paths)
     print("Paragraph " + str(p_idx) + ": " + str(len(paragraph_paths)) + " clips assembled.")
 
-print("\nTotal clips rendered: " + str(len(ordered_clip_paths)))
+print("\nClip rendering stage took " + str(round(time.time() - render_stage_start, 1)) + "s for " + str(len(jobs)) + " clips")
+print("Total clips rendered: " + str(len(ordered_clip_paths)))
 
 if not ordered_clip_paths:
     raise SystemExit("No clips rendered successfully.")
