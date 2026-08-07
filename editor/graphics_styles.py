@@ -3,6 +3,13 @@ import re
 import math
 import hashlib
 from PIL import Image, ImageDraw, ImageFont
+import functools
+_original_truetype = ImageFont.truetype
+@functools.lru_cache(maxsize=128)
+def _cached_truetype(font_path, size):
+    return _original_truetype(font_path, size)
+ImageFont.truetype = _cached_truetype
+
 
 def ease_out_cubic(t):
     t = max(0, min(t, 1.0))

@@ -87,3 +87,17 @@ GEMINI_API_KEY_PATH = f"{CONFIG_DIR}/gemini_api_key.txt"
 
 TARGET_VIDEO_MINUTES = 10
 WORDS_PER_MINUTE = 150
+
+PEXELS_API_KEY_PATH = f"{CONFIG_DIR}/pexels_api_key.txt"
+PIXABAY_API_KEY_PATH = f"{CONFIG_DIR}/pixabay_api_key.txt"
+FOOTAGE_RESULTS_PER_QUERY = 15
+
+CLIP_CACHE_DIR = f"{DATA_DIR}/cache/videos"
+CLIP_CACHE_MAX_BYTES = 3 * 1024 * 1024 * 1024  # 3GB rolling cache, LRU-evicted
+
+SCENE_SPLIT_TEMP_DIR = "/content/scene_split_temp"
+
+USE_NVENC = True
+RENDER_PARALLELISM = 2  # T4 typically supports ~2 concurrent NVENC sessions
+
+TTS_BATCH_SIZE = 4

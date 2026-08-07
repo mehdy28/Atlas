@@ -4,7 +4,7 @@ import sys
 
 sys.path.append("/content/Atlas")
 
-from config import VOICES_DIR, SCRIPT_PATH, TTS_MODEL_NAME, TTS_CHUNK_MAX_CHARS, TTS_WORK_DIR, NARRATION_OUTPUT_PATH
+from config import VOICES_DIR, SCRIPT_PATH, TTS_MODEL_NAME, TTS_CHUNK_MAX_CHARS, TTS_WORK_DIR, NARRATION_OUTPUT_PATH, TTS_BATCH_SIZE
 from voice.voice_manager import list_voices, create_voice_profile, load_voice_profile
 from voice.tts_engine import load_tts_model, generate_narration
 
@@ -63,6 +63,7 @@ print("\nGenerating narration...")
 generate_narration(
     model, script_text, voice_profile, TTS_WORK_DIR, NARRATION_OUTPUT_PATH,
     max_chars=TTS_CHUNK_MAX_CHARS,
+    batch_size=TTS_BATCH_SIZE,
 )
 
 print("\nDone. Narration saved to " + NARRATION_OUTPUT_PATH)

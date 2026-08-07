@@ -91,7 +91,7 @@ def search(query_text, top_k=10, mark_used=False):
         if not row:
             continue
         (_, asset_id, caption, start, end, duration, thumb_path,
-         times_used, last_used_at, video_path, keyword) = row
+         times_used, last_used_at, video_path, keyword, source_url) = row
 
         candidates.append({
             "scene_id": scene_id,
@@ -102,6 +102,7 @@ def search(query_text, top_k=10, mark_used=False):
             "duration_seconds": duration,
             "thumbnail_path": thumb_path,
             "video_path": video_path,
+            "source_url": source_url,
             "keyword": keyword,
             "relevance": float(sim),
             "times_used": times_used or 0,

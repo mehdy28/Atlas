@@ -67,37 +67,91 @@ def generate_chunk_audio(model, text, voice_profile, language="English"):
     return wavs, sr
 
 
+
+
+def generate_chunk_audio_batch(model, texts, voice_profile, language="English"):
+    """
+    Attempts to generate multiple chunks in one call. If the installed
+    qwen-tts version does not support list input, raises so the caller
+    can fall back to one-at-a-time generation.
+    """
+    if voice_profile["is_cached"] and voice_profile["prompt_obj"] is not None:
+        wavs, sr = model.generate_voice_clone(
+            text=texts,
+            language=language,
+            voice_clone_prompt=voice_profile["prompt_obj"],
+            temperature=0.6,
+            do_sample=True,
+            max_new_tokens=4096,
+        )
+    else:
+        wavs, sr = model.generate_voice_clone(
+            text=texts,
+            language=language,
+            ref_audio=voice_profile["ref_audio_path"],
+            ref_text=voice_profile["ref_text"],
+            x_vector_only_mode=True,
+            temperature=0.6,
+            do_sample=True,
+            max_new_tokens=4096,
+        )
+    if not isinstance(wavs, (list, tuple)) or len(wavs) != len(texts):
+        raise ValueError("Batch call did not return one waveform per input text - unsupported.")
+    return wavs, sr
+
+
 def generate_narration(model, script_text, voice_profile, work_dir, output_path,
-                        max_chars=240, language="English"):
+                        max_chars=240, language="English", batch_size=4):
     os.makedirs(work_dir, exist_ok=True)
 
     chunks = smart_chunk(script_text, max_chars=max_chars)
     print("Total chunks: " + str(len(chunks)))
+    print("Attempting batch size: " + str(batch_size))
 
     chunk_paths = []
-    for i, chunk in enumerate(chunks):
-        out_path = os.path.join(work_dir, "chunk_" + str(i).zfill(3) + ".wav")
+    pending_indices = [i for i, c in enumerate(chunks)
+                        if not os.path.exists(os.path.join(work_dir, "chunk_" + str(i).zfill(3) + ".wav"))]
+    for i in range(len(chunks)):
+        if i not in pending_indices:
+            chunk_paths.append(os.path.join(work_dir, "chunk_" + str(i).zfill(3) + ".wav"))
 
-        if os.path.exists(out_path):
-            print("Skipping chunk " + str(i+1) + "/" + str(len(chunks)) + " (already exists)")
-            chunk_paths.append(out_path)
-            continue
+    batching_works = True
+    i = 0
+    remaining = list(pending_indices)
+    while remaining:
+        batch_indices = remaining[:batch_size]
+        remaining = remaining[batch_size:]
+        batch_texts = [chunks[j] for j in batch_indices]
 
-        print("\nChunk " + str(i+1) + "/" + str(len(chunks)) + ": " + chunk[:70] + ("..." if len(chunk) > 70 else ""))
         t0 = time.time()
+        used_batch = False
+        if batching_works and len(batch_texts) > 1:
+            try:
+                wavs, sr = generate_chunk_audio_batch(model, batch_texts, voice_profile, language=language)
+                used_batch = True
+            except Exception as e:
+                print("Batch generation unsupported (" + str(e) + "), falling back to one-at-a-time for remaining chunks.")
+                batching_works = False
 
-        wavs, sr = generate_chunk_audio(model, chunk, voice_profile, language=language)
-
-        if wavs is None or len(wavs) == 0:
-            print("WARNING: model returned no audio for this chunk, skipping.")
-            continue
+        if not used_batch:
+            wavs = []
+            sr = None
+            for text in batch_texts:
+                w, s = generate_chunk_audio(model, text, voice_profile, language=language)
+                sr = s
+                wavs.append(w[0] if isinstance(w, (list, tuple)) else w)
 
         elapsed = time.time() - t0
-        duration = len(wavs[0]) / sr
-        print("Generated in " + str(round(elapsed,1)) + "s -> " + str(round(duration,2)) + "s of audio")
+        print("Batch of " + str(len(batch_indices)) + " chunks generated in " + str(round(elapsed,1)) + "s" + (" (batched call)" if used_batch else " (sequential)"))
 
-        sf.write(out_path, wavs[0], sr)
-        chunk_paths.append(out_path)
+        for local_idx, chunk_idx in enumerate(batch_indices):
+            out_path = os.path.join(work_dir, "chunk_" + str(chunk_idx).zfill(3) + ".wav")
+            wav = wavs[local_idx]
+            sf.write(out_path, wav, sr)
+            chunk_paths.append(out_path)
+
+    chunk_paths = [os.path.join(work_dir, "chunk_" + str(i).zfill(3) + ".wav") for i in range(len(chunks))
+                    if os.path.exists(os.path.join(work_dir, "chunk_" + str(i).zfill(3) + ".wav"))]
 
     print("\nMerging " + str(len(chunk_paths)) + " chunks...")
     final = AudioSegment.silent(duration=200)

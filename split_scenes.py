@@ -3,6 +3,7 @@ import os
 import sys
 import shutil
 import sqlite3
+import requests
 from pathlib import Path
 from tqdm import tqdm
 
@@ -10,32 +11,18 @@ sys.path.append("/content/Atlas")
 
 from config import (
     THUMBNAIL_DIR, SCENE_THRESHOLD, MIN_SCENE_LEN_SECONDS,
-    DRIVE_DB_PATH, LOCAL_DB_PATH, CHECKPOINT_EVERY
+    DRIVE_DB_PATH, SCENE_SPLIT_TEMP_DIR
 )
 from splitter.scene_detector import detect_scenes, extract_thumbnail
 
 Path(THUMBNAIL_DIR).mkdir(parents=True, exist_ok=True)
+Path(SCENE_SPLIT_TEMP_DIR).mkdir(parents=True, exist_ok=True)
 
-
-def sync_to_drive():
-    """Atomic-ish copy: write to a temp name on Drive, then rename over the real file."""
-    tmp_path = DRIVE_DB_PATH + ".tmp"
-    shutil.copy2(LOCAL_DB_PATH, tmp_path)
-    os.replace(tmp_path, DRIVE_DB_PATH)
-
-
-# Bring the latest Drive copy down to fast local disk before working on it
-if os.path.exists(DRIVE_DB_PATH):
-    shutil.copy2(DRIVE_DB_PATH, LOCAL_DB_PATH)
-    print(f"Loaded existing DB from Drive ({os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB)")
-else:
-    print("No existing DB on Drive, starting fresh.")
-
-conn = sqlite3.connect(LOCAL_DB_PATH)
+conn = sqlite3.connect(DRIVE_DB_PATH)
 cur = conn.cursor()
 
 cur.execute("PRAGMA table_info(assets)")
-cols = [row[1] for row in cur.fetchall()]
+cols = [r[1] for r in cur.fetchall()]
 if "scenes_extracted" not in cols:
     cur.execute("ALTER TABLE assets ADD COLUMN scenes_extracted INTEGER DEFAULT 0")
     conn.commit()
@@ -54,72 +41,58 @@ CREATE TABLE IF NOT EXISTS scenes (
 """)
 conn.commit()
 
-cur.execute("SELECT COUNT(*) FROM assets")
-total = cur.fetchone()[0]
-cur.execute("SELECT COUNT(*) FROM assets WHERE scenes_extracted = 1")
-done = cur.fetchone()[0]
-cur.execute("SELECT COUNT(*) FROM assets WHERE scenes_extracted = -1")
-failed = cur.fetchone()[0]
-
-print(f"Total assets: {total} | Already done: {done} | Previously failed: {failed} | Remaining: {total - done - failed}")
-
-cur.execute("""
-    SELECT id, filepath FROM assets
-    WHERE scenes_extracted IS NULL OR scenes_extracted = 0
-""")
+cur.execute("SELECT id, url FROM assets WHERE scenes_extracted IS NULL OR scenes_extracted = 0")
 pending = cur.fetchall()
+print("Pending assets to process: " + str(len(pending)))
 
-processed_since_sync = 0
-
-try:
-    for asset_id, filepath in tqdm(pending, desc="Splitting scenes"):
-
-        if not filepath or not os.path.exists(filepath):
-            cur.execute("UPDATE assets SET scenes_extracted = -1 WHERE id = ?", (asset_id,))
-            conn.commit()
-            continue
-
-        try:
-            scenes = detect_scenes(
-                filepath,
-                threshold=SCENE_THRESHOLD,
-                min_scene_len_seconds=MIN_SCENE_LEN_SECONDS
-            )
-        except Exception as e:
-            print(f"Scene detection failed for asset {asset_id}: {e}")
-            cur.execute("UPDATE assets SET scenes_extracted = -1 WHERE id = ?", (asset_id,))
-            conn.commit()
-            continue
-
-        for idx, (start, end) in enumerate(scenes):
-            duration = end - start
-            midpoint = start + (duration / 2)
-
-            thumb_filename = f"asset{asset_id}_scene{idx}.jpg"
-            thumb_path = os.path.join(THUMBNAIL_DIR, thumb_filename)
-
-            ok = extract_thumbnail(filepath, midpoint, thumb_path)
-            if not ok:
-                thumb_path = None
-
-            cur.execute("""
-                INSERT INTO scenes(asset_id, scene_index, start_seconds, end_seconds, duration_seconds, thumbnail_path)
-                VALUES (?,?,?,?,?,?)
-            """, (asset_id, idx, start, end, duration, thumb_path))
-
-        cur.execute("UPDATE assets SET scenes_extracted = 1 WHERE id = ?", (asset_id,))
+for asset_id, url in tqdm(pending, desc="Downloading + splitting"):
+    if not url:
+        cur.execute("UPDATE assets SET scenes_extracted = -1 WHERE id = ?", (asset_id,))
         conn.commit()
+        continue
 
-        processed_since_sync += 1
-        if processed_since_sync >= CHECKPOINT_EVERY:
-            sync_to_drive()
-            processed_since_sync = 0
+    ext = os.path.splitext(url.split("?")[0])[1] or ".mp4"
+    temp_path = os.path.join(SCENE_SPLIT_TEMP_DIR, "asset_" + str(asset_id) + ext)
 
-finally:
-    # Always push whatever we have back to Drive, even on Ctrl+C or an error
+    try:
+        resp = requests.get(url, stream=True, timeout=60)
+        resp.raise_for_status()
+        with open(temp_path, "wb") as f:
+            for chunk in resp.iter_content(1024 * 1024):
+                f.write(chunk)
+    except Exception as e:
+        print("Download failed for asset " + str(asset_id) + ": " + str(e))
+        cur.execute("UPDATE assets SET scenes_extracted = -1 WHERE id = ?", (asset_id,))
+        conn.commit()
+        continue
+
+    try:
+        scenes = detect_scenes(temp_path, threshold=SCENE_THRESHOLD, min_scene_len_seconds=MIN_SCENE_LEN_SECONDS)
+    except Exception as e:
+        print("Scene detection failed for asset " + str(asset_id) + ": " + str(e))
+        cur.execute("UPDATE assets SET scenes_extracted = -1 WHERE id = ?", (asset_id,))
+        conn.commit()
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        continue
+
+    for idx, (start, end) in enumerate(scenes):
+        duration = end - start
+        midpoint = start + duration / 2
+        thumb_filename = "asset" + str(asset_id) + "_scene" + str(idx) + ".jpg"
+        thumb_path = os.path.join(THUMBNAIL_DIR, thumb_filename)
+        ok = extract_thumbnail(temp_path, midpoint, thumb_path)
+        cur.execute("""
+            INSERT INTO scenes(asset_id, scene_index, start_seconds, end_seconds, duration_seconds, thumbnail_path)
+            VALUES (?,?,?,?,?,?)
+        """, (asset_id, idx, start, end, duration, thumb_path if ok else None))
+
+    cur.execute("UPDATE assets SET scenes_extracted = 1 WHERE id = ?", (asset_id,))
     conn.commit()
-    sync_to_drive()
-    conn.close()
-    print(f"\nSynced to Drive. DB size: {os.path.getsize(DRIVE_DB_PATH)/1024:.1f} KB")
 
-print("Done.")
+    # Discard the raw video immediately - only metadata + thumbnails persist
+    if os.path.exists(temp_path):
+        os.remove(temp_path)
+
+conn.close()
+print("Done. No bulk video files retained on Drive.")
