@@ -23,15 +23,9 @@ def _load_index():
 
 
 def _score_candidates(candidates, now):
-    """
-    candidates: list of dicts with keys:
-        scene_id, relevance (cosine similarity 0-1), times_used, last_used_at
-    Returns the same list with a \'score\' key added, sorted best-first.
-    """
     scored = []
     for c in candidates:
         score = RELEVANCE_WEIGHT * c["relevance"]
-
         score -= USAGE_PENALTY_WEIGHT * c["times_used"]
 
         if c["last_used_at"]:
@@ -52,11 +46,6 @@ def _score_candidates(candidates, now):
 
 
 def search(query_text, top_k=10, mark_used=False):
-    """
-    Semantic search over captioned scenes.
-    Returns a ranked list of scene dicts, best match first, with
-    relevance, usage, and final score info attached.
-    """
     index, scene_ids = _load_index()
 
     query_embedding = embed_texts([query_text], batch_size=1)
@@ -77,7 +66,8 @@ def search(query_text, top_k=10, mark_used=False):
     cur.execute(f"""
         SELECT scenes.id, scenes.asset_id, scenes.caption, scenes.start_seconds,
                scenes.end_seconds, scenes.duration_seconds, scenes.thumbnail_path,
-               scenes.times_used, scenes.last_used_at, assets.filepath, assets.keyword
+               scenes.times_used, scenes.last_used_at, assets.filepath, assets.keyword,
+               assets.url
         FROM scenes
         JOIN assets ON scenes.asset_id = assets.id
         WHERE scenes.id IN ({placeholders})
