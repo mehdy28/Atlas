@@ -1,4 +1,3 @@
-
 import os
 import sys
 import sqlite3
@@ -48,7 +47,9 @@ if "local_cache_path" not in cols:
     cur.execute("ALTER TABLE assets ADD COLUMN local_cache_path TEXT")
     conn.commit()
 
-with open("keywords.txt") as f:
+# FIXED: Use absolute path for keywords.txt
+keywords_path = os.path.join(os.path.dirname(__file__), "keywords.txt")
+with open(keywords_path) as f:
     keywords = [l.strip() for l in f if l.strip()]
 
 def insert_asset(source, keyword, resolved):
