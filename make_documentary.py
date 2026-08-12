@@ -1,5 +1,6 @@
 
 import os
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import sys
 import subprocess
 
@@ -7,7 +8,7 @@ ATLAS_DIR = "/content/Atlas"
 
 print("Installing/verifying dependencies from requirements.txt...")
 subprocess.run(["pip", "install", "-q", "-r", os.path.join(ATLAS_DIR, "requirements.txt")], capture_output=True)
-subprocess.run(["apt-get", "-y", "-qq", "install", "ffmpeg"], capture_output=True)
+subprocess.run(["apt-get", "-y", "-qq", "install", "ffmpeg", "libxcb-cursor0"], capture_output=True)
 
 _project_prefixes = (
     "config", "director", "voice", "alignment", "timeline",
