@@ -56,7 +56,7 @@ def render_stat_callout(content: Dict[str, Any], duration: float, palette: Dict[
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     circle = scene.add_layer(
-        mv.layer.Ellipse(radius=(box_w // 2, box_h // 2), color=palette["navy_hex"]),
+        mv.layer.Rectangle(size=(box_w, box_h), color=palette["navy_hex"], radius=min(box_w, box_h) // 2),
         name="circle", position=(video_width // 2, video_height // 2),
     )
     apply_scale_pop(circle, 0.0, 0.45, from_scale=0.0, to_scale=1.0)
@@ -213,5 +213,120 @@ def render_comparison(content: Dict[str, Any], duration: float, palette: Dict[st
         mv.layer.Text("\n".join(rl_lines), font_size=rl_size, font_family=font_family, color=palette["offwhite_hex"]),
         name="right_label", position=(right_cx, video_height // 2 + 60),
     )
+
+    return scene
+
+
+def render_line_chart(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
+                       video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
+    """
+    Trend line built from rotated Rectangle segments connecting each
+    point (Movis has no native plot primitive), with small square nodes
+    at each data point. Segments fade in staggered, left to right, for
+    a drawing-in effect.
+    """
+    _validate_content(content, ["x_labels", "values"])
+    x_labels = content["x_labels"]
+    values = [float(v) for v in content["values"]]
+    if len(x_labels) < 2 or len(values) != len(x_labels):
+        raise ValueError("line_chart requires at least 2 matching x_labels/values.")
+
+    title = str(content.get("title", ""))
+    panel_w, panel_h = calculate_container_size("line_chart", video_width, video_height, item_count=len(values))
+    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+
+    panel = scene.add_layer(
+        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=20),
+        name="panel", position=(video_width // 2, video_height // 2),
+    )
+    apply_fade_in(panel, 0.0, 0.3)
+
+    if title:
+        t_size, t_lines, _ = fit_text_to_container(title, font_path, panel_w - 80, 60, start_size=32)
+        title_layer = scene.add_layer(
+            mv.layer.Text("\n".join(t_lines), font_size=t_size, font_family=font_family, color=palette["white_hex"]),
+            name="chart_title", position=(video_width // 2, video_height // 2 - panel_h // 2 + 45),
+        )
+        apply_fade_in(title_layer, 0.1, 0.25)
+
+    max_v = max(values) if max(values) != 0 else 1.0
+    min_v = min(values)
+    chart_w = panel_w - 140
+    chart_h = panel_h - 220
+    base_x = video_width // 2 - chart_w // 2
+    base_y = video_height // 2 + chart_h // 2
+
+    points = []
+    n = len(values)
+    for idx, val in enumerate(values):
+        x = base_x + int(idx / (n - 1) * chart_w)
+        norm = (val - min_v) / (max_v - min_v) if max_v != min_v else 0.5
+        y = base_y - int(norm * chart_h)
+        points.append((x, y))
+
+    import math
+    for idx in range(len(points) - 1):
+        x1, y1 = points[idx]
+        x2, y2 = points[idx + 1]
+        seg_len = int(((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5)
+        angle_deg = math.degrees(math.atan2(y2 - y1, x2 - x1))
+        mid_x, mid_y = (x1 + x2) // 2, (y1 + y2) // 2
+
+        segment = scene.add_layer(
+            mv.layer.Rectangle(size=(max(seg_len, 2), 6), color=palette["orange_hex"]),
+            name="segment_" + str(idx), position=(mid_x, mid_y), rotation=angle_deg,
+        )
+        start_t = 0.25 + idx * (0.5 / max(1, len(points) - 1))
+        apply_fade_in(segment, start_t, 0.15)
+
+    for idx, (x, y) in enumerate(points):
+        node = scene.add_layer(
+            mv.layer.Rectangle(size=(16, 16), color=palette["white_hex"], radius=8),
+            name="node_" + str(idx), position=(x, y),
+        )
+        start_t = 0.2 + idx * (0.5 / max(1, len(points) - 1))
+        apply_scale_pop(node, start_t, 0.2)
+
+        lbl_size, lbl_lines, _ = fit_text_to_container(str(x_labels[idx]), font_path, chart_w // n, 40, start_size=20)
+        label_layer = scene.add_layer(
+            mv.layer.Text(str(x_labels[idx]), font_size=lbl_size, font_family=font_family, color=palette["offwhite_hex"]),
+            name="xlabel_" + str(idx), position=(x, base_y + 35),
+        )
+        apply_fade_in(label_layer, start_t, 0.2)
+
+    return scene
+
+
+def render_quote_card(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
+                       video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
+    """Full-width glass panel, centered quote text with attribution, fade + gentle scale-in."""
+    _validate_content(content, ["quote"])
+    quote = "\u201c" + str(content["quote"]) + "\u201d"
+    attribution = str(content.get("attribution", ""))
+
+    panel_w, panel_h = calculate_container_size("quote_card", video_width, video_height, char_count=len(quote))
+    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+
+    panel = scene.add_layer(
+        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=24),
+        name="panel", position=(video_width // 2, video_height // 2),
+    )
+    apply_fade_in(panel, 0.0, 0.35)
+    apply_scale_pop(panel, 0.0, 0.4, from_scale=0.92, to_scale=1.0)
+
+    q_size, q_lines, q_line_h = fit_text_to_container(quote, font_path, panel_w - 160, panel_h - 160, start_size=44)
+    quote_layer = scene.add_layer(
+        mv.layer.Text("\n".join(q_lines), font_size=q_size, font_family=font_family, color=palette["white_hex"]),
+        name="quote_text", position=(video_width // 2, video_height // 2 - 20),
+    )
+    apply_fade_in(quote_layer, 0.2, 0.35)
+
+    if attribution:
+        a_size, a_lines, _ = fit_text_to_container("\u2014 " + attribution, font_path, panel_w - 160, 60, start_size=24)
+        attr_layer = scene.add_layer(
+            mv.layer.Text("\n".join(a_lines), font_size=a_size, font_family=font_family, color=palette["orange_hex"]),
+            name="attribution", position=(video_width // 2, video_height // 2 + panel_h // 2 - 60),
+        )
+        apply_fade_in(attr_layer, 0.4, 0.3)
 
     return scene

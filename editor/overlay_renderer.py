@@ -1,34 +1,5 @@
 
-import os
 import subprocess
-from PIL import Image
-
-
-def render_graphic_alpha_clip(style_fn, content, graphic_meta, out_mov_path, width, height, fps, duration, fonts, palette):
-    """
-    Renders the full animated sequence for one graphic (using its own
-    internal easing/timing over `duration`) as a transparent-background
-    alpha video clip. All 20 styles already draw self-contained,
-    full-canvas-sized frames, so no separate positioning step is needed.
-    """
-    frame_count = max(2, int(round(duration * fps)))
-    tmp_dir = out_mov_path + "_frames"
-    os.makedirs(tmp_dir, exist_ok=True)
-
-    for i in range(frame_count):
-        t = i / frame_count
-        frame = style_fn(t, content, width, height, fonts, palette)
-        frame.save(os.path.join(tmp_dir, "f_" + str(i).zfill(4) + ".png"))
-
-    cmd = [
-        "ffmpeg", "-y", "-loglevel", "error",
-        "-framerate", str(fps),
-        "-i", os.path.join(tmp_dir, "f_%04d.png"),
-        "-c:v", "qtrle",
-        out_mov_path,
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    return result.returncode == 0, result.stderr
 
 
 def render_all_graphics_single_pass(base_video_path, graphics, output_path, fps):
