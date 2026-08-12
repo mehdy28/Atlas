@@ -6,17 +6,7 @@ import subprocess
 ATLAS_DIR = "/content/Atlas"
 
 print("Installing/verifying dependencies from requirements.txt...")
-result = subprocess.run(
-    ["pip", "install", "-q", "-r", os.path.join(ATLAS_DIR, "requirements.txt")],
-    capture_output=True, text=True
-)
-if result.returncode != 0:
-    print("WARNING: pip install had issues:")
-    print(result.stderr[-2000:])
-else:
-    print("Dependencies installed.\n")
-
-# Also handle system-level packages pip cannot install
+subprocess.run(["pip", "install", "-q", "-r", os.path.join(ATLAS_DIR, "requirements.txt")], capture_output=True)
 subprocess.run(["apt-get", "-y", "-qq", "install", "ffmpeg"], capture_output=True)
 
 _project_prefixes = (
@@ -28,7 +18,11 @@ for mod_name in list(sys.modules.keys()):
         del sys.modules[mod_name]
 
 STEPS = [
-    "generate_script.py",
+    "generate_script.py",       # topic -> script + graphics plan + footage_keywords
+    "discover_footage.py",      # NEW: keyword-driven video+image discovery, dedup, incremental
+    "split_scenes.py",          # scene-detect only the newly discovered videos (images already done)
+    "caption_scenes.py",        # caption all pending scenes (new video scenes + new images)
+    "build_index.py",           # rebuild the searchable FAISS index over everything
     "generate_narration.py",
     "align_script.py",
     "resolve_graphics_timing.py",
@@ -40,6 +34,7 @@ STEPS = [
 
 for fname in STEPS:
     path = os.path.join(ATLAS_DIR, fname)
+    print("\n" + "="*70 + "\nRUNNING: " + fname + "\n" + "="*70)
     with open(path) as f:
         code = f.read()
     exec(compile(code, path, "exec"), {"__name__": "__main__"})

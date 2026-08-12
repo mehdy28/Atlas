@@ -6,7 +6,7 @@ sys.path.append("/content/Atlas")
 
 from config import (
     SCRIPT_PATH, GRAPHICS_PLAN_PATH, GEMINI_MODEL_NAME,
-    GEMINI_API_KEY_PATH, TARGET_VIDEO_MINUTES, WORDS_PER_MINUTE
+    GEMINI_API_KEY_PATH, TARGET_VIDEO_MINUTES, WORDS_PER_MINUTE, FOOTAGE_KEYWORDS_PATH
 )
 from director.api_key_manager import get_or_prompt_api_key
 from director.gemini_director import generate_script_and_graphics
@@ -34,6 +34,11 @@ with open(SCRIPT_PATH, "w") as f:
 
 with open(GRAPHICS_PLAN_PATH, "w") as f:
     json.dump(graphics, f, indent=2)
+
+footage_keywords = result.get("footage_keywords", [])
+with open(FOOTAGE_KEYWORDS_PATH, "w") as f:
+    json.dump(footage_keywords, f, indent=2)
+print("Footage keywords: " + str(len(footage_keywords)))
 
 word_count = len(script_text.split())
 

@@ -37,6 +37,7 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
             "scene_id": candidate["scene_id"],
             "video_path": candidate["video_path"],
             "source_url": candidate.get("source_url"),
+            "asset_type": candidate.get("asset_type", "video"),
             "caption": candidate["caption"],
             "relevance": candidate["relevance"],
             "source_start_seconds": candidate["start_seconds"],

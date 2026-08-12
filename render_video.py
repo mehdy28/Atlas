@@ -15,7 +15,7 @@ from config import (
     GRADE_CONTRAST, GRADE_SATURATION, GRADE_BRIGHTNESS, GRADE_VIGNETTE_STRENGTH,
     CLIP_CACHE_DIR, CLIP_CACHE_MAX_BYTES, USE_NVENC, RENDER_PARALLELISM
 )
-from renderer.clip_renderer import render_clip, freeze_extend_clip
+from renderer.clip_renderer import render_clip, render_image_clip, freeze_extend_clip
 from collectors.asset_cache import get_or_download
 
 if os.path.exists(RENDER_WORK_DIR):
@@ -47,10 +47,28 @@ for paragraph in timeline:
 
 def do_render(job):
     idx, paragraph, clip, out_path = job
+    asset_type = clip.get("asset_type", "video")
+
+    if asset_type == "image":
+        image_path = clip.get("video_path")
+        if not image_path or not os.path.exists(image_path):
+            return idx, out_path, False, "Image asset missing local file: " + str(image_path), "n/a"
+        ok, err, encoder_used = render_image_clip(
+            image_path=image_path,
+            use_duration=clip["use_duration_seconds"],
+            motion=clip["motion"],
+            output_path=out_path,
+            width=RENDER_WIDTH, height=RENDER_HEIGHT, fps=RENDER_FPS,
+            grade_contrast=GRADE_CONTRAST, grade_saturation=GRADE_SATURATION,
+            grade_brightness=GRADE_BRIGHTNESS, grade_vignette=GRADE_VIGNETTE_STRENGTH,
+            use_nvenc=USE_NVENC,
+        )
+        return idx, out_path, ok, err, encoder_used
+
     try:
         local_video = resolve_local_video(clip)
     except Exception as e:
-        return idx, out_path, False, str(e)
+        return idx, out_path, False, str(e), "n/a"
 
     ok, err, encoder_used = render_clip(
         video_path=local_video,

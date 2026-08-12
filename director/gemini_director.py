@@ -63,9 +63,17 @@ of plain footage regularly, like a real news/documentary broadcast does):
 - Never invent statistics not implied by the script text; keep numbers
   plausible and consistent with what the narration says.
 
+Also provide a "footage_keywords" list: 15-25 short, concrete, visually
+searchable phrases (2-4 words each) covering every visual concept the
+script touches - things a stock-footage/photo site would actually have
+results for. Prefer concrete nouns and scenes over abstract concepts
+(e.g. "dairy farm cows" not "economic pressure"). These are used to
+search stock video AND photo libraries, so keep them literal and visual.
+
 Return ONLY valid JSON matching this exact structure, nothing else:
 {{
   "title": "string",
+  "footage_keywords": ["string", ...],
   "paragraphs": [
     {{"paragraph_index": 0, "text": "string"}},
     ...
@@ -145,4 +153,5 @@ def generate_script_and_graphics(topic, api_key, model_name="gemini-2.5-flash",
         "paragraphs": paragraphs,
         "graphics": validated_graphics,
         "dropped_graphics": dropped,
+        "footage_keywords": data.get("footage_keywords", []),
     }

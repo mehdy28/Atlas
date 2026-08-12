@@ -67,7 +67,7 @@ def search(query_text, top_k=10, mark_used=False):
         SELECT scenes.id, scenes.asset_id, scenes.caption, scenes.start_seconds,
                scenes.end_seconds, scenes.duration_seconds, scenes.thumbnail_path,
                scenes.times_used, scenes.last_used_at, assets.filepath, assets.keyword,
-               assets.url
+               assets.url, assets.asset_type
         FROM scenes
         JOIN assets ON scenes.asset_id = assets.id
         WHERE scenes.id IN ({placeholders})
@@ -81,7 +81,7 @@ def search(query_text, top_k=10, mark_used=False):
         if not row:
             continue
         (_, asset_id, caption, start, end, duration, thumb_path,
-         times_used, last_used_at, video_path, keyword, source_url) = row
+         times_used, last_used_at, video_path, keyword, source_url, asset_type) = row
 
         candidates.append({
             "scene_id": scene_id,
@@ -93,6 +93,7 @@ def search(query_text, top_k=10, mark_used=False):
             "thumbnail_path": thumb_path,
             "video_path": video_path,
             "source_url": source_url,
+            "asset_type": asset_type or "video",
             "keyword": keyword,
             "relevance": float(sim),
             "times_used": times_used or 0,

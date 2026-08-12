@@ -68,3 +68,34 @@ def freeze_extend_clip(input_path, output_path, extra_seconds, fps, use_nvenc=Tr
                          "-r", str(fps)] + _video_codec_args(False) + [output_path]
         result = subprocess.run(cmd_fallback, capture_output=True, text=True)
     return result.returncode == 0, result.stderr
+
+
+def render_image_clip(image_path, use_duration, motion, output_path, width, height, fps,
+                       grade_contrast, grade_saturation, grade_brightness, grade_vignette, use_nvenc=True):
+    """
+    Applies the same Ken Burns zoom/pan treatment as video clips, but to
+    a single still image held for use_duration.
+    """
+    zoompan = build_zoompan_filter(
+        motion["zoom_start"], motion["zoom_end"],
+        tuple(motion["pan_start_fraction"]), tuple(motion["pan_end_fraction"]),
+        use_duration, fps
+    ).format(w=width, h=height)
+
+    grade = build_grade_filter(grade_contrast, grade_saturation, grade_brightness, grade_vignette)
+    vf = "scale=3840:2160," + zoompan + "," + grade + ",format=yuv420p"
+
+    cmd = ["ffmpeg", "-y", "-loglevel", "error",
+           "-loop", "1", "-t", str(use_duration), "-i", image_path,
+           "-vf", vf, "-an", "-r", str(fps)] + _video_codec_args(use_nvenc) + [output_path]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    encoder_used = "nvenc" if use_nvenc else "libx264"
+    if result.returncode != 0 and use_nvenc:
+        cmd_fallback = ["ffmpeg", "-y", "-loglevel", "error",
+                         "-loop", "1", "-t", str(use_duration), "-i", image_path,
+                         "-vf", vf, "-an", "-r", str(fps)] + _video_codec_args(False) + [output_path]
+        result = subprocess.run(cmd_fallback, capture_output=True, text=True)
+        encoder_used = "libx264 (fallback)"
+
+    return result.returncode == 0, result.stderr, encoder_used
