@@ -1,6 +1,7 @@
 
 import os
 import sys
+import io
 import subprocess
 from contextlib import contextmanager
 from scenedetect import open_video, SceneManager

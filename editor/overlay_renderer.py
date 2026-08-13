@@ -2,7 +2,7 @@
 import subprocess
 
 
-def render_all_graphics_single_pass(base_video_path, graphics, output_path, fps):
+def render_all_graphics_single_pass(base_video_path, graphics, output_path, fps, use_nvenc=True):
     """
     graphics: list of dicts with keys: mov_path, start_seconds, duration_seconds
     All clips are full video-frame size, positioned at (0,0), so the
@@ -31,11 +31,22 @@ def render_all_graphics_single_pass(base_video_path, graphics, output_path, fps)
 
     filter_complex = ";".join(filter_parts)
 
+    codec_args = ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", "19"] if use_nvenc else ["-c:v", "libx264", "-preset", "medium", "-crf", "19"]
+
     cmd = ["ffmpeg", "-y", "-loglevel", "error"] + inputs + [
         "-filter_complex", filter_complex,
         "-map", "[" + prev_tag + "]",
-        "-c:v", "libx264", "-preset", "medium", "-crf", "19",
-        output_path,
-    ]
+    ] + codec_args + [output_path]
     result = subprocess.run(cmd, capture_output=True, text=True)
+
+    if result.returncode != 0 and use_nvenc:
+        print("NVENC compositing failed, falling back to software encode.")
+        cmd_fallback = ["ffmpeg", "-y", "-loglevel", "error"] + inputs + [
+            "-filter_complex", filter_complex,
+            "-map", "[" + prev_tag + "]",
+            "-c:v", "libx264", "-preset", "medium", "-crf", "19",
+            output_path,
+        ]
+        result = subprocess.run(cmd_fallback, capture_output=True, text=True)
+
     return result.returncode == 0, result.stderr

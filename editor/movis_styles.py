@@ -52,11 +52,13 @@ def render_stat_callout(content: Dict[str, Any], duration: float, palette: Dict[
     stat = str(content["stat"])
     label = str(content.get("label", ""))
 
-    box_w, box_h = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
+    box_w_raw, box_h_raw = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
+    box_size = max(box_w_raw, box_h_raw)  # force square so the corner-radius trick makes a real circle
+    box_w = box_h = box_size
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     circle = scene.add_layer(
-        mv.layer.Rectangle(size=(box_w, box_h), color=palette["navy_hex"], radius=min(box_w, box_h) // 2),
+        mv.layer.Rectangle(size=(box_w, box_h), color=palette["navy_hex"], radius=box_size // 2),
         name="circle", position=(video_width // 2, video_height // 2),
     )
     apply_scale_pop(circle, 0.0, 0.45, from_scale=0.0, to_scale=1.0)

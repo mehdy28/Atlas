@@ -24,9 +24,9 @@ def build_zoompan_filter(zoom_start, zoom_end, pan_start, pan_end, duration_seco
 
 
 def build_grade_filter(contrast, saturation, brightness, vignette_strength):
+    # Vignette removed per feedback - footage stays as-is, only contrast/saturation grading applied
     eq = "eq=contrast=" + str(contrast) + ":saturation=" + str(saturation) + ":brightness=" + str(brightness)
-    vignette = "vignette=PI/" + str(round(4 / max(vignette_strength, 0.01), 3))
-    return eq + "," + vignette
+    return eq
 
 
 def render_clip(video_path, source_start, use_duration, motion, output_path, width, height, fps,

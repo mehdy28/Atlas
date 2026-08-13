@@ -102,7 +102,7 @@ else:
     compositing_start = time.time()
     print("\nCompositing " + str(len(prepared)) + " graphics in a single pass...")
     composited_path = os.path.join(GRAPHICS_WORK_DIR, "composited_full.mp4")
-    ok, err = render_all_graphics_single_pass(silent_video_path, prepared, composited_path, RENDER_FPS)
+    ok, err = render_all_graphics_single_pass(silent_video_path, prepared, composited_path, RENDER_FPS, use_nvenc=True)
     if not ok:
         print("Single-pass compositing FAILED: " + err[:2000])
         raise SystemExit("Compositing failed.")
