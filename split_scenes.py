@@ -11,7 +11,7 @@ sys.path.append("/content/Atlas")
 
 from config import (
     THUMBNAIL_DIR, SCENE_THRESHOLD, MIN_SCENE_LEN_SECONDS,
-    DRIVE_DB_PATH, SCENE_SPLIT_TEMP_DIR
+    DRIVE_DB_PATH, SCENE_SPLIT_TEMP_DIR, MAX_ASSETS_PER_SPLIT_RUN
 )
 from splitter.scene_detector import detect_scenes, extract_thumbnail
 
@@ -41,9 +41,13 @@ CREATE TABLE IF NOT EXISTS scenes (
 """)
 conn.commit()
 
-cur.execute("SELECT id, url FROM assets WHERE scenes_extracted IS NULL OR scenes_extracted = 0")
-pending = cur.fetchall()
-print("Pending assets to process: " + str(len(pending)))
+cur.execute("SELECT id, url FROM assets WHERE scenes_extracted IS NULL OR scenes_extracted = 0 ORDER BY id ASC")
+all_pending = cur.fetchall()
+total_pending = len(all_pending)
+pending = all_pending[:MAX_ASSETS_PER_SPLIT_RUN]
+print("Total pending: " + str(total_pending) + " | Processing this run: " + str(len(pending)) + " (capped at " + str(MAX_ASSETS_PER_SPLIT_RUN) + ")")
+if total_pending > len(pending):
+    print("Remaining " + str(total_pending - len(pending)) + " assets will be picked up on a future run - not blocking this one.")
 
 for asset_id, url in tqdm(pending, desc="Downloading + splitting"):
     if not url:

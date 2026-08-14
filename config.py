@@ -108,3 +108,16 @@ FOOTAGE_KEYWORDS_PATH = f"{PRODUCTION_DIR}/footage_keywords.json"
 FOOTAGE_KEYWORDS_PER_VIDEO = 20
 VIDEO_RESULTS_PER_KEYWORD = 8
 IMAGE_RESULTS_PER_KEYWORD = 5
+
+# Narrower default discovery - most keywords don't need 15+ results each
+VIDEO_RESULTS_PER_KEYWORD_DEFAULT = 3
+IMAGE_RESULTS_PER_KEYWORD_DEFAULT = 3
+
+# Bounded per-run processing so a growing backlog can never block a run indefinitely
+MAX_ASSETS_PER_SPLIT_RUN = 120
+
+# Below this average relevance, a paragraph gets a targeted second discovery pass
+LOW_RELEVANCE_THRESHOLD = 0.38
+BOOST_VIDEO_RESULTS_PER_KEYWORD = 10
+BOOST_IMAGE_RESULTS_PER_KEYWORD = 6
+LOW_RELEVANCE_PARAGRAPHS_PATH = f"{PRODUCTION_DIR}/low_relevance_paragraphs.json"
