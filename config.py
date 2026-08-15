@@ -118,6 +118,25 @@ MAX_ASSETS_PER_SPLIT_RUN = 120
 
 # Below this average relevance, a paragraph gets a targeted second discovery pass
 LOW_RELEVANCE_THRESHOLD = 0.38
-BOOST_VIDEO_RESULTS_PER_KEYWORD = 10
-BOOST_IMAGE_RESULTS_PER_KEYWORD = 6
+BOOST_VIDEO_RESULTS_PER_KEYWORD = 6
+BOOST_IMAGE_RESULTS_PER_KEYWORD = 4
 LOW_RELEVANCE_PARAGRAPHS_PATH = f"{PRODUCTION_DIR}/low_relevance_paragraphs.json"
+
+SPLIT_PARALLELISM = 6
+
+GENERIC_CONCEPT_QUERIES = [
+    "business meeting handshake",
+    "team collaboration office",
+    "world map global connections",
+    "city skyline aerial view",
+    "hands typing on laptop",
+    "clock time lapse",
+    "money growth chart finance",
+    "government building flags",
+    "people walking city street",
+    "sunrise hope future",
+    "scientist research laboratory",
+    "family home lifestyle",
+]
+PARAGRAPH_QUERY_OVERRIDES_PATH = f"{PRODUCTION_DIR}/paragraph_query_overrides.json"
+MAX_BOOST_PARAGRAPHS = 5

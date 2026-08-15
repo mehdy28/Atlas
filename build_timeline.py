@@ -4,11 +4,18 @@ import json
 
 sys.path.append("/content/Atlas")
 
+import os
 from config import (
     PARAGRAPH_TIMINGS_PATH, TIMELINE_OUTPUT_PATH,
     MIN_CLIP_DURATION_SECONDS, MAX_CLIPS_PER_PARAGRAPH,
-    SEARCH_CANDIDATES_PER_PARAGRAPH, LOW_RELEVANCE_THRESHOLD, LOW_RELEVANCE_PARAGRAPHS_PATH
+    SEARCH_CANDIDATES_PER_PARAGRAPH, LOW_RELEVANCE_THRESHOLD, LOW_RELEVANCE_PARAGRAPHS_PATH,
+    PARAGRAPH_QUERY_OVERRIDES_PATH
 )
+
+query_overrides = {}
+if os.path.exists(PARAGRAPH_QUERY_OVERRIDES_PATH):
+    with open(PARAGRAPH_QUERY_OVERRIDES_PATH) as f:
+        query_overrides = json.load(f)
 from timeline.builder import fill_paragraph_with_clips
 
 with open(PARAGRAPH_TIMINGS_PATH) as f:
@@ -29,8 +36,9 @@ for p in paragraphs:
 
     target_duration = end - start
 
+    search_text = query_overrides.get(str(idx), text)
     clips, covered = fill_paragraph_with_clips(
-        paragraph_text=text,
+        paragraph_text=search_text,
         target_duration=target_duration,
         max_clips=MAX_CLIPS_PER_PARAGRAPH,
         candidates_to_fetch=SEARCH_CANDIDATES_PER_PARAGRAPH,

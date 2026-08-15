@@ -4,6 +4,8 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import sys
 import subprocess
 import json
+import io
+from contextlib import redirect_stdout
 
 ATLAS_DIR = "/content/Atlas"
 
@@ -19,12 +21,21 @@ for mod_name in list(sys.modules.keys()):
     if mod_name in _project_prefixes or any(mod_name.startswith(p + ".") for p in _project_prefixes):
         del sys.modules[mod_name]
 
-def run_step(fname):
+def run_step(fname, capture=False):
     path = os.path.join(ATLAS_DIR, fname)
     print("\\n" + "="*70 + "\\nRUNNING: " + fname + "\\n" + "="*70)
     with open(path) as f:
         code = f.read()
-    exec(compile(code, path, "exec"), {"__name__": "__main__"})
+    if capture:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            exec(compile(code, path, "exec"), {"__name__": "__main__"})
+        output = buf.getvalue()
+        print(output)
+        return output
+    else:
+        exec(compile(code, path, "exec"), {"__name__": "__main__"})
+        return ""
 
 CORE_STEPS = [
     "generate_script.py",
@@ -47,15 +58,21 @@ with open(LOW_RELEVANCE_PARAGRAPHS_PATH) as f:
 
 if low_relevance:
     print("\\n" + "="*70)
-    print(str(len(low_relevance)) + " paragraph(s) need a targeted footage boost.")
+    print(str(len(low_relevance)) + " paragraph(s) below relevance threshold. Trying to resolve smartly...")
     print("="*70)
-    run_step("boost_footage.py")
-    run_step("split_scenes.py")
-    run_step("caption_scenes.py")
-    run_step("build_index.py")
+    boost_output = run_step("boost_footage.py", capture=True)
+
+    if "NEEDS_NEW_FOOTAGE=true" in boost_output:
+        print("\\nNew footage was discovered - reprocessing (split/caption/index)...")
+        run_step("split_scenes.py")
+        run_step("caption_scenes.py")
+        run_step("build_index.py")
+    else:
+        print("\\nAll paragraphs resolved from existing footage - no reprocessing needed.")
+
     run_step("build_timeline.py")
 else:
-    print("\\nNo boost round needed - footage matched well across all paragraphs.")
+    print("\\nNo boost needed - footage matched well across all paragraphs.")
 
 FINAL_STEPS = [
     "apply_editing.py",
