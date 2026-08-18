@@ -1,8 +1,61 @@
 
+import re
+import math
+import hashlib
+from typing import Dict, Any, List, Tuple
 import movis as mv
-from typing import Dict, Any
 from sizing.container_sizing import calculate_container_size, fit_text_to_container, inscribed_square_side
-from editor.movis_animations import apply_fade_in, apply_scale_pop, apply_slide_in
+from editor.movis_animations import apply_fade_in, apply_fade_out, apply_scale_pop, apply_slide_in
+
+
+# ============== SHARED LAYOUT ENGINE ==============
+# Every text-heavy style uses this: measure all blocks first, size the
+# container to fit exactly what was measured, then position top-down.
+# This is the single source of truth for vertical layout, replacing the
+# per-style ad-hoc math that kept producing inconsistent overflow bugs.
+
+def measure_block(text, font_path, max_width, max_height, start_size, min_size=16):
+    size, lines, line_h = fit_text_to_container(text, font_path, max_width, max_height, start_size=start_size, min_size=min_size, padding=0)
+    return {"lines": lines, "font_size": size, "line_h": line_h, "block_h": line_h * len(lines)}
+
+
+def stack_blocks(blocks: List[dict], pad_top_bottom: int, gap: int, max_total_height: int):
+    """
+    Given pre-measured blocks (each with 'block_h'), returns:
+    (total_content_height, list of top_y_offsets relative to content top)
+    Caps total height at max_total_height - if exceeded, this indicates
+    the content genuinely does not fit even at minimum font size, which
+    should be rare given fit_text_to_container already shrinks text.
+    """
+    offsets = []
+    cursor = 0
+    for b in blocks:
+        offsets.append(cursor)
+        cursor += b["block_h"] + gap
+    total = cursor - gap if blocks else 0
+    total_with_padding = total + pad_top_bottom * 2
+    return min(total_with_padding, max(max_total_height, total_with_padding)), offsets
+
+
+def add_text_layer(scene, block, x_center, y_top, color, font_family, fade_start=0.15, fade_dur=0.3, add_shadow=True):
+    layer = scene.add_layer(
+        mv.layer.Text("\n".join(block["lines"]), font_size=block["font_size"], font_family=font_family, color=color),
+        position=(x_center, y_top + block["block_h"] // 2),
+    )
+    if add_shadow:
+        layer.add_effect(mv.effect.DropShadow(offset=3.0, color="#000000", opacity=0.5, radius=4.0))
+    apply_fade_in(layer, fade_start, fade_dur)
+    return layer
+
+
+def rounded_panel(scene, w, h, x, y, fill_hex, border_hex=None, radius=22):
+    panel = scene.add_layer(
+        mv.layer.Rectangle(size=(w, h), color=fill_hex, radius=radius, contents=(
+            [mv.attribute.StrokeProperty(color=border_hex, width=2)] if border_hex else []
+        )),
+        position=(x, y),
+    )
+    return panel
 
 
 def _validate_content(content: Dict[str, Any], required_keys: list) -> None:
@@ -11,403 +64,361 @@ def _validate_content(content: Dict[str, Any], required_keys: list) -> None:
         raise ValueError("Missing required content keys: " + str(missing))
 
 
-def render_text_box(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                     video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Lower-third style panel: navy background, heading + body, slides in from left."""
+def extract_percent(text):
+    m = re.search(r"(\d+(\.\d+)?)\s*%", str(text))
+    return float(m.group(1)) if m else None
+
+
+def pick_variant(candidates, seed_key):
+    h = int(hashlib.md5(str(seed_key).encode()).hexdigest(), 16)
+    return candidates[h % len(candidates)]
+
+
+# ============== STYLE RENDERERS ==============
+
+def render_text_box(content, duration, palette, video_width, video_height, font_path, font_family):
     _validate_content(content, ["heading"])
     heading = str(content["heading"]).upper()
     body = str(content.get("body", ""))
 
-    panel_w, panel_h = calculate_container_size("text_box", video_width, video_height, char_count=len(body))
-    PAD = 40
-    GAP = 20
+    panel_w, _ = calculate_container_size("text_box", video_width, video_height, char_count=len(body))
+    PAD, GAP = 44, 22
+    max_h = int(video_height * 0.85)
 
-    h_size, h_lines, h_line_h = fit_text_to_container(heading, font_path, panel_w - PAD*2, panel_h * 0.5, start_size=44, padding=0)
-    heading_block_h = h_line_h * len(h_lines)
-
-    b_size, b_lines, b_line_h = (28, [], 0)
-    body_block_h = 0
+    blocks = [measure_block(heading, font_path, panel_w - PAD * 2, max_h * 0.5, start_size=46)]
     if body:
-        b_size, b_lines, b_line_h = fit_text_to_container(body, font_path, panel_w - PAD*2, panel_h * 0.5, start_size=26, padding=0)
-        body_block_h = b_line_h * len(b_lines)
+        blocks.append(measure_block(body, font_path, panel_w - PAD * 2, max_h * 0.5, start_size=27))
 
-    total_content_h = heading_block_h + (GAP if body else 0) + body_block_h + PAD * 2
-
-    # Grow the panel if content needs more room than the default allotment, capped at 85% of frame height
-    panel_h = max(panel_h, min(int(total_content_h), int(video_height * 0.85)))
+    panel_h, offsets = stack_blocks(blocks, PAD, GAP, max_h)
 
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+    py = video_height - panel_h // 2 - 40
+    panel = rounded_panel(scene, panel_w, panel_h, panel_w // 2, py, palette["navy_hex"], border_hex=palette["orange_hex"])
+    apply_slide_in(panel, 0.0, 0.4, (-panel_w, py), (panel_w // 2, py))
 
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=16),
-        name="panel", position=(panel_w // 2, video_height - panel_h // 2 - 40),
-    )
-    from editor.movis_animations import apply_slide_in
-    apply_slide_in(panel, 0.0, 0.4, (-panel_w, video_height - panel_h // 2 - 40), (panel_w // 2, video_height - panel_h // 2 - 40))
-
-    panel_top_y = video_height - panel_h - 40
-    cursor_y = panel_top_y + PAD
-
-    heading_layer = scene.add_layer(
-        mv.layer.Text("\n".join(h_lines), font_size=h_size, font_family=font_family, color=palette["white_hex"]),
-        name="heading", position=(panel_w // 2, cursor_y + heading_block_h // 2),
-    )
-    apply_fade_in(heading_layer, 0.15, 0.3)
-    cursor_y += heading_block_h + GAP
-
-    if body:
-        body_layer = scene.add_layer(
-            mv.layer.Text("\n".join(b_lines), font_size=b_size, font_family=font_family, color=palette["offwhite_hex"]),
-            name="body", position=(panel_w // 2, cursor_y + body_block_h // 2),
-        )
-        apply_fade_in(body_layer, 0.25, 0.3)
+    content_top = py - panel_h // 2 + PAD
+    colors = [palette["white_hex"], palette["offwhite_hex"]]
+    for i, block in enumerate(blocks):
+        add_text_layer(scene, block, panel_w // 2, content_top + offsets[i], colors[i], font_family, fade_start=0.15 + i * 0.1)
 
     return scene
 
 
-def render_stat_callout(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                         video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Large centered number in a circular panel, scale-pop entrance."""
+def render_stat_callout(content, duration, palette, video_width, video_height, font_path, font_family):
     _validate_content(content, ["stat"])
     stat = str(content["stat"])
     label = str(content.get("label", ""))
 
-    box_w_raw, box_h_raw = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
-    box_size = max(box_w_raw, box_h_raw)
-    box_w = box_h = box_size
+    # Design decision: circles only work for short, predictable content.
+    # Longer stats/labels automatically use a rounded badge instead.
+    use_circle = len(stat) <= 6 and len(label) <= 30
 
-    # Text must stay within the circle's inscribed square, not the full bounding box,
-    # or it visually spills past the curved edge.
-    safe_side = int(inscribed_square_side(box_size))
-    PAD = 24
-    usable = safe_side - PAD * 2
+    if use_circle:
+        box_w_raw, box_h_raw = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
+        box_size = max(box_w_raw, box_h_raw)
+        safe_side = int(inscribed_square_side(box_size))
+        PAD = 20
+        usable_w = safe_side - PAD * 2
+        max_h = int(usable_w * 0.9)
 
-    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+        stat_block = measure_block(stat, font_path, usable_w, max_h * 0.6, start_size=130)
+        blocks = [stat_block]
+        if label:
+            blocks.append(measure_block(label, font_path, usable_w, max_h * 0.4, start_size=26))
 
-    circle = scene.add_layer(
-        mv.layer.Rectangle(size=(box_w, box_h), color=palette["navy_hex"], radius=box_size // 2),
-        name="circle", position=(video_width // 2, video_height // 2),
-    )
-    from editor.movis_animations import apply_scale_pop
-    apply_scale_pop(circle, 0.0, 0.45, from_scale=0.0, to_scale=1.0)
+        _, offsets = stack_blocks(blocks, 0, 14, max_h)
+        total_h = sum(b["block_h"] for b in blocks) + 14 * (len(blocks) - 1)
 
-    # Reserve roughly 55% of the safe zone height for the number, 35% for the label, with a gap
-    stat_size, stat_lines, stat_line_h = fit_text_to_container(stat, font_path, usable, int(usable * 0.55), start_size=140, padding=0)
-    stat_block_h = stat_line_h * len(stat_lines)
+        scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+        cx, cy = video_width // 2, video_height // 2
+        circle = scene.add_layer(
+            mv.layer.Rectangle(size=(box_size, box_size), color=palette["navy_hex"], radius=box_size // 2,
+                                contents=[mv.attribute.StrokeProperty(color=palette["orange_hex"], width=3)]),
+            position=(cx, cy),
+        )
+        apply_scale_pop(circle, 0.0, 0.45, from_scale=0.0, to_scale=1.0)
 
-    label_size, label_lines, label_line_h = (24, [], 0)
-    label_block_h = 0
+        content_top = cy - total_h // 2
+        colors = [palette["white_hex"], palette["orange_hex"]]
+        for i, block in enumerate(blocks):
+            add_text_layer(scene, block, cx, content_top + offsets[i], colors[i], font_family, fade_start=0.3 + i * 0.15)
+
+        return scene
+
+    # Rounded badge fallback for longer content
+    panel_w, panel_h_raw = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
+    panel_w = max(panel_w, 560)
+    PAD, GAP = 40, 16
+    max_h = int(video_height * 0.5)
+
+    stat_block = measure_block(stat, font_path, panel_w - PAD * 2, max_h * 0.55, start_size=90)
+    blocks = [stat_block]
     if label:
-        label_size, label_lines, label_line_h = fit_text_to_container(label, font_path, usable, int(usable * 0.35), start_size=28, padding=0)
-        label_block_h = label_line_h * len(label_lines)
+        blocks.append(measure_block(label, font_path, panel_w - PAD * 2, max_h * 0.45, start_size=26))
 
-    GAP = 14
-    total_h = stat_block_h + (GAP if label else 0) + label_block_h
-    top_y = video_height // 2 - total_h // 2
+    panel_h, offsets = stack_blocks(blocks, PAD, GAP, max_h)
 
-    stat_layer = scene.add_layer(
-        mv.layer.Text("\n".join(stat_lines), font_size=stat_size, font_family=font_family, color=palette["white_hex"]),
-        name="stat_text", position=(video_width // 2, top_y + stat_block_h // 2),
-    )
-    apply_fade_in(stat_layer, 0.3, 0.25)
-
-    if label:
-        label_layer = scene.add_layer(
-            mv.layer.Text("\n".join(label_lines), font_size=label_size, font_family=font_family, color=palette["orange_hex"]),
-            name="label_text", position=(video_width // 2, top_y + stat_block_h + GAP + label_block_h // 2),
-        )
-        apply_fade_in(label_layer, 0.45, 0.25)
-
-    return scene
-
-
-def render_bar_chart(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                      video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Growing bars, each animated in with a staggered scale-up on the y-axis via position slide."""
-    _validate_content(content, ["categories", "values"])
-    categories = content["categories"]
-    values = [float(v) for v in content["values"]]
-    if not categories or not values or len(categories) != len(values):
-        raise ValueError("bar_chart requires matching categories and values lists.")
-
-    panel_w, panel_h = calculate_container_size("bar_chart", video_width, video_height, item_count=len(values))
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=palette["orange_hex"], radius=28)
+    apply_scale_pop(panel, 0.0, 0.4, from_scale=0.9, to_scale=1.0)
 
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=20),
-        name="panel", position=(video_width // 2, video_height // 2),
-    )
-    apply_fade_in(panel, 0.0, 0.3)
-
-    max_v = max(values)
-    chart_w = panel_w - 120
-    chart_h = panel_h - 200
-    bar_w = chart_w // (len(values) * 2)
-    base_x = video_width // 2 - chart_w // 2
-    base_y = video_height // 2 + chart_h // 2
-
-    for idx, (cat, val) in enumerate(zip(categories, values)):
-        bar_h = int((val / max_v) * chart_h)
-        x = base_x + idx * 2 * bar_w + bar_w
-        color = palette["orange_hex"] if idx == len(values) - 1 else palette["muted_blue_hex"]
-
-        bar = scene.add_layer(
-            mv.layer.Rectangle(size=(bar_w, bar_h), color=color),
-            name="bar_" + str(idx), position=(x, base_y - bar_h // 2), anchor_point=(0.5, 0.5),
-        )
-        start_t = 0.1 + idx * 0.08
-        bar.scale.enable_motion().extend(
-            keyframes=[start_t, start_t + 0.3], values=[(1.0, 0.0), (1.0, 1.0)], easings=["ease_out"]
-        )
-
-        label_size, _, _ = fit_text_to_container(str(cat), font_path, bar_w * 2, 40, start_size=22)
-        scene.add_layer(
-            mv.layer.Text(str(cat), font_size=label_size, font_family=font_family, color=palette["offwhite_hex"]),
-            name="label_" + str(idx), position=(x, base_y + 30),
-        )
+    content_top = cy - panel_h // 2 + PAD
+    colors = [palette["white_hex"], palette["orange_hex"]]
+    for i, block in enumerate(blocks):
+        add_text_layer(scene, block, cx, content_top + offsets[i], colors[i], font_family, fade_start=0.3 + i * 0.15)
 
     return scene
 
 
-def render_list_reveal(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                        video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Staggered fade+slide list items, one per line, in a glass panel."""
-    _validate_content(content, ["heading", "items"])
-    heading = str(content["heading"]).upper()
-    items = content.get("items", [])
-    if not items:
-        raise ValueError("list_reveal requires at least one item.")
-
-    panel_w, panel_h = calculate_container_size("list_reveal", video_width, video_height, item_count=len(items))
-    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
-
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=20),
-        name="panel", position=(video_width // 2, video_height // 2),
-    )
-    apply_fade_in(panel, 0.0, 0.3)
-
-    top_y = video_height // 2 - panel_h // 2 + 60
-    h_size, h_lines, _ = fit_text_to_container(heading, font_path, panel_w - 80, 80, start_size=36)
-    heading_layer = scene.add_layer(
-        mv.layer.Text("\n".join(h_lines), font_size=h_size, font_family=font_family, color=palette["orange_hex"]),
-        name="heading", position=(video_width // 2, top_y),
-    )
-    apply_fade_in(heading_layer, 0.1, 0.25)
-
-    row_h = min(80, (panel_h - 150) // max(1, len(items)))
-    for idx, item in enumerate(items[:6]):
-        item_size, item_lines, _ = fit_text_to_container(str(item), font_path, panel_w - 120, row_h - 10, start_size=28)
-        y = top_y + 70 + idx * row_h
-        from_pos = (video_width // 2 - 80, y)
-        to_pos = (video_width // 2, y)
-
-        item_layer = scene.add_layer(
-            mv.layer.Text("\n".join(item_lines), font_size=item_size, font_family=font_family, color=palette["white_hex"]),
-            name="item_" + str(idx), position=from_pos,
-        )
-        start_t = 0.2 + idx * 0.15
-        apply_slide_in(item_layer, start_t, 0.25, from_pos, to_pos)
-        apply_fade_in(item_layer, start_t, 0.25)
-
-    return scene
-
-
-def render_comparison(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                       video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Two-sided split panel, values slide in from opposite edges."""
+def render_comparison(content, duration, palette, video_width, video_height, font_path, font_family):
     _validate_content(content, ["left_label", "left_value", "right_label", "right_value"])
 
-    panel_w, panel_h = calculate_container_size("comparison", video_width, video_height)
-    PAD = 50
-    DIVIDER_GAP = 30
+    panel_w, _ = calculate_container_size("comparison", video_width, video_height)
+    PAD, DIVIDER_GAP, GAP = 50, 40, 18
     half_w = (panel_w - PAD * 2 - DIVIDER_GAP) // 2
+    max_h = int(video_height * 0.6)
 
-    left_label, left_value = str(content["left_label"]), str(content["left_value"])
-    right_label, right_value = str(content["right_label"]), str(content["right_value"])
+    left_val = measure_block(str(content["left_value"]), font_path, half_w, max_h * 0.5, start_size=50)
+    right_val = measure_block(str(content["right_value"]), font_path, half_w, max_h * 0.5, start_size=50)
+    left_lbl = measure_block(str(content["left_label"]), font_path, half_w, max_h * 0.4, start_size=23)
+    right_lbl = measure_block(str(content["right_label"]), font_path, half_w, max_h * 0.4, start_size=23)
 
-    lv_size, lv_lines, lv_line_h = fit_text_to_container(left_value, font_path, half_w, panel_h * 0.35, start_size=52, padding=0)
-    rv_size, rv_lines, rv_line_h = fit_text_to_container(right_value, font_path, half_w, panel_h * 0.35, start_size=52, padding=0)
-    ll_size, ll_lines, ll_line_h = fit_text_to_container(left_label, font_path, half_w, panel_h * 0.35, start_size=24, padding=0)
-    rl_size, rl_lines, rl_line_h = fit_text_to_container(right_label, font_path, half_w, panel_h * 0.35, start_size=24, padding=0)
-
-    value_block_h = max(lv_line_h * len(lv_lines), rv_line_h * len(rv_lines))
-    label_block_h = max(ll_line_h * len(ll_lines), rl_line_h * len(rl_lines))
-    GAP = 20
-    total_h = value_block_h + GAP + label_block_h
-    panel_h = max(panel_h, int(total_h + PAD * 2))
+    value_h = max(left_val["block_h"], right_val["block_h"])
+    label_h = max(left_lbl["block_h"], right_lbl["block_h"])
+    total_h = value_h + GAP + label_h
+    panel_h = min(total_h + PAD * 2, max_h)
 
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
-
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=22),
-        name="panel", position=(video_width // 2, video_height // 2),
-    )
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=None, radius=22)
     apply_fade_in(panel, 0.0, 0.3)
 
-    left_cx = video_width // 2 - DIVIDER_GAP // 2 - half_w // 2
-    right_cx = video_width // 2 + DIVIDER_GAP // 2 + half_w // 2
-    top_y = video_height // 2 - total_h // 2
-
-    from editor.movis_animations import apply_slide_in
+    left_cx = cx - DIVIDER_GAP // 2 - half_w // 2
+    right_cx = cx + DIVIDER_GAP // 2 + half_w // 2
+    top_y = cy - total_h // 2
 
     left_val_layer = scene.add_layer(
-        mv.layer.Text("\n".join(lv_lines), font_size=lv_size, font_family=font_family, color=palette["white_hex"]),
-        name="left_val", position=(left_cx - 60, top_y + value_block_h // 2),
+        mv.layer.Text("\n".join(left_val["lines"]), font_size=left_val["font_size"], font_family=font_family, color=palette["white_hex"]),
+        position=(left_cx, top_y + value_h // 2),
     )
-    apply_slide_in(left_val_layer, 0.1, 0.35, (left_cx - 160, top_y + value_block_h // 2), (left_cx, top_y + value_block_h // 2))
+    left_val_layer.add_effect(mv.effect.DropShadow(offset=3.0, color="#000000", opacity=0.5, radius=4.0))
+    apply_slide_in(left_val_layer, 0.1, 0.35, (left_cx - 100, top_y + value_h // 2), (left_cx, top_y + value_h // 2))
 
     right_val_layer = scene.add_layer(
-        mv.layer.Text("\n".join(rv_lines), font_size=rv_size, font_family=font_family, color=palette["orange_hex"]),
-        name="right_val", position=(right_cx + 60, top_y + value_block_h // 2),
+        mv.layer.Text("\n".join(right_val["lines"]), font_size=right_val["font_size"], font_family=font_family, color=palette["orange_hex"]),
+        position=(right_cx, top_y + value_h // 2),
     )
-    apply_slide_in(right_val_layer, 0.15, 0.35, (right_cx + 160, top_y + value_block_h // 2), (right_cx, top_y + value_block_h // 2))
+    right_val_layer.add_effect(mv.effect.DropShadow(offset=3.0, color="#000000", opacity=0.5, radius=4.0))
+    apply_slide_in(right_val_layer, 0.15, 0.35, (right_cx + 100, top_y + value_h // 2), (right_cx, top_y + value_h // 2))
+
+    add_text_layer(scene, left_lbl, left_cx, top_y + value_h + GAP, palette["offwhite_hex"], font_family, fade_start=0.3, add_shadow=False)
+    add_text_layer(scene, right_lbl, right_cx, top_y + value_h + GAP, palette["offwhite_hex"], font_family, fade_start=0.3, add_shadow=False)
 
     scene.add_layer(
-        mv.layer.Text("\n".join(ll_lines), font_size=ll_size, font_family=font_family, color=palette["offwhite_hex"]),
-        name="left_label", position=(left_cx, top_y + value_block_h + GAP + label_block_h // 2),
-    )
-    scene.add_layer(
-        mv.layer.Text("\n".join(rl_lines), font_size=rl_size, font_family=font_family, color=palette["offwhite_hex"]),
-        name="right_label", position=(right_cx, top_y + value_block_h + GAP + label_block_h // 2),
-    )
-
-    scene.add_layer(
-        mv.layer.Rectangle(size=(2, int(total_h)), color=(90, 100, 120)),
-        name="divider", position=(video_width // 2, video_height // 2),
+        mv.layer.Rectangle(size=(2, int(total_h)), color=palette["muted_blue_hex"]),
+        position=(cx, cy),
     )
 
     return scene
 
 
-def render_line_chart(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                       video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """
-    Trend line built from rotated Rectangle segments connecting each
-    point (Movis has no native plot primitive), with small square nodes
-    at each data point. Segments fade in staggered, left to right, for
-    a drawing-in effect.
-    """
-    _validate_content(content, ["x_labels", "values"])
-    x_labels = content["x_labels"]
-    values = [float(v) for v in content["values"]]
-    if len(x_labels) < 2 or len(values) != len(x_labels):
-        raise ValueError("line_chart requires at least 2 matching x_labels/values.")
-
-    title = str(content.get("title", ""))
-    panel_w, panel_h = calculate_container_size("line_chart", video_width, video_height, item_count=len(values))
-    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
-
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=20),
-        name="panel", position=(video_width // 2, video_height // 2),
-    )
-    apply_fade_in(panel, 0.0, 0.3)
-
-    if title:
-        t_size, t_lines, _ = fit_text_to_container(title, font_path, panel_w - 80, 60, start_size=32)
-        title_layer = scene.add_layer(
-            mv.layer.Text("\n".join(t_lines), font_size=t_size, font_family=font_family, color=palette["white_hex"]),
-            name="chart_title", position=(video_width // 2, video_height // 2 - panel_h // 2 + 45),
-        )
-        apply_fade_in(title_layer, 0.1, 0.25)
-
-    max_v = max(values) if max(values) != 0 else 1.0
-    min_v = min(values)
-    chart_w = panel_w - 140
-    chart_h = panel_h - 220
-    base_x = video_width // 2 - chart_w // 2
-    base_y = video_height // 2 + chart_h // 2
-
-    points = []
-    n = len(values)
-    for idx, val in enumerate(values):
-        x = base_x + int(idx / (n - 1) * chart_w)
-        norm = (val - min_v) / (max_v - min_v) if max_v != min_v else 0.5
-        y = base_y - int(norm * chart_h)
-        points.append((x, y))
-
-    import math
-    for idx in range(len(points) - 1):
-        x1, y1 = points[idx]
-        x2, y2 = points[idx + 1]
-        seg_len = int(((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5)
-        angle_deg = math.degrees(math.atan2(y2 - y1, x2 - x1))
-        mid_x, mid_y = (x1 + x2) // 2, (y1 + y2) // 2
-
-        segment = scene.add_layer(
-            mv.layer.Rectangle(size=(max(seg_len, 2), 6), color=palette["orange_hex"]),
-            name="segment_" + str(idx), position=(mid_x, mid_y), rotation=angle_deg,
-        )
-        start_t = 0.25 + idx * (0.5 / max(1, len(points) - 1))
-        apply_fade_in(segment, start_t, 0.15)
-
-    for idx, (x, y) in enumerate(points):
-        node = scene.add_layer(
-            mv.layer.Rectangle(size=(16, 16), color=palette["white_hex"], radius=8),
-            name="node_" + str(idx), position=(x, y),
-        )
-        start_t = 0.2 + idx * (0.5 / max(1, len(points) - 1))
-        apply_scale_pop(node, start_t, 0.2)
-
-        lbl_size, lbl_lines, _ = fit_text_to_container(str(x_labels[idx]), font_path, chart_w // n, 40, start_size=20)
-        label_layer = scene.add_layer(
-            mv.layer.Text(str(x_labels[idx]), font_size=lbl_size, font_family=font_family, color=palette["offwhite_hex"]),
-            name="xlabel_" + str(idx), position=(x, base_y + 35),
-        )
-        apply_fade_in(label_layer, start_t, 0.2)
-
-    return scene
-
-
-def render_quote_card(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
-                       video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Full-width glass panel, centered quote text with attribution, fade + gentle scale-in."""
+def render_quote_card(content, duration, palette, video_width, video_height, font_path, font_family):
     _validate_content(content, ["quote"])
     quote = "\u201c" + str(content["quote"]) + "\u201d"
     attribution = str(content.get("attribution", ""))
 
-    panel_w, panel_h = calculate_container_size("quote_card", video_width, video_height, char_count=len(quote))
-    PAD = 60
-    GAP = 24
+    panel_w, _ = calculate_container_size("quote_card", video_width, video_height, char_count=len(quote))
+    PAD, GAP = 64, 26
+    max_h = int(video_height * 0.85)
 
-    q_size, q_lines, q_line_h = fit_text_to_container(quote, font_path, panel_w - PAD*2, panel_h * 0.75, start_size=44, padding=0)
-    quote_block_h = q_line_h * len(q_lines)
-
-    a_size, a_lines, a_line_h = (22, [], 0)
-    attr_block_h = 0
+    blocks = [measure_block(quote, font_path, panel_w - PAD * 2, max_h * 0.75, start_size=42)]
     if attribution:
-        a_size, a_lines, a_line_h = fit_text_to_container("\u2014 " + attribution, font_path, panel_w - PAD*2, panel_h * 0.15, start_size=24, padding=0)
-        attr_block_h = a_line_h * len(a_lines)
+        blocks.append(measure_block("\u2014 " + attribution, font_path, panel_w - PAD * 2, max_h * 0.15, start_size=23))
 
-    total_content_h = quote_block_h + (GAP if attribution else 0) + attr_block_h + PAD * 2
-    panel_h = max(panel_h, min(int(total_content_h), int(video_height * 0.85)))
+    panel_h, offsets = stack_blocks(blocks, PAD, GAP, max_h)
 
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
-
-    panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=24),
-        name="panel", position=(video_width // 2, video_height // 2),
-    )
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=palette["orange_hex"], radius=26)
     apply_fade_in(panel, 0.0, 0.35)
-    from editor.movis_animations import apply_scale_pop
-    apply_scale_pop(panel, 0.0, 0.4, from_scale=0.92, to_scale=1.0)
+    apply_scale_pop(panel, 0.0, 0.4, from_scale=0.94, to_scale=1.0)
 
-    panel_top_y = video_height // 2 - panel_h // 2
-    cursor_y = panel_top_y + PAD
-
-    quote_layer = scene.add_layer(
-        mv.layer.Text("\n".join(q_lines), font_size=q_size, font_family=font_family, color=palette["white_hex"]),
-        name="quote_text", position=(video_width // 2, cursor_y + quote_block_h // 2),
-    )
-    apply_fade_in(quote_layer, 0.2, 0.35)
-    cursor_y += quote_block_h + GAP
-
-    if attribution:
-        attr_layer = scene.add_layer(
-            mv.layer.Text("\n".join(a_lines), font_size=a_size, font_family=font_family, color=palette["orange_hex"]),
-            name="attribution", position=(video_width // 2, cursor_y + attr_block_h // 2),
-        )
-        apply_fade_in(attr_layer, 0.4, 0.3)
+    content_top = cy - panel_h // 2 + PAD
+    colors = [palette["white_hex"], palette["orange_hex"]]
+    for i, block in enumerate(blocks):
+        add_text_layer(scene, block, cx, content_top + offsets[i], colors[i], font_family, fade_start=0.2 + i * 0.2)
 
     return scene
+
+
+def render_list_reveal(content, duration, palette, video_width, video_height, font_path, font_family):
+    _validate_content(content, ["heading", "items"])
+    heading = str(content["heading"]).upper()
+    items = content.get("items", [])[:6]
+    if not items:
+        raise ValueError("list_reveal requires at least one item.")
+
+    panel_w, _ = calculate_container_size("list_reveal", video_width, video_height, item_count=len(items))
+    PAD, GAP, ITEM_GAP = 50, 26, 16
+    max_h = int(video_height * 0.85)
+
+    heading_block = measure_block(heading, font_path, panel_w - PAD * 2, 100, start_size=38)
+    item_blocks = [measure_block(str(item), font_path, panel_w - PAD * 2 - 30, 80, start_size=27) for item in items]
+
+    items_total_h = sum(b["block_h"] for b in item_blocks) + ITEM_GAP * (len(item_blocks) - 1)
+    total_h = heading_block["block_h"] + GAP + items_total_h
+    panel_h = min(total_h + PAD * 2, max_h)
+
+    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=None, radius=22)
+    apply_fade_in(panel, 0.0, 0.3)
+
+    content_top = cy - panel_h // 2 + PAD
+    add_text_layer(scene, heading_block, cx, content_top, palette["orange_hex"], font_family, fade_start=0.1)
+
+    cursor = content_top + heading_block["block_h"] + GAP
+    dot_x = cx - (panel_w - PAD * 2) // 2 + 10
+
+    for idx, (item, block) in enumerate(zip(items, item_blocks)):
+        start_t = 0.25 + idx * 0.13
+        dot = scene.add_layer(
+            mv.layer.Rectangle(size=(14, 14), color=palette["orange_hex"], radius=7),
+            position=(dot_x, cursor + block["block_h"] // 2),
+        )
+        apply_fade_in(dot, start_t, 0.2)
+
+        item_layer = scene.add_layer(
+            mv.layer.Text("\n".join(block["lines"]), font_size=block["font_size"], font_family=font_family, color=palette["white_hex"]),
+            position=(cx + 15, cursor + block["block_h"] // 2),
+        )
+        apply_fade_in(item_layer, start_t, 0.2)
+        cursor += block["block_h"] + ITEM_GAP
+
+    return scene
+
+
+def render_bar_chart(content, duration, palette, video_width, video_height, font_path, font_family):
+    _validate_content(content, ["categories", "values"])
+    categories = content["categories"]
+    values = [float(v) for v in content["values"]]
+    max_v = max(values) if values else 1
+
+    panel_w, panel_h = calculate_container_size("bar_chart", video_width, video_height, item_count=len(values))
+    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=None, radius=22)
+    apply_fade_in(panel, 0.0, 0.3)
+
+    PAD_TOP = 90
+    title_block = measure_block(str(content.get("title", "")).upper(), font_path, panel_w - 100, 60, start_size=34)
+    top_y = cy - panel_h // 2
+    add_text_layer(scene, title_block, cx - (panel_w // 2) + 60 + title_block["block_h"], top_y + 45, palette["white_hex"], font_family, fade_start=0.1, add_shadow=False)
+
+    chart_w = panel_w - 140
+    chart_h = panel_h - PAD_TOP - 90
+    ox = cx - chart_w // 2
+    oy = cy + chart_h // 2
+    bar_w = chart_w // (len(values) * 2)
+
+    for idx, (cat, val) in enumerate(zip(categories, values)):
+        bar_h = int((val / max_v) * chart_h)
+        x = ox + idx * 2 * bar_w + bar_w
+        color = palette["orange_hex"] if idx == len(values) - 1 else palette["muted_blue_hex"]
+        bar = scene.add_layer(
+            mv.layer.Rectangle(size=(bar_w, bar_h), color=color, radius=4),
+            position=(x, oy - bar_h // 2),
+        )
+        start_t = 0.15 + idx * 0.06
+        bar.scale.enable_motion().extend(keyframes=[start_t, start_t + 0.3], values=[(1.0, 0.0), (1.0, 1.0)], easings=["ease_out"])
+
+        lbl = measure_block(str(cat)[:10], font_path, bar_w * 2, 40, start_size=22)
+        add_text_layer(scene, lbl, x, oy + 16, palette["offwhite_hex"], font_family, fade_start=start_t, add_shadow=False)
+
+    return scene
+
+
+def render_line_chart(content, duration, palette, video_width, video_height, font_path, font_family):
+    _validate_content(content, ["x_labels", "values"])
+    x_labels = content["x_labels"]
+    values = [float(v) for v in content["values"]]
+    max_v, min_v = max(values), min(values)
+
+    panel_w, panel_h = calculate_container_size("line_chart", video_width, video_height, item_count=len(values))
+    scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
+    cx, cy = video_width // 2, video_height // 2
+    panel = rounded_panel(scene, panel_w, panel_h, cx, cy, palette["navy_hex"], border_hex=None, radius=22)
+    apply_fade_in(panel, 0.0, 0.3)
+
+    title_block = measure_block(str(content.get("title", "")).upper(), font_path, panel_w - 100, 60, start_size=34)
+    top_y = cy - panel_h // 2
+    add_text_layer(scene, title_block, cx - (panel_w // 2) + 60 + title_block["block_h"], top_y + 45, palette["white_hex"], font_family, fade_start=0.1, add_shadow=False)
+
+    chart_w, chart_h = panel_w - 140, panel_h - 200
+    ox, oy = cx - chart_w // 2, cy + chart_h // 2
+    n = max(2, len(values))
+
+    points = []
+    for idx, val in enumerate(values):
+        x = ox + int(idx / (n - 1) * chart_w)
+        norm = (val - min_v) / (max_v - min_v) if max_v != min_v else 0.5
+        y = oy - int(norm * chart_h)
+        points.append((x, y))
+
+    for idx in range(len(points) - 1):
+        x1, y1 = points[idx]
+        x2, y2 = points[idx + 1]
+        seg_len = int(math.hypot(x2 - x1, y2 - y1))
+        angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
+        mx, my = (x1 + x2) // 2, (y1 + y2) // 2
+        seg = scene.add_layer(
+            mv.layer.Rectangle(size=(max(seg_len, 2), 5), color=palette["orange_hex"]),
+            position=(mx, my), rotation=angle,
+        )
+        apply_fade_in(seg, 0.25 + idx * (0.5 / max(1, len(points) - 1)), 0.15)
+
+    for idx, (x, y) in enumerate(points):
+        node = scene.add_layer(
+            mv.layer.Rectangle(size=(16, 16), color=palette["white_hex"], radius=8),
+            position=(x, y),
+        )
+        start_t = 0.2 + idx * (0.5 / max(1, len(points) - 1))
+        apply_scale_pop(node, start_t, 0.2)
+
+        lbl = measure_block(str(x_labels[idx]), font_path, chart_w // n, 40, start_size=20)
+        add_text_layer(scene, lbl, x, oy + 20, palette["offwhite_hex"], font_family, fade_start=start_t, add_shadow=False)
+
+    return scene
+
+
+# ============== TYPE -> STYLE REGISTRY ==============
+
+TEXT_BOX_STYLES = [render_text_box]
+COMPARISON_STYLES = [render_comparison]
+BAR_CHART_STYLES = [render_bar_chart]
+LINE_CHART_STYLES = [render_line_chart]
+LIST_REVEAL_STYLES = [render_list_reveal]
+QUOTE_CARD_STYLES = [render_quote_card]
+STAT_STYLES = [render_stat_callout]
+
+
+def select_style_fn(graphic):
+    g_type = graphic["type"]
+    seed = graphic.get("trigger_phrase", "") + str(graphic.get("paragraph_index", 0))
+
+    if g_type == "text_box":
+        return pick_variant(TEXT_BOX_STYLES, seed)
+    if g_type == "comparison":
+        return pick_variant(COMPARISON_STYLES, seed)
+    if g_type == "bar_chart":
+        return pick_variant(BAR_CHART_STYLES, seed)
+    if g_type == "line_chart":
+        return pick_variant(LINE_CHART_STYLES, seed)
+    if g_type == "list_reveal":
+        return pick_variant(LIST_REVEAL_STYLES, seed)
+    if g_type == "quote_card":
+        return pick_variant(QUOTE_CARD_STYLES, seed)
+    if g_type == "stat_callout":
+        return pick_variant(STAT_STYLES, seed)
+    return pick_variant(TEXT_BOX_STYLES, seed)
