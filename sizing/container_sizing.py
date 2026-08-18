@@ -35,6 +35,11 @@ def calculate_container_size(content_type: str, video_width: int, video_height: 
     return max(width, 200), max(height, 120)
 
 
+def inscribed_square_side(diameter: float) -> float:
+    """The largest square that fits entirely inside a circle of this diameter."""
+    return diameter / 1.41421356
+
+
 def fit_text_to_container(text: str, font_path: str, max_width: int, max_height: int,
                            start_size: int = 90, min_size: int = 18,
                            padding: int = 20, line_spacing: float = 1.25) -> Tuple[int, List[str], int]:

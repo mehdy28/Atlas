@@ -1,7 +1,7 @@
 
 import movis as mv
 from typing import Dict, Any
-from sizing.container_sizing import calculate_container_size, fit_text_to_container
+from sizing.container_sizing import calculate_container_size, fit_text_to_container, inscribed_square_side
 from editor.movis_animations import apply_fade_in, apply_scale_pop, apply_slide_in
 
 
@@ -19,26 +19,46 @@ def render_text_box(content: Dict[str, Any], duration: float, palette: Dict[str,
     body = str(content.get("body", ""))
 
     panel_w, panel_h = calculate_container_size("text_box", video_width, video_height, char_count=len(body))
+    PAD = 40
+    GAP = 20
+
+    h_size, h_lines, h_line_h = fit_text_to_container(heading, font_path, panel_w - PAD*2, panel_h * 0.5, start_size=44, padding=0)
+    heading_block_h = h_line_h * len(h_lines)
+
+    b_size, b_lines, b_line_h = (28, [], 0)
+    body_block_h = 0
+    if body:
+        b_size, b_lines, b_line_h = fit_text_to_container(body, font_path, panel_w - PAD*2, panel_h * 0.5, start_size=26, padding=0)
+        body_block_h = b_line_h * len(b_lines)
+
+    total_content_h = heading_block_h + (GAP if body else 0) + body_block_h + PAD * 2
+
+    # Grow the panel if content needs more room than the default allotment, capped at 85% of frame height
+    panel_h = max(panel_h, min(int(total_content_h), int(video_height * 0.85)))
+
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     panel = scene.add_layer(
         mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=16),
         name="panel", position=(panel_w // 2, video_height - panel_h // 2 - 40),
     )
+    from editor.movis_animations import apply_slide_in
     apply_slide_in(panel, 0.0, 0.4, (-panel_w, video_height - panel_h // 2 - 40), (panel_w // 2, video_height - panel_h // 2 - 40))
 
-    h_size, h_lines, h_line_h = fit_text_to_container(heading, font_path, panel_w - 60, panel_h // 2, start_size=48)
+    panel_top_y = video_height - panel_h - 40
+    cursor_y = panel_top_y + PAD
+
     heading_layer = scene.add_layer(
         mv.layer.Text("\n".join(h_lines), font_size=h_size, font_family=font_family, color=palette["white_hex"]),
-        name="heading", position=(panel_w // 2, video_height - panel_h + 50),
+        name="heading", position=(panel_w // 2, cursor_y + heading_block_h // 2),
     )
     apply_fade_in(heading_layer, 0.15, 0.3)
+    cursor_y += heading_block_h + GAP
 
     if body:
-        b_size, b_lines, b_line_h = fit_text_to_container(body, font_path, panel_w - 60, panel_h // 2, start_size=26)
         body_layer = scene.add_layer(
             mv.layer.Text("\n".join(b_lines), font_size=b_size, font_family=font_family, color=palette["offwhite_hex"]),
-            name="body", position=(panel_w // 2, video_height - panel_h // 2 + 20),
+            name="body", position=(panel_w // 2, cursor_y + body_block_h // 2),
         )
         apply_fade_in(body_layer, 0.25, 0.3)
 
@@ -47,34 +67,54 @@ def render_text_box(content: Dict[str, Any], duration: float, palette: Dict[str,
 
 def render_stat_callout(content: Dict[str, Any], duration: float, palette: Dict[str, Any],
                          video_width: int, video_height: int, font_path: str, font_family: str) -> mv.layer.Composition:
-    """Large centered number in a circular glass panel, scale-pop entrance."""
+    """Large centered number in a circular panel, scale-pop entrance."""
     _validate_content(content, ["stat"])
     stat = str(content["stat"])
     label = str(content.get("label", ""))
 
     box_w_raw, box_h_raw = calculate_container_size("stat_callout", video_width, video_height, char_count=len(label))
-    box_size = max(box_w_raw, box_h_raw)  # force square so the corner-radius trick makes a real circle
+    box_size = max(box_w_raw, box_h_raw)
     box_w = box_h = box_size
+
+    # Text must stay within the circle's inscribed square, not the full bounding box,
+    # or it visually spills past the curved edge.
+    safe_side = int(inscribed_square_side(box_size))
+    PAD = 24
+    usable = safe_side - PAD * 2
+
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     circle = scene.add_layer(
         mv.layer.Rectangle(size=(box_w, box_h), color=palette["navy_hex"], radius=box_size // 2),
         name="circle", position=(video_width // 2, video_height // 2),
     )
+    from editor.movis_animations import apply_scale_pop
     apply_scale_pop(circle, 0.0, 0.45, from_scale=0.0, to_scale=1.0)
 
-    stat_size, stat_lines, _ = fit_text_to_container(stat, font_path, box_w - 80, box_h // 2, start_size=160)
+    # Reserve roughly 55% of the safe zone height for the number, 35% for the label, with a gap
+    stat_size, stat_lines, stat_line_h = fit_text_to_container(stat, font_path, usable, int(usable * 0.55), start_size=140, padding=0)
+    stat_block_h = stat_line_h * len(stat_lines)
+
+    label_size, label_lines, label_line_h = (24, [], 0)
+    label_block_h = 0
+    if label:
+        label_size, label_lines, label_line_h = fit_text_to_container(label, font_path, usable, int(usable * 0.35), start_size=28, padding=0)
+        label_block_h = label_line_h * len(label_lines)
+
+    GAP = 14
+    total_h = stat_block_h + (GAP if label else 0) + label_block_h
+    top_y = video_height // 2 - total_h // 2
+
     stat_layer = scene.add_layer(
-        mv.layer.Text(stat, font_size=stat_size, font_family=font_family, color=palette["white_hex"]),
-        name="stat_text", position=(video_width // 2, video_height // 2 - box_h // 6),
+        mv.layer.Text("\n".join(stat_lines), font_size=stat_size, font_family=font_family, color=palette["white_hex"]),
+        name="stat_text", position=(video_width // 2, top_y + stat_block_h // 2),
     )
     apply_fade_in(stat_layer, 0.3, 0.25)
 
     if label:
-        label_size, label_lines, _ = fit_text_to_container(label, font_path, box_w - 100, box_h // 3, start_size=28)
         label_layer = scene.add_layer(
             mv.layer.Text("\n".join(label_lines), font_size=label_size, font_family=font_family, color=palette["orange_hex"]),
-            name="label_text", position=(video_width // 2, video_height // 2 + box_h // 4),
+            name="label_text", position=(video_width // 2, top_y + stat_block_h + GAP + label_block_h // 2),
         )
         apply_fade_in(label_layer, 0.45, 0.25)
 
@@ -179,41 +219,62 @@ def render_comparison(content: Dict[str, Any], duration: float, palette: Dict[st
     _validate_content(content, ["left_label", "left_value", "right_label", "right_value"])
 
     panel_w, panel_h = calculate_container_size("comparison", video_width, video_height)
+    PAD = 50
+    DIVIDER_GAP = 30
+    half_w = (panel_w - PAD * 2 - DIVIDER_GAP) // 2
+
+    left_label, left_value = str(content["left_label"]), str(content["left_value"])
+    right_label, right_value = str(content["right_label"]), str(content["right_value"])
+
+    lv_size, lv_lines, lv_line_h = fit_text_to_container(left_value, font_path, half_w, panel_h * 0.35, start_size=52, padding=0)
+    rv_size, rv_lines, rv_line_h = fit_text_to_container(right_value, font_path, half_w, panel_h * 0.35, start_size=52, padding=0)
+    ll_size, ll_lines, ll_line_h = fit_text_to_container(left_label, font_path, half_w, panel_h * 0.35, start_size=24, padding=0)
+    rl_size, rl_lines, rl_line_h = fit_text_to_container(right_label, font_path, half_w, panel_h * 0.35, start_size=24, padding=0)
+
+    value_block_h = max(lv_line_h * len(lv_lines), rv_line_h * len(rv_lines))
+    label_block_h = max(ll_line_h * len(ll_lines), rl_line_h * len(rl_lines))
+    GAP = 20
+    total_h = value_block_h + GAP + label_block_h
+    panel_h = max(panel_h, int(total_h + PAD * 2))
+
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     panel = scene.add_layer(
-        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=20),
+        mv.layer.Rectangle(size=(panel_w, panel_h), color=palette["navy_hex"], radius=22),
         name="panel", position=(video_width // 2, video_height // 2),
     )
     apply_fade_in(panel, 0.0, 0.3)
 
-    left_cx = video_width // 2 - panel_w // 4
-    right_cx = video_width // 2 + panel_w // 4
+    left_cx = video_width // 2 - DIVIDER_GAP // 2 - half_w // 2
+    right_cx = video_width // 2 + DIVIDER_GAP // 2 + half_w // 2
+    top_y = video_height // 2 - total_h // 2
 
-    lv_size, lv_lines, _ = fit_text_to_container(str(content["left_value"]), font_path, panel_w // 2 - 60, panel_h // 3, start_size=54)
-    left_val = scene.add_layer(
+    from editor.movis_animations import apply_slide_in
+
+    left_val_layer = scene.add_layer(
         mv.layer.Text("\n".join(lv_lines), font_size=lv_size, font_family=font_family, color=palette["white_hex"]),
-        name="left_val", position=(left_cx - panel_w // 3, video_height // 2 - 40),
+        name="left_val", position=(left_cx - 60, top_y + value_block_h // 2),
     )
-    apply_slide_in(left_val, 0.1, 0.35, (left_cx - panel_w // 3 - 100, video_height // 2 - 40), (left_cx, video_height // 2 - 40))
+    apply_slide_in(left_val_layer, 0.1, 0.35, (left_cx - 160, top_y + value_block_h // 2), (left_cx, top_y + value_block_h // 2))
 
-    rv_size, rv_lines, _ = fit_text_to_container(str(content["right_value"]), font_path, panel_w // 2 - 60, panel_h // 3, start_size=54)
-    right_val = scene.add_layer(
+    right_val_layer = scene.add_layer(
         mv.layer.Text("\n".join(rv_lines), font_size=rv_size, font_family=font_family, color=palette["orange_hex"]),
-        name="right_val", position=(right_cx + panel_w // 3 + 100, video_height // 2 - 40),
+        name="right_val", position=(right_cx + 60, top_y + value_block_h // 2),
     )
-    apply_slide_in(right_val, 0.15, 0.35, (right_cx + panel_w // 3 + 100, video_height // 2 - 40), (right_cx, video_height // 2 - 40))
+    apply_slide_in(right_val_layer, 0.15, 0.35, (right_cx + 160, top_y + value_block_h // 2), (right_cx, top_y + value_block_h // 2))
 
-    ll_size, ll_lines, _ = fit_text_to_container(str(content["left_label"]), font_path, panel_w // 2 - 60, 60, start_size=22)
     scene.add_layer(
         mv.layer.Text("\n".join(ll_lines), font_size=ll_size, font_family=font_family, color=palette["offwhite_hex"]),
-        name="left_label", position=(left_cx, video_height // 2 + 60),
+        name="left_label", position=(left_cx, top_y + value_block_h + GAP + label_block_h // 2),
     )
-
-    rl_size, rl_lines, _ = fit_text_to_container(str(content["right_label"]), font_path, panel_w // 2 - 60, 60, start_size=22)
     scene.add_layer(
         mv.layer.Text("\n".join(rl_lines), font_size=rl_size, font_family=font_family, color=palette["offwhite_hex"]),
-        name="right_label", position=(right_cx, video_height // 2 + 60),
+        name="right_label", position=(right_cx, top_y + value_block_h + GAP + label_block_h // 2),
+    )
+
+    scene.add_layer(
+        mv.layer.Rectangle(size=(2, int(total_h)), color=(90, 100, 120)),
+        name="divider", position=(video_width // 2, video_height // 2),
     )
 
     return scene
@@ -307,6 +368,21 @@ def render_quote_card(content: Dict[str, Any], duration: float, palette: Dict[st
     attribution = str(content.get("attribution", ""))
 
     panel_w, panel_h = calculate_container_size("quote_card", video_width, video_height, char_count=len(quote))
+    PAD = 60
+    GAP = 24
+
+    q_size, q_lines, q_line_h = fit_text_to_container(quote, font_path, panel_w - PAD*2, panel_h * 0.75, start_size=44, padding=0)
+    quote_block_h = q_line_h * len(q_lines)
+
+    a_size, a_lines, a_line_h = (22, [], 0)
+    attr_block_h = 0
+    if attribution:
+        a_size, a_lines, a_line_h = fit_text_to_container("\u2014 " + attribution, font_path, panel_w - PAD*2, panel_h * 0.15, start_size=24, padding=0)
+        attr_block_h = a_line_h * len(a_lines)
+
+    total_content_h = quote_block_h + (GAP if attribution else 0) + attr_block_h + PAD * 2
+    panel_h = max(panel_h, min(int(total_content_h), int(video_height * 0.85)))
+
     scene = mv.layer.Composition(size=(video_width, video_height), duration=duration)
 
     panel = scene.add_layer(
@@ -314,20 +390,23 @@ def render_quote_card(content: Dict[str, Any], duration: float, palette: Dict[st
         name="panel", position=(video_width // 2, video_height // 2),
     )
     apply_fade_in(panel, 0.0, 0.35)
+    from editor.movis_animations import apply_scale_pop
     apply_scale_pop(panel, 0.0, 0.4, from_scale=0.92, to_scale=1.0)
 
-    q_size, q_lines, q_line_h = fit_text_to_container(quote, font_path, panel_w - 160, panel_h - 160, start_size=44)
+    panel_top_y = video_height // 2 - panel_h // 2
+    cursor_y = panel_top_y + PAD
+
     quote_layer = scene.add_layer(
         mv.layer.Text("\n".join(q_lines), font_size=q_size, font_family=font_family, color=palette["white_hex"]),
-        name="quote_text", position=(video_width // 2, video_height // 2 - 20),
+        name="quote_text", position=(video_width // 2, cursor_y + quote_block_h // 2),
     )
     apply_fade_in(quote_layer, 0.2, 0.35)
+    cursor_y += quote_block_h + GAP
 
     if attribution:
-        a_size, a_lines, _ = fit_text_to_container("\u2014 " + attribution, font_path, panel_w - 160, 60, start_size=24)
         attr_layer = scene.add_layer(
             mv.layer.Text("\n".join(a_lines), font_size=a_size, font_family=font_family, color=palette["orange_hex"]),
-            name="attribution", position=(video_width // 2, video_height // 2 + panel_h // 2 - 60),
+            name="attribution", position=(video_width // 2, cursor_y + attr_block_h // 2),
         )
         apply_fade_in(attr_layer, 0.4, 0.3)
 
