@@ -1,7 +1,9 @@
 
 import json
+import time
 from google import genai
 from google.genai import types
+from google.genai import errors as genai_errors
 
 GRAPHIC_TYPES = [
     "stat_callout", "text_box", "bar_chart", "line_chart",
