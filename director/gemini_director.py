@@ -157,3 +157,58 @@ def generate_script_and_graphics(topic, api_key, model_name="gemini-2.5-flash",
         "dropped_graphics": dropped,
         "footage_keywords": data.get("footage_keywords", []),
     }
+
+
+IMAGE_PROMPT_INSTRUCTIONS_TEMPLATE = """
+You are a visual director writing prompts for an AI image generator
+(Stable Diffusion). You are given a list of narration paragraphs that
+have NO good matching stock footage available - either because the
+scenario is invented/specific (e.g. "a CEO announcing layoffs"), or
+involves brand/logo concepts stock libraries do not carry.
+
+For each paragraph below, write ONE concise, concrete, visually
+descriptive image prompt (documentary/photojournalism style, realistic,
+NOT illustration or cartoon) that would work as a still B-roll image
+for that moment. Keep prompts under 30 words, describe composition and
+mood, avoid text/logos/words appearing in the generated image itself
+(image models render text poorly), and avoid naming real living people
+or exact real company logos - describe the scene generically instead
+(e.g. "a corporate boardroom" not "the Uber logo").
+
+PARAGRAPHS NEEDING GENERATED IMAGES:
+{numbered_paragraphs}
+
+Return ONLY valid JSON matching this exact structure, nothing else:
+{{
+  "image_prompts": [
+    {{"paragraph_index": 0, "prompt": "string"}},
+    ...
+  ]
+}}
+"""
+
+
+def generate_image_prompts_batch(paragraphs_needing_images, api_key, model_name="gemini-2.5-flash"):
+    """
+    paragraphs_needing_images: list of {"paragraph_index": int, "text": str}
+    Returns list of {"paragraph_index": int, "prompt": str}
+    Single batched Gemini call for all of them at once.
+    """
+    if not paragraphs_needing_images:
+        return []
+
+    client = genai.Client(api_key=api_key)
+
+    numbered = "\n".join(
+        "[" + str(p["paragraph_index"]) + "] " + p["text"]
+        for p in paragraphs_needing_images
+    )
+    instructions = IMAGE_PROMPT_INSTRUCTIONS_TEMPLATE.format(numbered_paragraphs=numbered)
+    prompt = "Write the image prompts as specified above."
+
+    token_budget = max(2048, len(paragraphs_needing_images) * 100)
+
+    raw = _call_gemini_json(client, model_name, instructions, prompt, token_budget)
+    data = _parse_json_with_recovery(client, model_name, instructions, prompt, raw, token_budget)
+
+    return data.get("image_prompts", [])

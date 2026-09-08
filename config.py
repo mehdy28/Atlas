@@ -140,3 +140,10 @@ GENERIC_CONCEPT_QUERIES = [
 ]
 PARAGRAPH_QUERY_OVERRIDES_PATH = f"{PRODUCTION_DIR}/paragraph_query_overrides.json"
 MAX_BOOST_PARAGRAPHS = 5
+
+SD_MODEL_NAME = "stabilityai/sd-turbo"  # fast, low-VRAM, good enough for B-roll stills
+GENERATED_IMAGES_DIR = f"{DATA_DIR}/storage/generated_images"
+IMAGE_PROMPTS_PATH = f"{PRODUCTION_DIR}/image_generation_prompts.json"
+IMAGE_GEN_STEPS = 4  # sd-turbo is designed for 1-4 steps, not 20-50
+IMAGE_GEN_WIDTH = 768
+IMAGE_GEN_HEIGHT = 512
