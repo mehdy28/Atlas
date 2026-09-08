@@ -1,5 +1,5 @@
 
-DATA_DIR = "/content/drive/MyDrive/AtlasData"
+DATA_DIR = "/content/AtlasData"
 VIDEO_DIR = f"{DATA_DIR}/storage/videos"
 THUMBNAIL_DIR = f"{DATA_DIR}/storage/thumbnails"
 
