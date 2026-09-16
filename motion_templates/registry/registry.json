@@ -1,0 +1,1320 @@
+{
+  "generated": "2026-09-16T09:57:53.238456Z",
+  "categories": [
+    {
+      "idx": 1,
+      "slug": "title",
+      "label": "Title / Section Header",
+      "family": "banner"
+    },
+    {
+      "idx": 2,
+      "slug": "stat",
+      "label": "Single Stat Reveal",
+      "family": "stat"
+    },
+    {
+      "idx": 3,
+      "slug": "compare",
+      "label": "Two-Stat Comparison",
+      "family": "compare"
+    },
+    {
+      "idx": 4,
+      "slug": "quote",
+      "label": "Pull Quote",
+      "family": "quote"
+    },
+    {
+      "idx": 5,
+      "slug": "timeline",
+      "label": "Timeline / Sequence of Events",
+      "family": "timeline"
+    },
+    {
+      "idx": 6,
+      "slug": "list",
+      "label": "Enumerated / Ranked List",
+      "family": "list"
+    },
+    {
+      "idx": 7,
+      "slug": "map",
+      "label": "Map / Location Reveal",
+      "family": "map"
+    },
+    {
+      "idx": 8,
+      "slug": "feature",
+      "label": "Image-Led Feature",
+      "family": "feature"
+    },
+    {
+      "idx": 9,
+      "slug": "chart",
+      "label": "Simple Chart Reveal",
+      "family": "chart"
+    },
+    {
+      "idx": 10,
+      "slug": "closing",
+      "label": "Outro / Closing Card",
+      "family": "closing"
+    },
+    {
+      "idx": 11,
+      "slug": "progress",
+      "label": "Progress / Milestone Fill",
+      "family": "progress"
+    },
+    {
+      "idx": 12,
+      "slug": "versus",
+      "label": "Versus / Split Comparison",
+      "family": "versus"
+    },
+    {
+      "idx": 13,
+      "slug": "definition",
+      "label": "Definition / Glossary Card",
+      "family": "definition"
+    },
+    {
+      "idx": 14,
+      "slug": "warning",
+      "label": "Warning / Alert Card",
+      "family": "warning"
+    },
+    {
+      "idx": 15,
+      "slug": "grid",
+      "label": "Grid / Roster Reveal",
+      "family": "grid"
+    },
+    {
+      "idx": 16,
+      "slug": "credits",
+      "label": "Credits Roll",
+      "family": "credits"
+    },
+    {
+      "idx": 17,
+      "slug": "takeover",
+      "label": "Full-Bleed Number Takeover",
+      "family": "takeover"
+    },
+    {
+      "idx": 18,
+      "slug": "lowerthird",
+      "label": "Lower Third Caption",
+      "family": "lowerthird"
+    },
+    {
+      "idx": 19,
+      "slug": "split",
+      "label": "50/50 Split Panel",
+      "family": "split"
+    },
+    {
+      "idx": 20,
+      "slug": "radial",
+      "label": "APPROVAL",
+      "family": "radial"
+    },
+    {
+      "idx": 21,
+      "slug": "badge",
+      "label": "Corner Badge Expand",
+      "family": "badge"
+    }
+  ],
+  "states": [
+    {
+      "id": "st_01a",
+      "file": "states/st_01_title_a.py",
+      "category": "title",
+      "family": "banner",
+      "label": "Title / Section Header (a)",
+      "exposes": [
+        "headline",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_01b",
+      "file": "states/st_01_title_b.py",
+      "category": "title",
+      "family": "banner",
+      "label": "Title / Section Header (b)",
+      "exposes": [
+        "headline",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_01c",
+      "file": "states/st_01_title_c.py",
+      "category": "title",
+      "family": "banner",
+      "label": "Title / Section Header (c)",
+      "exposes": [
+        "headline",
+        "accent_line",
+        "detail"
+      ]
+    },
+    {
+      "id": "st_02a",
+      "file": "states/st_02_stat_a.py",
+      "category": "stat",
+      "family": "stat",
+      "label": "Single Stat Reveal (a)",
+      "exposes": [
+        "kicker_only"
+      ]
+    },
+    {
+      "id": "st_02b",
+      "file": "states/st_02_stat_b.py",
+      "category": "stat",
+      "family": "stat",
+      "label": "Single Stat Reveal (b)",
+      "exposes": [
+        "big_stat"
+      ]
+    },
+    {
+      "id": "st_02c",
+      "file": "states/st_02_stat_c.py",
+      "category": "stat",
+      "family": "stat",
+      "label": "Single Stat Reveal (c)",
+      "exposes": [
+        "big_stat"
+      ]
+    },
+    {
+      "id": "st_03a",
+      "file": "states/st_03_compare_a.py",
+      "category": "compare",
+      "family": "compare",
+      "label": "Two-Stat Comparison (a)",
+      "exposes": [
+        "primary_stat",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_03b",
+      "file": "states/st_03_compare_b.py",
+      "category": "compare",
+      "family": "compare",
+      "label": "Two-Stat Comparison (b)",
+      "exposes": [
+        "primary_stat",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_03c",
+      "file": "states/st_03_compare_c.py",
+      "category": "compare",
+      "family": "compare",
+      "label": "Two-Stat Comparison (c)",
+      "exposes": [
+        "primary_stat",
+        "secondary_stat",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_04a",
+      "file": "states/st_04_quote_a.py",
+      "category": "quote",
+      "family": "quote",
+      "label": "Pull Quote (a)",
+      "exposes": [
+        "quote_text",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_04b",
+      "file": "states/st_04_quote_b.py",
+      "category": "quote",
+      "family": "quote",
+      "label": "Pull Quote (b)",
+      "exposes": [
+        "quote_text",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_04c",
+      "file": "states/st_04_quote_c.py",
+      "category": "quote",
+      "family": "quote",
+      "label": "Pull Quote (c)",
+      "exposes": [
+        "quote_text",
+        "quote_attr",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_05a",
+      "file": "states/st_05_timeline_a.py",
+      "category": "timeline",
+      "family": "timeline",
+      "label": "Timeline / Sequence of Events (a)",
+      "exposes": [
+        "timeline_track"
+      ]
+    },
+    {
+      "id": "st_05b",
+      "file": "states/st_05_timeline_b.py",
+      "category": "timeline",
+      "family": "timeline",
+      "label": "Timeline / Sequence of Events (b)",
+      "exposes": [
+        "timeline_track",
+        "marker_1"
+      ]
+    },
+    {
+      "id": "st_05c",
+      "file": "states/st_05_timeline_c.py",
+      "category": "timeline",
+      "family": "timeline",
+      "label": "Timeline / Sequence of Events (c)",
+      "exposes": [
+        "timeline_track",
+        "marker_1",
+        "marker_2"
+      ]
+    },
+    {
+      "id": "st_06a",
+      "file": "states/st_06_list_a.py",
+      "category": "list",
+      "family": "list",
+      "label": "Enumerated / Ranked List (a)",
+      "exposes": [
+        "list_container"
+      ]
+    },
+    {
+      "id": "st_06b",
+      "file": "states/st_06_list_b.py",
+      "category": "list",
+      "family": "list",
+      "label": "Enumerated / Ranked List (b)",
+      "exposes": [
+        "list_container",
+        "item_1"
+      ]
+    },
+    {
+      "id": "st_06c",
+      "file": "states/st_06_list_c.py",
+      "category": "list",
+      "family": "list",
+      "label": "Enumerated / Ranked List (c)",
+      "exposes": [
+        "list_container",
+        "item_1",
+        "item_2"
+      ]
+    },
+    {
+      "id": "st_07a",
+      "file": "states/st_07_map_a.py",
+      "category": "map",
+      "family": "map",
+      "label": "Map / Location Reveal (a)",
+      "exposes": [
+        "map_bg",
+        "pin"
+      ]
+    },
+    {
+      "id": "st_07b",
+      "file": "states/st_07_map_b.py",
+      "category": "map",
+      "family": "map",
+      "label": "Map / Location Reveal (b)",
+      "exposes": [
+        "map_bg",
+        "pin"
+      ]
+    },
+    {
+      "id": "st_07c",
+      "file": "states/st_07_map_c.py",
+      "category": "map",
+      "family": "map",
+      "label": "Map / Location Reveal (c)",
+      "exposes": [
+        "map_bg",
+        "pin",
+        "caption"
+      ]
+    },
+    {
+      "id": "st_08a",
+      "file": "states/st_08_feature_a.py",
+      "category": "feature",
+      "family": "feature",
+      "label": "Image-Led Feature (a)",
+      "exposes": [
+        "image",
+        "title_chip",
+        "logo_chip"
+      ]
+    },
+    {
+      "id": "st_08b",
+      "file": "states/st_08_feature_b.py",
+      "category": "feature",
+      "family": "feature",
+      "label": "Image-Led Feature (b)",
+      "exposes": [
+        "image",
+        "logo_chip",
+        "stat_panel"
+      ]
+    },
+    {
+      "id": "st_08c",
+      "file": "states/st_08_feature_c.py",
+      "category": "feature",
+      "family": "feature",
+      "label": "Image-Led Feature (c)",
+      "exposes": [
+        "image",
+        "logo_chip",
+        "stat_panel"
+      ]
+    },
+    {
+      "id": "st_09a",
+      "file": "states/st_09_chart_a.py",
+      "category": "chart",
+      "family": "chart",
+      "label": "Simple Chart Reveal (a)",
+      "exposes": [
+        "chart_axis"
+      ]
+    },
+    {
+      "id": "st_09b",
+      "file": "states/st_09_chart_b.py",
+      "category": "chart",
+      "family": "chart",
+      "label": "Simple Chart Reveal (b)",
+      "exposes": [
+        "chart_axis",
+        "chart_bars"
+      ]
+    },
+    {
+      "id": "st_09c",
+      "file": "states/st_09_chart_c.py",
+      "category": "chart",
+      "family": "chart",
+      "label": "Simple Chart Reveal (c)",
+      "exposes": [
+        "chart_axis",
+        "chart_bars",
+        "chart_label"
+      ]
+    },
+    {
+      "id": "st_10a",
+      "file": "states/st_10_closing_a.py",
+      "category": "closing",
+      "family": "closing",
+      "label": "Outro / Closing Card (a)",
+      "exposes": [
+        "logo_chip"
+      ]
+    },
+    {
+      "id": "st_10b",
+      "file": "states/st_10_closing_b.py",
+      "category": "closing",
+      "family": "closing",
+      "label": "Outro / Closing Card (b)",
+      "exposes": [
+        "logo_chip",
+        "tagline"
+      ]
+    },
+    {
+      "id": "st_10c",
+      "file": "states/st_10_closing_c.py",
+      "category": "closing",
+      "family": "closing",
+      "label": "Outro / Closing Card (c)",
+      "exposes": [
+        "logo_chip",
+        "tagline",
+        "accent_line"
+      ]
+    },
+    {
+      "id": "st_11a",
+      "file": "states/st_11_progress_a.py",
+      "category": "progress",
+      "family": "progress",
+      "label": "Progress / Milestone Fill (a)",
+      "exposes": [
+        "track",
+        "kicker_label"
+      ]
+    },
+    {
+      "id": "st_11b",
+      "file": "states/st_11_progress_b.py",
+      "category": "progress",
+      "family": "progress",
+      "label": "Progress / Milestone Fill (b)",
+      "exposes": [
+        "track",
+        "fill",
+        "pct_text"
+      ]
+    },
+    {
+      "id": "st_11c",
+      "file": "states/st_11_progress_c.py",
+      "category": "progress",
+      "family": "progress",
+      "label": "Progress / Milestone Fill (c)",
+      "exposes": [
+        "track",
+        "fill",
+        "pct_text",
+        "note"
+      ]
+    },
+    {
+      "id": "st_12a",
+      "file": "states/st_12_versus_a.py",
+      "category": "versus",
+      "family": "versus",
+      "label": "Versus / Split Comparison (a)",
+      "exposes": [
+        "side_left",
+        "divider"
+      ]
+    },
+    {
+      "id": "st_12b",
+      "file": "states/st_12_versus_b.py",
+      "category": "versus",
+      "family": "versus",
+      "label": "Versus / Split Comparison (b)",
+      "exposes": [
+        "side_left",
+        "side_right",
+        "divider"
+      ]
+    },
+    {
+      "id": "st_12c",
+      "file": "states/st_12_versus_c.py",
+      "category": "versus",
+      "family": "versus",
+      "label": "Versus / Split Comparison (c)",
+      "exposes": [
+        "side_left",
+        "side_right",
+        "divider",
+        "verdict"
+      ]
+    },
+    {
+      "id": "st_13a",
+      "file": "states/st_13_definition_a.py",
+      "category": "definition",
+      "family": "definition",
+      "label": "Definition / Glossary Card (a)",
+      "exposes": [
+        "term"
+      ]
+    },
+    {
+      "id": "st_13b",
+      "file": "states/st_13_definition_b.py",
+      "category": "definition",
+      "family": "definition",
+      "label": "Definition / Glossary Card (b)",
+      "exposes": [
+        "term",
+        "definition_text"
+      ]
+    },
+    {
+      "id": "st_13c",
+      "file": "states/st_13_definition_c.py",
+      "category": "definition",
+      "family": "definition",
+      "label": "Definition / Glossary Card (c)",
+      "exposes": [
+        "term",
+        "definition_text",
+        "tag"
+      ]
+    },
+    {
+      "id": "st_14a",
+      "file": "states/st_14_warning_a.py",
+      "category": "warning",
+      "family": "warning",
+      "label": "Warning / Alert Card (a)",
+      "exposes": [
+        "badge"
+      ]
+    },
+    {
+      "id": "st_14b",
+      "file": "states/st_14_warning_b.py",
+      "category": "warning",
+      "family": "warning",
+      "label": "Warning / Alert Card (b)",
+      "exposes": [
+        "badge",
+        "headline"
+      ]
+    },
+    {
+      "id": "st_14c",
+      "file": "states/st_14_warning_c.py",
+      "category": "warning",
+      "family": "warning",
+      "label": "Warning / Alert Card (c)",
+      "exposes": [
+        "badge",
+        "headline",
+        "detail"
+      ]
+    },
+    {
+      "id": "st_15a",
+      "file": "states/st_15_grid_a.py",
+      "category": "grid",
+      "family": "grid",
+      "label": "Grid / Roster Reveal (a)",
+      "exposes": [
+        "title"
+      ]
+    },
+    {
+      "id": "st_15b",
+      "file": "states/st_15_grid_b.py",
+      "category": "grid",
+      "family": "grid",
+      "label": "Grid / Roster Reveal (b)",
+      "exposes": [
+        "title",
+        "tiles"
+      ]
+    },
+    {
+      "id": "st_15c",
+      "file": "states/st_15_grid_c.py",
+      "category": "grid",
+      "family": "grid",
+      "label": "Grid / Roster Reveal (c)",
+      "exposes": [
+        "title",
+        "tiles",
+        "highlight"
+      ]
+    },
+    {
+      "id": "st_16a",
+      "file": "states/st_16_credits_a.py",
+      "category": "credits",
+      "family": "credits",
+      "label": "Credits Roll (a)",
+      "exposes": [
+        "heading"
+      ]
+    },
+    {
+      "id": "st_16b",
+      "file": "states/st_16_credits_b.py",
+      "category": "credits",
+      "family": "credits",
+      "label": "Credits Roll (b)",
+      "exposes": [
+        "heading",
+        "credit_1"
+      ]
+    },
+    {
+      "id": "st_16c",
+      "file": "states/st_16_credits_c.py",
+      "category": "credits",
+      "family": "credits",
+      "label": "Credits Roll (c)",
+      "exposes": [
+        "heading",
+        "credit_1",
+        "credit_2"
+      ]
+    },
+    {
+      "id": "st_17a",
+      "file": "states/st_17_takeover_a.py",
+      "category": "takeover",
+      "family": "takeover",
+      "label": "Full-Bleed Number Takeover (a)",
+      "exposes": [
+        "kicker"
+      ]
+    },
+    {
+      "id": "st_17b",
+      "file": "states/st_17_takeover_b.py",
+      "category": "takeover",
+      "family": "takeover",
+      "label": "Full-Bleed Number Takeover (b)",
+      "exposes": [
+        "kicker",
+        "big_number"
+      ]
+    },
+    {
+      "id": "st_17c",
+      "file": "states/st_17_takeover_c.py",
+      "category": "takeover",
+      "family": "takeover",
+      "label": "Full-Bleed Number Takeover (c)",
+      "exposes": [
+        "kicker",
+        "big_number",
+        "desc"
+      ]
+    },
+    {
+      "id": "st_18a",
+      "file": "states/st_18_lowerthird_a.py",
+      "category": "lowerthird",
+      "family": "lowerthird",
+      "label": "Lower Third Caption (a)",
+      "exposes": [
+        "bar_bg"
+      ]
+    },
+    {
+      "id": "st_18b",
+      "file": "states/st_18_lowerthird_b.py",
+      "category": "lowerthird",
+      "family": "lowerthird",
+      "label": "Lower Third Caption (b)",
+      "exposes": [
+        "bar_bg",
+        "name_text"
+      ]
+    },
+    {
+      "id": "st_18c",
+      "file": "states/st_18_lowerthird_c.py",
+      "category": "lowerthird",
+      "family": "lowerthird",
+      "label": "Lower Third Caption (c)",
+      "exposes": [
+        "bar_bg",
+        "name_text",
+        "tag"
+      ]
+    },
+    {
+      "id": "st_19a",
+      "file": "states/st_19_split_a.py",
+      "category": "split",
+      "family": "split",
+      "label": "50/50 Split Panel (a)",
+      "exposes": [
+        "panel"
+      ]
+    },
+    {
+      "id": "st_19b",
+      "file": "states/st_19_split_b.py",
+      "category": "split",
+      "family": "split",
+      "label": "50/50 Split Panel (b)",
+      "exposes": [
+        "panel",
+        "headline"
+      ]
+    },
+    {
+      "id": "st_19c",
+      "file": "states/st_19_split_c.py",
+      "category": "split",
+      "family": "split",
+      "label": "50/50 Split Panel (c)",
+      "exposes": [
+        "panel",
+        "headline",
+        "caption"
+      ]
+    },
+    {
+      "id": "st_20a",
+      "file": "states/st_20_radial_a.py",
+      "category": "radial",
+      "family": "radial",
+      "label": "APPROVAL (a)",
+      "exposes": [
+        "ring"
+      ]
+    },
+    {
+      "id": "st_20b",
+      "file": "states/st_20_radial_b.py",
+      "category": "radial",
+      "family": "radial",
+      "label": "APPROVAL (b)",
+      "exposes": [
+        "ring"
+      ]
+    },
+    {
+      "id": "st_20c",
+      "file": "states/st_20_radial_c.py",
+      "category": "radial",
+      "family": "radial",
+      "label": "APPROVAL (c)",
+      "exposes": [
+        "ring",
+        "desc"
+      ]
+    },
+    {
+      "id": "st_21a",
+      "file": "states/st_21_badge_a.py",
+      "category": "badge",
+      "family": "badge",
+      "label": "Corner Badge Expand (a)",
+      "exposes": [
+        "chip"
+      ]
+    },
+    {
+      "id": "st_21b",
+      "file": "states/st_21_badge_b.py",
+      "category": "badge",
+      "family": "badge",
+      "label": "Corner Badge Expand (b)",
+      "exposes": [
+        "chip",
+        "detail"
+      ]
+    },
+    {
+      "id": "st_21c",
+      "file": "states/st_21_badge_c.py",
+      "category": "badge",
+      "family": "badge",
+      "label": "Corner Badge Expand (c)",
+      "exposes": [
+        "chip",
+        "detail",
+        "note"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "tpl_01_title_intro",
+      "file": "templates/tpl_01_title_intro.py",
+      "category": "title",
+      "family": "banner",
+      "states_used": [
+        "st_01a",
+        "st_01b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_01_title_full",
+      "file": "templates/tpl_01_title_full.py",
+      "category": "title",
+      "family": "banner",
+      "states_used": [
+        "st_01a",
+        "st_01b",
+        "st_01c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_02_stat_intro",
+      "file": "templates/tpl_02_stat_intro.py",
+      "category": "stat",
+      "family": "stat",
+      "states_used": [
+        "st_02a",
+        "st_02b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_02_stat_full",
+      "file": "templates/tpl_02_stat_full.py",
+      "category": "stat",
+      "family": "stat",
+      "states_used": [
+        "st_02a",
+        "st_02b",
+        "st_02c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_03_compare_intro",
+      "file": "templates/tpl_03_compare_intro.py",
+      "category": "compare",
+      "family": "compare",
+      "states_used": [
+        "st_03a",
+        "st_03b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_03_compare_full",
+      "file": "templates/tpl_03_compare_full.py",
+      "category": "compare",
+      "family": "compare",
+      "states_used": [
+        "st_03a",
+        "st_03b",
+        "st_03c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_04_quote_intro",
+      "file": "templates/tpl_04_quote_intro.py",
+      "category": "quote",
+      "family": "quote",
+      "states_used": [
+        "st_04a",
+        "st_04b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_04_quote_full",
+      "file": "templates/tpl_04_quote_full.py",
+      "category": "quote",
+      "family": "quote",
+      "states_used": [
+        "st_04a",
+        "st_04b",
+        "st_04c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_05_timeline_intro",
+      "file": "templates/tpl_05_timeline_intro.py",
+      "category": "timeline",
+      "family": "timeline",
+      "states_used": [
+        "st_05a",
+        "st_05b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_05_timeline_full",
+      "file": "templates/tpl_05_timeline_full.py",
+      "category": "timeline",
+      "family": "timeline",
+      "states_used": [
+        "st_05a",
+        "st_05b",
+        "st_05c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_06_list_intro",
+      "file": "templates/tpl_06_list_intro.py",
+      "category": "list",
+      "family": "list",
+      "states_used": [
+        "st_06a",
+        "st_06b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_06_list_full",
+      "file": "templates/tpl_06_list_full.py",
+      "category": "list",
+      "family": "list",
+      "states_used": [
+        "st_06a",
+        "st_06b",
+        "st_06c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_07_map_intro",
+      "file": "templates/tpl_07_map_intro.py",
+      "category": "map",
+      "family": "map",
+      "states_used": [
+        "st_07a",
+        "st_07b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_07_map_full",
+      "file": "templates/tpl_07_map_full.py",
+      "category": "map",
+      "family": "map",
+      "states_used": [
+        "st_07a",
+        "st_07b",
+        "st_07c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_08_feature_intro",
+      "file": "templates/tpl_08_feature_intro.py",
+      "category": "feature",
+      "family": "feature",
+      "states_used": [
+        "st_08a",
+        "st_08b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_08_feature_full",
+      "file": "templates/tpl_08_feature_full.py",
+      "category": "feature",
+      "family": "feature",
+      "states_used": [
+        "st_08a",
+        "st_08b",
+        "st_08c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_09_chart_intro",
+      "file": "templates/tpl_09_chart_intro.py",
+      "category": "chart",
+      "family": "chart",
+      "states_used": [
+        "st_09a",
+        "st_09b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_09_chart_full",
+      "file": "templates/tpl_09_chart_full.py",
+      "category": "chart",
+      "family": "chart",
+      "states_used": [
+        "st_09a",
+        "st_09b",
+        "st_09c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_10_closing_intro",
+      "file": "templates/tpl_10_closing_intro.py",
+      "category": "closing",
+      "family": "closing",
+      "states_used": [
+        "st_10a",
+        "st_10b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_10_closing_full",
+      "file": "templates/tpl_10_closing_full.py",
+      "category": "closing",
+      "family": "closing",
+      "states_used": [
+        "st_10a",
+        "st_10b",
+        "st_10c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_11_progress_intro",
+      "file": "templates/tpl_11_progress_intro.py",
+      "category": "progress",
+      "family": "progress",
+      "states_used": [
+        "st_11a",
+        "st_11b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_11_progress_full",
+      "file": "templates/tpl_11_progress_full.py",
+      "category": "progress",
+      "family": "progress",
+      "states_used": [
+        "st_11a",
+        "st_11b",
+        "st_11c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_12_versus_intro",
+      "file": "templates/tpl_12_versus_intro.py",
+      "category": "versus",
+      "family": "versus",
+      "states_used": [
+        "st_12a",
+        "st_12b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_12_versus_full",
+      "file": "templates/tpl_12_versus_full.py",
+      "category": "versus",
+      "family": "versus",
+      "states_used": [
+        "st_12a",
+        "st_12b",
+        "st_12c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_13_definition_intro",
+      "file": "templates/tpl_13_definition_intro.py",
+      "category": "definition",
+      "family": "definition",
+      "states_used": [
+        "st_13a",
+        "st_13b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_13_definition_full",
+      "file": "templates/tpl_13_definition_full.py",
+      "category": "definition",
+      "family": "definition",
+      "states_used": [
+        "st_13a",
+        "st_13b",
+        "st_13c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_14_warning_intro",
+      "file": "templates/tpl_14_warning_intro.py",
+      "category": "warning",
+      "family": "warning",
+      "states_used": [
+        "st_14a",
+        "st_14b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_14_warning_full",
+      "file": "templates/tpl_14_warning_full.py",
+      "category": "warning",
+      "family": "warning",
+      "states_used": [
+        "st_14a",
+        "st_14b",
+        "st_14c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_15_grid_intro",
+      "file": "templates/tpl_15_grid_intro.py",
+      "category": "grid",
+      "family": "grid",
+      "states_used": [
+        "st_15a",
+        "st_15b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_15_grid_full",
+      "file": "templates/tpl_15_grid_full.py",
+      "category": "grid",
+      "family": "grid",
+      "states_used": [
+        "st_15a",
+        "st_15b",
+        "st_15c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_16_credits_intro",
+      "file": "templates/tpl_16_credits_intro.py",
+      "category": "credits",
+      "family": "credits",
+      "states_used": [
+        "st_16a",
+        "st_16b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_16_credits_full",
+      "file": "templates/tpl_16_credits_full.py",
+      "category": "credits",
+      "family": "credits",
+      "states_used": [
+        "st_16a",
+        "st_16b",
+        "st_16c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_17_takeover_intro",
+      "file": "templates/tpl_17_takeover_intro.py",
+      "category": "takeover",
+      "family": "takeover",
+      "states_used": [
+        "st_17a",
+        "st_17b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_17_takeover_full",
+      "file": "templates/tpl_17_takeover_full.py",
+      "category": "takeover",
+      "family": "takeover",
+      "states_used": [
+        "st_17a",
+        "st_17b",
+        "st_17c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_18_lowerthird_intro",
+      "file": "templates/tpl_18_lowerthird_intro.py",
+      "category": "lowerthird",
+      "family": "lowerthird",
+      "states_used": [
+        "st_18a",
+        "st_18b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_18_lowerthird_full",
+      "file": "templates/tpl_18_lowerthird_full.py",
+      "category": "lowerthird",
+      "family": "lowerthird",
+      "states_used": [
+        "st_18a",
+        "st_18b",
+        "st_18c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_19_split_intro",
+      "file": "templates/tpl_19_split_intro.py",
+      "category": "split",
+      "family": "split",
+      "states_used": [
+        "st_19a",
+        "st_19b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_19_split_full",
+      "file": "templates/tpl_19_split_full.py",
+      "category": "split",
+      "family": "split",
+      "states_used": [
+        "st_19a",
+        "st_19b",
+        "st_19c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_20_radial_intro",
+      "file": "templates/tpl_20_radial_intro.py",
+      "category": "radial",
+      "family": "radial",
+      "states_used": [
+        "st_20a",
+        "st_20b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_20_radial_full",
+      "file": "templates/tpl_20_radial_full.py",
+      "category": "radial",
+      "family": "radial",
+      "states_used": [
+        "st_20a",
+        "st_20b",
+        "st_20c"
+      ],
+      "duration_s": 7.8
+    },
+    {
+      "id": "tpl_21_badge_intro",
+      "file": "templates/tpl_21_badge_intro.py",
+      "category": "badge",
+      "family": "badge",
+      "states_used": [
+        "st_21a",
+        "st_21b"
+      ],
+      "duration_s": 5.4
+    },
+    {
+      "id": "tpl_21_badge_full",
+      "file": "templates/tpl_21_badge_full.py",
+      "category": "badge",
+      "family": "badge",
+      "states_used": [
+        "st_21a",
+        "st_21b",
+        "st_21c"
+      ],
+      "duration_s": 7.8
+    }
+  ],
+  "transition_rule": "same category/family between two templates -> morph; different -> slide or cut (author's choice)."
+}
