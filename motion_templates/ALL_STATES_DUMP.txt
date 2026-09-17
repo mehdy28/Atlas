@@ -1,0 +1,2274 @@
+
+================================================================================
+[1/63] FILE: st_01_title_a.py
+PATH: /content/Atlas/motion_templates/states/st_01_title_a.py
+================================================================================
+"""Title / Section Header - state A (banner family)
+
+Category: title  |  Family: banner  |  Exposes: ['headline', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_01a',
+    'category': 'title',
+    'family': 'banner',
+    'label': 'Title / Section Header (a)',
+    'exposes': ['headline', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "headline": elem('headline', 140, 140, w=1100, kicker='PART ONE', text='THE DECISION<br>NOBODY SAW COMING', size=84, kicker_size=22),
+        "accent_line": elem('bar', 140, 380, w=220, h=6),
+    }
+
+
+
+================================================================================
+[2/63] FILE: st_01_title_b.py
+PATH: /content/Atlas/motion_templates/states/st_01_title_b.py
+================================================================================
+"""Title / Section Header - state B (banner family)
+
+Category: title  |  Family: banner  |  Exposes: ['headline', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_01b',
+    'category': 'title',
+    'family': 'banner',
+    'label': 'Title / Section Header (b)',
+    'exposes': ['headline', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "headline": elem('headline', 140, 70, w=1100, scale=0.6, kicker='PART ONE', text='THE DECISION<br>NOBODY SAW COMING', size=84, kicker_size=22),
+        "accent_line": elem('bar', 140, 204, w=100, h=4),
+    }
+
+
+
+================================================================================
+[3/63] FILE: st_01_title_c.py
+PATH: /content/Atlas/motion_templates/states/st_01_title_c.py
+================================================================================
+"""Title / Section Header - state C (banner family)
+
+Category: title  |  Family: banner  |  Exposes: ['headline', 'accent_line', 'detail']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_01c',
+    'category': 'title',
+    'family': 'banner',
+    'label': 'Title / Section Header (c)',
+    'exposes': ['headline', 'accent_line', 'detail'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "headline": elem('headline', 140, 70, w=1100, scale=0.6, kicker='PART ONE', text='THE DECISION<br>NOBODY SAW COMING', size=84, kicker_size=22),
+        "accent_line": elem('bar', 140, 204, w=100, h=4),
+        "detail": elem('subtext', 140, 226, w=700, text='A single sentence of context that sets up the section.', size=28),
+    }
+
+
+
+================================================================================
+[4/63] FILE: st_02_stat_a.py
+PATH: /content/Atlas/motion_templates/states/st_02_stat_a.py
+================================================================================
+"""Single Stat Reveal - state A (stat family)
+
+Category: stat  |  Family: stat  |  Exposes: ['kicker_only']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_02a',
+    'category': 'stat',
+    'family': 'stat',
+    'label': 'Single Stat Reveal (a)',
+    'exposes': ['kicker_only'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "kicker_only": elem('subtext', 140, 160, w=600, text='THE HEADLINE FIGURE', size=20, color='#ff6a00'),
+    }
+
+
+
+================================================================================
+[5/63] FILE: st_02_stat_b.py
+PATH: /content/Atlas/motion_templates/states/st_02_stat_b.py
+================================================================================
+"""Single Stat Reveal - state B (stat family)
+
+Category: stat  |  Family: stat  |  Exposes: ['big_stat']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_02b',
+    'category': 'stat',
+    'family': 'stat',
+    'label': 'Single Stat Reveal (b)',
+    'exposes': ['big_stat'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "big_stat": elem('big_stat', 140, 160, w=760, kicker='THE HEADLINE FIGURE', number='47%', desc='OF THE BUDGET<br>MOVED IN ONE MEETING', size=230, kicker_size=20, desc_size=30),
+    }
+
+
+
+================================================================================
+[6/63] FILE: st_02_stat_c.py
+PATH: /content/Atlas/motion_templates/states/st_02_stat_c.py
+================================================================================
+"""Single Stat Reveal - state C (stat family)
+
+Category: stat  |  Family: stat  |  Exposes: ['big_stat']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_02c',
+    'category': 'stat',
+    'family': 'stat',
+    'label': 'Single Stat Reveal (c)',
+    'exposes': ['big_stat'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "big_stat": elem('big_stat', 140, 70, w=520, scale=0.72, kicker='THE HEADLINE FIGURE', number='47%', desc='OF THE BUDGET<br>MOVED IN ONE MEETING', size=230, kicker_size=20, desc_size=30),
+    }
+
+
+
+================================================================================
+[7/63] FILE: st_03_compare_a.py
+PATH: /content/Atlas/motion_templates/states/st_03_compare_a.py
+================================================================================
+"""Two-Stat Comparison - state A (compare family)
+
+Category: compare  |  Family: compare  |  Exposes: ['primary_stat', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_03a',
+    'category': 'compare',
+    'family': 'compare',
+    'label': 'Two-Stat Comparison (a)',
+    'exposes': ['primary_stat', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "primary_stat": elem('big_stat', 380, 170, w=560, kicker='BEFORE', number='1,200', desc='STAFF ON<br>THE PROJECT', size=180, kicker_size=18, desc_size=26),
+        "accent_line": elem('bar', 380, 460, w=160, h=4),
+    }
+
+
+
+================================================================================
+[8/63] FILE: st_03_compare_b.py
+PATH: /content/Atlas/motion_templates/states/st_03_compare_b.py
+================================================================================
+"""Two-Stat Comparison - state B (compare family)
+
+Category: compare  |  Family: compare  |  Exposes: ['primary_stat', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_03b',
+    'category': 'compare',
+    'family': 'compare',
+    'label': 'Two-Stat Comparison (b)',
+    'exposes': ['primary_stat', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "primary_stat": elem('big_stat', 130, 170, w=480, scale=0.85, kicker='BEFORE', number='1,200', desc='STAFF ON<br>THE PROJECT', size=180, kicker_size=18, desc_size=26),
+        "accent_line": elem('bar', 660, 130, w=4, h=320),
+    }
+
+
+
+================================================================================
+[9/63] FILE: st_03_compare_c.py
+PATH: /content/Atlas/motion_templates/states/st_03_compare_c.py
+================================================================================
+"""Two-Stat Comparison - state C (compare family)
+
+Category: compare  |  Family: compare  |  Exposes: ['primary_stat', 'secondary_stat', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_03c',
+    'category': 'compare',
+    'family': 'compare',
+    'label': 'Two-Stat Comparison (c)',
+    'exposes': ['primary_stat', 'secondary_stat', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "primary_stat": elem('big_stat', 130, 170, w=480, scale=0.85, kicker='BEFORE', number='1,200', desc='STAFF ON<br>THE PROJECT', size=180, kicker_size=18, desc_size=26),
+        "accent_line": elem('bar', 660, 130, w=4, h=320),
+        "secondary_stat": elem('big_stat', 740, 170, w=440, kicker='AFTER', number='340', desc='STAFF ON<br>THE PROJECT', size=180, kicker_size=18, desc_size=26),
+    }
+
+
+
+================================================================================
+[10/63] FILE: st_04_quote_a.py
+PATH: /content/Atlas/motion_templates/states/st_04_quote_a.py
+================================================================================
+"""Pull Quote - state A (quote family)
+
+Category: quote  |  Family: quote  |  Exposes: ['quote_text', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_04a',
+    'category': 'quote',
+    'family': 'quote',
+    'label': 'Pull Quote (a)',
+    'exposes': ['quote_text', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "quote_text": elem('quote', 220, 200, w=840, text="We didn't expect the cut to land this fast, or this deep.", size=48),
+        "accent_line": elem('bar', 140, 180, w=5, h=320),
+    }
+
+
+
+================================================================================
+[11/63] FILE: st_04_quote_b.py
+PATH: /content/Atlas/motion_templates/states/st_04_quote_b.py
+================================================================================
+"""Pull Quote - state B (quote family)
+
+Category: quote  |  Family: quote  |  Exposes: ['quote_text', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_04b',
+    'category': 'quote',
+    'family': 'quote',
+    'label': 'Pull Quote (b)',
+    'exposes': ['quote_text', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "quote_text": elem('quote', 220, 200, w=840, text="We didn't expect the cut to land this fast, or this deep.", size=48),
+        "accent_line": elem('bar', 140, 180, w=5, h=320),
+    }
+
+
+
+================================================================================
+[12/63] FILE: st_04_quote_c.py
+PATH: /content/Atlas/motion_templates/states/st_04_quote_c.py
+================================================================================
+"""Pull Quote - state C (quote family)
+
+Category: quote  |  Family: quote  |  Exposes: ['quote_text', 'quote_attr', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_04c',
+    'category': 'quote',
+    'family': 'quote',
+    'label': 'Pull Quote (c)',
+    'exposes': ['quote_text', 'quote_attr', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "quote_text": elem('quote', 220, 200, w=840, text="We didn't expect the cut to land this fast, or this deep.", size=48),
+        "accent_line": elem('bar', 140, 180, w=5, h=320),
+        "quote_attr": elem('subtext', 220, 420, w=600, text='SENIOR ENGINEER, INTERNAL MEMO', size=18, color='#999'),
+    }
+
+
+
+================================================================================
+[13/63] FILE: st_05_timeline_a.py
+PATH: /content/Atlas/motion_templates/states/st_05_timeline_a.py
+================================================================================
+"""Timeline / Sequence of Events - state A (timeline family)
+
+Category: timeline  |  Family: timeline  |  Exposes: ['timeline_track']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_05a',
+    'category': 'timeline',
+    'family': 'timeline',
+    'label': 'Timeline / Sequence of Events (a)',
+    'exposes': ['timeline_track'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "timeline_track": elem('timeline_track', 140, 360, w=1000, h=4),
+    }
+
+
+
+================================================================================
+[14/63] FILE: st_05_timeline_b.py
+PATH: /content/Atlas/motion_templates/states/st_05_timeline_b.py
+================================================================================
+"""Timeline / Sequence of Events - state B (timeline family)
+
+Category: timeline  |  Family: timeline  |  Exposes: ['timeline_track', 'marker_1']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_05b',
+    'category': 'timeline',
+    'family': 'timeline',
+    'label': 'Timeline / Sequence of Events (b)',
+    'exposes': ['timeline_track', 'marker_1'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "timeline_track": elem('timeline_track', 140, 360, w=1000, h=4),
+        "marker_1": elem('timeline_marker', 200, 390, w=200, date='MONDAY', label='Budget freeze announced company-wide'),
+    }
+
+
+
+================================================================================
+[15/63] FILE: st_05_timeline_c.py
+PATH: /content/Atlas/motion_templates/states/st_05_timeline_c.py
+================================================================================
+"""Timeline / Sequence of Events - state C (timeline family)
+
+Category: timeline  |  Family: timeline  |  Exposes: ['timeline_track', 'marker_1', 'marker_2']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_05c',
+    'category': 'timeline',
+    'family': 'timeline',
+    'label': 'Timeline / Sequence of Events (c)',
+    'exposes': ['timeline_track', 'marker_1', 'marker_2'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "timeline_track": elem('timeline_track', 140, 360, w=1000, h=4),
+        "marker_1": elem('timeline_marker', 200, 390, w=200, date='MONDAY', label='Budget freeze announced company-wide'),
+        "marker_2": elem('timeline_marker', 600, 390, w=200, date='FRIDAY', label='First layoffs confirmed in writing'),
+    }
+
+
+
+================================================================================
+[16/63] FILE: st_06_list_a.py
+PATH: /content/Atlas/motion_templates/states/st_06_list_a.py
+================================================================================
+"""Enumerated / Ranked List - state A (list family)
+
+Category: list  |  Family: list  |  Exposes: ['list_container']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_06a',
+    'category': 'list',
+    'family': 'list',
+    'label': 'Enumerated / Ranked List (a)',
+    'exposes': ['list_container'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "list_container": elem('list_container', 160, 200, w=800, title='THREE THINGS THAT CHANGED'),
+    }
+
+
+
+================================================================================
+[17/63] FILE: st_06_list_b.py
+PATH: /content/Atlas/motion_templates/states/st_06_list_b.py
+================================================================================
+"""Enumerated / Ranked List - state B (list family)
+
+Category: list  |  Family: list  |  Exposes: ['list_container', 'item_1']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_06b',
+    'category': 'list',
+    'family': 'list',
+    'label': 'Enumerated / Ranked List (b)',
+    'exposes': ['list_container', 'item_1'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "list_container": elem('list_container', 160, 200, w=800, title='THREE THINGS THAT CHANGED'),
+        "item_1": elem('list_item', 160, 270, w=800, rank='01', text='Who reports to whom'),
+    }
+
+
+
+================================================================================
+[18/63] FILE: st_06_list_c.py
+PATH: /content/Atlas/motion_templates/states/st_06_list_c.py
+================================================================================
+"""Enumerated / Ranked List - state C (list family)
+
+Category: list  |  Family: list  |  Exposes: ['list_container', 'item_1', 'item_2']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_06c',
+    'category': 'list',
+    'family': 'list',
+    'label': 'Enumerated / Ranked List (c)',
+    'exposes': ['list_container', 'item_1', 'item_2'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "list_container": elem('list_container', 160, 200, w=800, title='THREE THINGS THAT CHANGED'),
+        "item_1": elem('list_item', 160, 270, w=800, rank='01', text='Who reports to whom'),
+        "item_2": elem('list_item', 160, 330, w=800, rank='02', text='Where the budget actually goes'),
+    }
+
+
+
+================================================================================
+[19/63] FILE: st_07_map_a.py
+PATH: /content/Atlas/motion_templates/states/st_07_map_a.py
+================================================================================
+"""Map / Location Reveal - state A (map family)
+
+Category: map  |  Family: map  |  Exposes: ['map_bg', 'pin']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_07a',
+    'category': 'map',
+    'family': 'map',
+    'label': 'Map / Location Reveal (a)',
+    'exposes': ['map_bg', 'pin'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "map_bg": elem('map_bg', 0, 0, w=1280, h=720),
+        "pin": elem('pin', 610, 320, w=90, h=90, ring=1.0),
+    }
+
+
+
+================================================================================
+[20/63] FILE: st_07_map_b.py
+PATH: /content/Atlas/motion_templates/states/st_07_map_b.py
+================================================================================
+"""Map / Location Reveal - state B (map family)
+
+Category: map  |  Family: map  |  Exposes: ['map_bg', 'pin']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_07b',
+    'category': 'map',
+    'family': 'map',
+    'label': 'Map / Location Reveal (b)',
+    'exposes': ['map_bg', 'pin'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "map_bg": elem('map_bg', 0, 0, w=1280, h=720),
+        "pin": elem('pin', 610, 320, w=90, h=90, ring=0.0),
+    }
+
+
+
+================================================================================
+[21/63] FILE: st_07_map_c.py
+PATH: /content/Atlas/motion_templates/states/st_07_map_c.py
+================================================================================
+"""Map / Location Reveal - state C (map family)
+
+Category: map  |  Family: map  |  Exposes: ['map_bg', 'pin', 'caption']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_07c',
+    'category': 'map',
+    'family': 'map',
+    'label': 'Map / Location Reveal (c)',
+    'exposes': ['map_bg', 'pin', 'caption'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "map_bg": elem('map_bg', 0, 0, w=1280, h=720),
+        "pin": elem('pin', 160, 320, w=50, h=50, ring=0.0),
+        "caption": elem('caption_panel', 280, 260, w=620, kicker='WHERE IT LANDED', text='The new lab opened three time zones away from the jobs it replaced.'),
+    }
+
+
+
+================================================================================
+[22/63] FILE: st_08_feature_a.py
+PATH: /content/Atlas/motion_templates/states/st_08_feature_a.py
+================================================================================
+"""Image-Led Feature - state A (feature family)
+
+Category: feature  |  Family: feature  |  Exposes: ['image', 'title_chip', 'logo_chip']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_08a',
+    'category': 'feature',
+    'family': 'feature',
+    'label': 'Image-Led Feature (a)',
+    'exposes': ['image', 'title_chip', 'logo_chip'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "image": elem('image', 230, 139, w=900, h=562, c1='#2a2a2a', c2='#111'),
+        "title_chip": elem('title_chip', 260, 169, label1='THE MEMO', label2='OBTAINED BY OUR TEAM'),
+        "logo_chip": elem('logo_chip', 1040, 611, src=''),
+    }
+
+
+
+================================================================================
+[23/63] FILE: st_08_feature_b.py
+PATH: /content/Atlas/motion_templates/states/st_08_feature_b.py
+================================================================================
+"""Image-Led Feature - state B (feature family)
+
+Category: feature  |  Family: feature  |  Exposes: ['image', 'logo_chip', 'stat_panel']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_08b',
+    'category': 'feature',
+    'family': 'feature',
+    'label': 'Image-Led Feature (b)',
+    'exposes': ['image', 'logo_chip', 'stat_panel'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "image": elem('image', 190, 139, w=520, h=562, c1='#2a2a2a', c2='#111'),
+        "logo_chip": elem('logo_chip', 620, 611, src=''),
+        "stat_panel": elem('big_stat', 830, 230, w=380, kicker='THE NUMBER', number='3,300', desc='JOBS CUT<br>IN ONE WEEK', size=120, kicker_size=16, desc_size=20),
+    }
+
+
+
+================================================================================
+[24/63] FILE: st_08_feature_c.py
+PATH: /content/Atlas/motion_templates/states/st_08_feature_c.py
+================================================================================
+"""Image-Led Feature - state C (feature family)
+
+Category: feature  |  Family: feature  |  Exposes: ['image', 'logo_chip', 'stat_panel']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_08c',
+    'category': 'feature',
+    'family': 'feature',
+    'label': 'Image-Led Feature (c)',
+    'exposes': ['image', 'logo_chip', 'stat_panel'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "image": elem('image', 190, 139, w=520, h=562, c1='#2a2a2a', c2='#111'),
+        "logo_chip": elem('logo_chip', 620, 611, src=''),
+        "stat_panel": elem('big_stat', 830, 230, w=380, kicker='THE NUMBER', number='3,300', desc='JOBS CUT<br>IN ONE WEEK', size=120, kicker_size=16, desc_size=20),
+    }
+
+
+
+================================================================================
+[25/63] FILE: st_09_chart_a.py
+PATH: /content/Atlas/motion_templates/states/st_09_chart_a.py
+================================================================================
+"""Simple Chart Reveal - state A (chart family)
+
+Category: chart  |  Family: chart  |  Exposes: ['chart_axis']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_09a',
+    'category': 'chart',
+    'family': 'chart',
+    'label': 'Simple Chart Reveal (a)',
+    'exposes': ['chart_axis'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chart_axis": elem('chart_axis', 200, 180, w=880, h=360),
+    }
+
+
+
+================================================================================
+[26/63] FILE: st_09_chart_b.py
+PATH: /content/Atlas/motion_templates/states/st_09_chart_b.py
+================================================================================
+"""Simple Chart Reveal - state B (chart family)
+
+Category: chart  |  Family: chart  |  Exposes: ['chart_axis', 'chart_bars']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_09b',
+    'category': 'chart',
+    'family': 'chart',
+    'label': 'Simple Chart Reveal (b)',
+    'exposes': ['chart_axis', 'chart_bars'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chart_axis": elem('chart_axis', 200, 180, w=880, h=360),
+        "chart_bars": elem('chart_bars', 200, 180, w=880, h=360, bars=[0.3, 0.55, 0.4, 0.85, 0.6]),
+    }
+
+
+
+================================================================================
+[27/63] FILE: st_09_chart_c.py
+PATH: /content/Atlas/motion_templates/states/st_09_chart_c.py
+================================================================================
+"""Simple Chart Reveal - state C (chart family)
+
+Category: chart  |  Family: chart  |  Exposes: ['chart_axis', 'chart_bars', 'chart_label']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_09c',
+    'category': 'chart',
+    'family': 'chart',
+    'label': 'Simple Chart Reveal (c)',
+    'exposes': ['chart_axis', 'chart_bars', 'chart_label'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chart_axis": elem('chart_axis', 200, 180, w=880, h=360),
+        "chart_bars": elem('chart_bars', 200, 180, w=880, h=360, bars=[0.3, 0.55, 0.4, 0.85, 0.6]),
+        "chart_label": elem('chart_label', 200, 130, text='SPENDING ROSE EVERY QUARTER', size=26),
+    }
+
+
+
+================================================================================
+[28/63] FILE: st_10_closing_a.py
+PATH: /content/Atlas/motion_templates/states/st_10_closing_a.py
+================================================================================
+"""Outro / Closing Card - state A (closing family)
+
+Category: closing  |  Family: closing  |  Exposes: ['logo_chip']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_10a',
+    'category': 'closing',
+    'family': 'closing',
+    'label': 'Outro / Closing Card (a)',
+    'exposes': ['logo_chip'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "logo_chip": elem('logo_chip', 575, 160, size=76, padding='24px 28px', src=''),
+    }
+
+
+
+================================================================================
+[29/63] FILE: st_10_closing_b.py
+PATH: /content/Atlas/motion_templates/states/st_10_closing_b.py
+================================================================================
+"""Outro / Closing Card - state B (closing family)
+
+Category: closing  |  Family: closing  |  Exposes: ['logo_chip', 'tagline']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_10b',
+    'category': 'closing',
+    'family': 'closing',
+    'label': 'Outro / Closing Card (b)',
+    'exposes': ['logo_chip', 'tagline'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "logo_chip": elem('logo_chip', 575, 160, size=76, padding='24px 28px', src=''),
+        "tagline": elem('subtext', 220, 330, w=840, text='More of this story next episode.', size=38, color='#fff', align='center'),
+    }
+
+
+
+================================================================================
+[30/63] FILE: st_10_closing_c.py
+PATH: /content/Atlas/motion_templates/states/st_10_closing_c.py
+================================================================================
+"""Outro / Closing Card - state C (closing family)
+
+Category: closing  |  Family: closing  |  Exposes: ['logo_chip', 'tagline', 'accent_line']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_10c',
+    'category': 'closing',
+    'family': 'closing',
+    'label': 'Outro / Closing Card (c)',
+    'exposes': ['logo_chip', 'tagline', 'accent_line'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "logo_chip": elem('logo_chip', 575, 160, size=76, padding='24px 28px', src=''),
+        "tagline": elem('subtext', 220, 330, w=840, text='More of this story next episode.', size=38, color='#fff', align='center'),
+        "accent_line": elem('bar', 540, 420, w=200, h=4),
+    }
+
+
+
+================================================================================
+[31/63] FILE: st_11_progress_a.py
+PATH: /content/Atlas/motion_templates/states/st_11_progress_a.py
+================================================================================
+"""Progress / Milestone Fill - state A (progress family)
+
+Category: progress  |  Family: progress  |  Exposes: ['track', 'kicker_label']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_11a',
+    'category': 'progress',
+    'family': 'progress',
+    'label': 'Progress / Milestone Fill (a)',
+    'exposes': ['track', 'kicker_label'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "track": elem('bar', 140, 300, w=900, h=8, color1='#3a3a3a', color2='#3a3a3a'),
+        "kicker_label": elem('subtext', 140, 240, w=700, text='BUDGET REALLOCATED', size=20, color='#ff6a00'),
+    }
+
+
+
+================================================================================
+[32/63] FILE: st_11_progress_b.py
+PATH: /content/Atlas/motion_templates/states/st_11_progress_b.py
+================================================================================
+"""Progress / Milestone Fill - state B (progress family)
+
+Category: progress  |  Family: progress  |  Exposes: ['track', 'fill', 'pct_text']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_11b',
+    'category': 'progress',
+    'family': 'progress',
+    'label': 'Progress / Milestone Fill (b)',
+    'exposes': ['track', 'fill', 'pct_text'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "track": elem('bar', 140, 300, w=900, h=8, color1='#3a3a3a', color2='#3a3a3a'),
+        "fill": elem('bar', 140, 300, w=738.0, h=8),
+        "pct_text": elem('headline', 140, 150, w=500, kicker='BUDGET REALLOCATED', text='82%', size=96, kicker_size=20),
+    }
+
+
+
+================================================================================
+[33/63] FILE: st_11_progress_c.py
+PATH: /content/Atlas/motion_templates/states/st_11_progress_c.py
+================================================================================
+"""Progress / Milestone Fill - state C (progress family)
+
+Category: progress  |  Family: progress  |  Exposes: ['track', 'fill', 'pct_text', 'note']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_11c',
+    'category': 'progress',
+    'family': 'progress',
+    'label': 'Progress / Milestone Fill (c)',
+    'exposes': ['track', 'fill', 'pct_text', 'note'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "track": elem('bar', 140, 300, w=900, h=8, color1='#3a3a3a', color2='#3a3a3a'),
+        "fill": elem('bar', 140, 300, w=738.0, h=8),
+        "pct_text": elem('headline', 140, 150, w=500, kicker='BUDGET REALLOCATED', text='82%', size=96, kicker_size=20),
+        "note": elem('subtext', 140, 340, w=700, text='Most of it moved in the final 48 hours.', size=22, color='#ccc'),
+    }
+
+
+
+================================================================================
+[34/63] FILE: st_12_versus_a.py
+PATH: /content/Atlas/motion_templates/states/st_12_versus_a.py
+================================================================================
+"""Versus / Split Comparison - state A (versus family)
+
+Category: versus  |  Family: versus  |  Exposes: ['side_left', 'divider']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_12a',
+    'category': 'versus',
+    'family': 'versus',
+    'label': 'Versus / Split Comparison (a)',
+    'exposes': ['side_left', 'divider'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "side_left": elem('headline', 220, 240, w=360, kicker='', text='BEFORE', size=76, kicker_size=1),
+        "divider": elem('bar', 637, 180, w=3, h=280, color1='#444', color2='#444'),
+    }
+
+
+
+================================================================================
+[35/63] FILE: st_12_versus_b.py
+PATH: /content/Atlas/motion_templates/states/st_12_versus_b.py
+================================================================================
+"""Versus / Split Comparison - state B (versus family)
+
+Category: versus  |  Family: versus  |  Exposes: ['side_left', 'side_right', 'divider']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_12b',
+    'category': 'versus',
+    'family': 'versus',
+    'label': 'Versus / Split Comparison (b)',
+    'exposes': ['side_left', 'side_right', 'divider'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "side_left": elem('headline', 220, 240, w=360, kicker='', text='BEFORE', size=76, kicker_size=1),
+        "divider": elem('bar', 637, 180, w=3, h=280),
+        "side_right": elem('headline', 700, 240, w=360, kicker='', text='AFTER', size=76, kicker_size=1),
+    }
+
+
+
+================================================================================
+[36/63] FILE: st_12_versus_c.py
+PATH: /content/Atlas/motion_templates/states/st_12_versus_c.py
+================================================================================
+"""Versus / Split Comparison - state C (versus family)
+
+Category: versus  |  Family: versus  |  Exposes: ['side_left', 'side_right', 'divider', 'verdict']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_12c',
+    'category': 'versus',
+    'family': 'versus',
+    'label': 'Versus / Split Comparison (c)',
+    'exposes': ['side_left', 'side_right', 'divider', 'verdict'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "side_left": elem('headline', 220, 240, w=360, kicker='', text='BEFORE', size=76, kicker_size=1),
+        "divider": elem('bar', 637, 180, w=3, h=280),
+        "side_right": elem('headline', 700, 240, w=360, kicker='', text='AFTER', size=76, kicker_size=1),
+        "verdict": elem('subtext', 340, 500, w=600, text='Same team. Half the size.', size=24, color='#eee'),
+    }
+
+
+
+================================================================================
+[37/63] FILE: st_13_definition_a.py
+PATH: /content/Atlas/motion_templates/states/st_13_definition_a.py
+================================================================================
+"""Definition / Glossary Card - state A (definition family)
+
+Category: definition  |  Family: definition  |  Exposes: ['term']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_13a',
+    'category': 'definition',
+    'family': 'definition',
+    'label': 'Definition / Glossary Card (a)',
+    'exposes': ['term'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "term": elem('headline', 160, 200, w=1000, kicker='', text='GOLDEN PARACHUTE', size=72, kicker_size=1),
+    }
+
+
+
+================================================================================
+[38/63] FILE: st_13_definition_b.py
+PATH: /content/Atlas/motion_templates/states/st_13_definition_b.py
+================================================================================
+"""Definition / Glossary Card - state B (definition family)
+
+Category: definition  |  Family: definition  |  Exposes: ['term', 'definition_text']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_13b',
+    'category': 'definition',
+    'family': 'definition',
+    'label': 'Definition / Glossary Card (b)',
+    'exposes': ['term', 'definition_text'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "term": elem('headline', 160, 200, w=1000, scale=0.85, kicker='', text='GOLDEN PARACHUTE', size=72, kicker_size=1),
+        "definition_text": elem('subtext', 160, 310, w=820, text='A payout guaranteed to executives if they lose their job after a merger or takeover.', size=26, color='#ddd'),
+    }
+
+
+
+================================================================================
+[39/63] FILE: st_13_definition_c.py
+PATH: /content/Atlas/motion_templates/states/st_13_definition_c.py
+================================================================================
+"""Definition / Glossary Card - state C (definition family)
+
+Category: definition  |  Family: definition  |  Exposes: ['term', 'definition_text', 'tag']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_13c',
+    'category': 'definition',
+    'family': 'definition',
+    'label': 'Definition / Glossary Card (c)',
+    'exposes': ['term', 'definition_text', 'tag'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "term": elem('headline', 160, 200, w=1000, scale=0.85, kicker='', text='GOLDEN PARACHUTE', size=72, kicker_size=1),
+        "definition_text": elem('subtext', 160, 310, w=820, text='A payout guaranteed to executives if they lose their job after a merger or takeover.', size=26, color='#ddd'),
+        "tag": elem('subtext', 160, 430, w=600, text='WHY IT MATTERS HERE', size=16, color='#ff6a00'),
+    }
+
+
+
+================================================================================
+[40/63] FILE: st_14_warning_a.py
+PATH: /content/Atlas/motion_templates/states/st_14_warning_a.py
+================================================================================
+"""Warning / Alert Card - state A (warning family)
+
+Category: warning  |  Family: warning  |  Exposes: ['badge']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_14a',
+    'category': 'warning',
+    'family': 'warning',
+    'label': 'Warning / Alert Card (a)',
+    'exposes': ['badge'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "badge": elem('alert_badge', 160, 260, w=90, h=80),
+    }
+
+
+
+================================================================================
+[41/63] FILE: st_14_warning_b.py
+PATH: /content/Atlas/motion_templates/states/st_14_warning_b.py
+================================================================================
+"""Warning / Alert Card - state B (warning family)
+
+Category: warning  |  Family: warning  |  Exposes: ['badge', 'headline']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_14b',
+    'category': 'warning',
+    'family': 'warning',
+    'label': 'Warning / Alert Card (b)',
+    'exposes': ['badge', 'headline'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "badge": elem('alert_badge', 160, 260, w=90, h=80),
+        "headline": elem('headline', 290, 250, w=820, kicker='', text="THIS WASN'T IN<br>THE PRESS RELEASE", size=52, kicker_size=1),
+    }
+
+
+
+================================================================================
+[42/63] FILE: st_14_warning_c.py
+PATH: /content/Atlas/motion_templates/states/st_14_warning_c.py
+================================================================================
+"""Warning / Alert Card - state C (warning family)
+
+Category: warning  |  Family: warning  |  Exposes: ['badge', 'headline', 'detail']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_14c',
+    'category': 'warning',
+    'family': 'warning',
+    'label': 'Warning / Alert Card (c)',
+    'exposes': ['badge', 'headline', 'detail'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "badge": elem('alert_badge', 160, 260, w=90, h=80),
+        "headline": elem('headline', 290, 250, w=820, kicker='', text="THIS WASN'T IN<br>THE PRESS RELEASE", size=52, kicker_size=1),
+        "detail": elem('subtext', 290, 410, w=700, text='Internal documents tell a different story.', size=24, color='#ccc'),
+    }
+
+
+
+================================================================================
+[43/63] FILE: st_15_grid_a.py
+PATH: /content/Atlas/motion_templates/states/st_15_grid_a.py
+================================================================================
+"""Grid / Roster Reveal - state A (grid family)
+
+Category: grid  |  Family: grid  |  Exposes: ['title']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_15a',
+    'category': 'grid',
+    'family': 'grid',
+    'label': 'Grid / Roster Reveal (a)',
+    'exposes': ['title'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "title": elem('subtext', 160, 220, w=700, text='WHO SIGNED OFF', size=22, color='#ff6a00'),
+    }
+
+
+
+================================================================================
+[44/63] FILE: st_15_grid_b.py
+PATH: /content/Atlas/motion_templates/states/st_15_grid_b.py
+================================================================================
+"""Grid / Roster Reveal - state B (grid family)
+
+Category: grid  |  Family: grid  |  Exposes: ['title', 'tiles']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_15b',
+    'category': 'grid',
+    'family': 'grid',
+    'label': 'Grid / Roster Reveal (b)',
+    'exposes': ['title', 'tiles'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "title": elem('subtext', 160, 220, w=700, text='WHO SIGNED OFF', size=22, color='#ff6a00'),
+        "tiles": elem('tile_grid', 160, 280, w=960, h=160, items=['CEO', 'CFO', 'COO', 'General Counsel']),
+    }
+
+
+
+================================================================================
+[45/63] FILE: st_15_grid_c.py
+PATH: /content/Atlas/motion_templates/states/st_15_grid_c.py
+================================================================================
+"""Grid / Roster Reveal - state C (grid family)
+
+Category: grid  |  Family: grid  |  Exposes: ['title', 'tiles', 'highlight']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_15c',
+    'category': 'grid',
+    'family': 'grid',
+    'label': 'Grid / Roster Reveal (c)',
+    'exposes': ['title', 'tiles', 'highlight'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "title": elem('subtext', 160, 220, w=700, text='WHO SIGNED OFF', size=22, color='#ff6a00'),
+        "tiles": elem('tile_grid', 160, 280, w=960, h=160, items=['CEO', 'CFO', 'COO', 'General Counsel']),
+        "highlight": elem('subtext', 160, 480, w=700, text='All four signed the same week.', size=22, color='#eee'),
+    }
+
+
+
+================================================================================
+[46/63] FILE: st_16_credits_a.py
+PATH: /content/Atlas/motion_templates/states/st_16_credits_a.py
+================================================================================
+"""Credits Roll - state A (credits family)
+
+Category: credits  |  Family: credits  |  Exposes: ['heading']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_16a',
+    'category': 'credits',
+    'family': 'credits',
+    'label': 'Credits Roll (a)',
+    'exposes': ['heading'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "heading": elem('subtext', 180, 160, w=800, text='REPORTING', size=22, color='#ff6a00'),
+    }
+
+
+
+================================================================================
+[47/63] FILE: st_16_credits_b.py
+PATH: /content/Atlas/motion_templates/states/st_16_credits_b.py
+================================================================================
+"""Credits Roll - state B (credits family)
+
+Category: credits  |  Family: credits  |  Exposes: ['heading', 'credit_1']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_16b',
+    'category': 'credits',
+    'family': 'credits',
+    'label': 'Credits Roll (b)',
+    'exposes': ['heading', 'credit_1'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "heading": elem('subtext', 180, 160, w=800, text='REPORTING', size=22, color='#ff6a00'),
+        "credit_1": elem('credit_line', 180, 225, w=750, name='Jordan Ellis', role='LEAD RESEARCH', name_size=40, role_size=18),
+    }
+
+
+
+================================================================================
+[48/63] FILE: st_16_credits_c.py
+PATH: /content/Atlas/motion_templates/states/st_16_credits_c.py
+================================================================================
+"""Credits Roll - state C (credits family)
+
+Category: credits  |  Family: credits  |  Exposes: ['heading', 'credit_1', 'credit_2']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_16c',
+    'category': 'credits',
+    'family': 'credits',
+    'label': 'Credits Roll (c)',
+    'exposes': ['heading', 'credit_1', 'credit_2'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "heading": elem('subtext', 180, 160, w=800, text='REPORTING', size=22, color='#ff6a00'),
+        "credit_1": elem('credit_line', 180, 225, w=750, name='Jordan Ellis', role='LEAD RESEARCH', name_size=40, role_size=18),
+        "credit_2": elem('credit_line', 180, 355, w=750, name='Priya Nair', role='DATA VERIFICATION', name_size=40, role_size=18),
+    }
+
+
+
+================================================================================
+[49/63] FILE: st_17_takeover_a.py
+PATH: /content/Atlas/motion_templates/states/st_17_takeover_a.py
+================================================================================
+"""Full-Bleed Number Takeover - state A (takeover family)
+
+Category: takeover  |  Family: takeover  |  Exposes: ['kicker']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_17a',
+    'category': 'takeover',
+    'family': 'takeover',
+    'label': 'Full-Bleed Number Takeover (a)',
+    'exposes': ['kicker'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "kicker": elem('subtext', 0, 220, w=1280, text='IN TOTAL', size=22, color='#ff6a00', align='center'),
+    }
+
+
+
+================================================================================
+[50/63] FILE: st_17_takeover_b.py
+PATH: /content/Atlas/motion_templates/states/st_17_takeover_b.py
+================================================================================
+"""Full-Bleed Number Takeover - state B (takeover family)
+
+Category: takeover  |  Family: takeover  |  Exposes: ['kicker', 'big_number']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_17b',
+    'category': 'takeover',
+    'family': 'takeover',
+    'label': 'Full-Bleed Number Takeover (b)',
+    'exposes': ['kicker', 'big_number'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "kicker": elem('subtext', 0, 190, w=1280, text='IN TOTAL', size=22, color='#ff6a00', align='center'),
+        "big_number": elem('big_stat', 0, 250, w=1280, kicker='', number='10X', desc='', size=280, kicker_size=1, desc_size=1, align='center'),
+    }
+
+
+
+================================================================================
+[51/63] FILE: st_17_takeover_c.py
+PATH: /content/Atlas/motion_templates/states/st_17_takeover_c.py
+================================================================================
+"""Full-Bleed Number Takeover - state C (takeover family)
+
+Category: takeover  |  Family: takeover  |  Exposes: ['kicker', 'big_number', 'desc']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_17c',
+    'category': 'takeover',
+    'family': 'takeover',
+    'label': 'Full-Bleed Number Takeover (c)',
+    'exposes': ['kicker', 'big_number', 'desc'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "kicker": elem('subtext', 0, 190, w=1280, text='IN TOTAL', size=22, color='#ff6a00', align='center'),
+        "big_number": elem('big_stat', 0, 250, w=1280, kicker='', number='10X', desc='', size=280, kicker_size=1, desc_size=1, align='center'),
+        "desc": elem('subtext', 0, 560, w=1280, text='GROWTH IN THREE YEARS', size=26, color='#ddd', align='center'),
+    }
+
+
+
+================================================================================
+[52/63] FILE: st_18_lowerthird_a.py
+PATH: /content/Atlas/motion_templates/states/st_18_lowerthird_a.py
+================================================================================
+"""Lower Third Caption - state A (lowerthird family)
+
+Category: lowerthird  |  Family: lowerthird  |  Exposes: ['bar_bg']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_18a',
+    'category': 'lowerthird',
+    'family': 'lowerthird',
+    'label': 'Lower Third Caption (a)',
+    'exposes': ['bar_bg'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "bar_bg": elem('caption_panel', 120, 530, w=780, kicker='', text='', padding='24px 34px'),
+    }
+
+
+
+================================================================================
+[53/63] FILE: st_18_lowerthird_b.py
+PATH: /content/Atlas/motion_templates/states/st_18_lowerthird_b.py
+================================================================================
+"""Lower Third Caption - state B (lowerthird family)
+
+Category: lowerthird  |  Family: lowerthird  |  Exposes: ['bar_bg', 'name_text']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_18b',
+    'category': 'lowerthird',
+    'family': 'lowerthird',
+    'label': 'Lower Third Caption (b)',
+    'exposes': ['bar_bg', 'name_text'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "bar_bg": elem('caption_panel', 120, 530, w=780, kicker='FORMER VP OF OPERATIONS', text='Daniel Cho', kicker_size=16, text_size=32, padding='24px 34px'),
+    }
+
+
+
+================================================================================
+[54/63] FILE: st_18_lowerthird_c.py
+PATH: /content/Atlas/motion_templates/states/st_18_lowerthird_c.py
+================================================================================
+"""Lower Third Caption - state C (lowerthird family)
+
+Category: lowerthird  |  Family: lowerthird  |  Exposes: ['bar_bg', 'name_text', 'tag']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_18c',
+    'category': 'lowerthird',
+    'family': 'lowerthird',
+    'label': 'Lower Third Caption (c)',
+    'exposes': ['bar_bg', 'name_text', 'tag'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "bar_bg": elem('caption_panel', 120, 530, w=780, kicker='FORMER VP OF OPERATIONS', text='Daniel Cho', kicker_size=16, text_size=32, padding='24px 34px'),
+        "tag": elem('subtext', 154, 662, w=700, text='SPOKE ON CONDITION OF ANONYMITY', size=15, color='#888'),
+    }
+
+
+
+================================================================================
+[55/63] FILE: st_19_split_a.py
+PATH: /content/Atlas/motion_templates/states/st_19_split_a.py
+================================================================================
+"""50/50 Split Panel - state A (split family)
+
+Category: split  |  Family: split  |  Exposes: ['panel']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_19a',
+    'category': 'split',
+    'family': 'split',
+    'label': '50/50 Split Panel (a)',
+    'exposes': ['panel'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "panel": elem('image', 0, 0, w=620, h=720, c1='#2a1a10', c2='#0a0806'),
+    }
+
+
+
+================================================================================
+[56/63] FILE: st_19_split_b.py
+PATH: /content/Atlas/motion_templates/states/st_19_split_b.py
+================================================================================
+"""50/50 Split Panel - state B (split family)
+
+Category: split  |  Family: split  |  Exposes: ['panel', 'headline']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_19b',
+    'category': 'split',
+    'family': 'split',
+    'label': '50/50 Split Panel (b)',
+    'exposes': ['panel', 'headline'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "panel": elem('image', 0, 0, w=620, h=720, c1='#2a1a10', c2='#0a0806'),
+        "headline": elem('headline', 720, 230, w=460, kicker='THE FACILITY', text='BUILT IN<br>18 MONTHS', size=64, kicker_size=18),
+    }
+
+
+
+================================================================================
+[57/63] FILE: st_19_split_c.py
+PATH: /content/Atlas/motion_templates/states/st_19_split_c.py
+================================================================================
+"""50/50 Split Panel - state C (split family)
+
+Category: split  |  Family: split  |  Exposes: ['panel', 'headline', 'caption']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_19c',
+    'category': 'split',
+    'family': 'split',
+    'label': '50/50 Split Panel (c)',
+    'exposes': ['panel', 'headline', 'caption'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "panel": elem('image', 0, 0, w=620, h=720, c1='#2a1a10', c2='#0a0806'),
+        "headline": elem('headline', 720, 230, w=460, kicker='THE FACILITY', text='BUILT IN<br>18 MONTHS', size=64, kicker_size=18),
+        "caption": elem('subtext', 720, 480, w=460, text='Construction records, obtained via FOIA request.', size=18, color='#999'),
+    }
+
+
+
+================================================================================
+[58/63] FILE: st_20_radial_a.py
+PATH: /content/Atlas/motion_templates/states/st_20_radial_a.py
+================================================================================
+"""APPROVAL - state A (radial family)
+
+Category: radial  |  Family: radial  |  Exposes: ['ring']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_20a',
+    'category': 'radial',
+    'family': 'radial',
+    'label': 'APPROVAL (a)',
+    'exposes': ['ring'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "ring": elem('radial_progress', 460, 120, w=360, pct=0.0, number='', label='', number_size=84, label_size=18),
+    }
+
+
+
+================================================================================
+[59/63] FILE: st_20_radial_b.py
+PATH: /content/Atlas/motion_templates/states/st_20_radial_b.py
+================================================================================
+"""APPROVAL - state B (radial family)
+
+Category: radial  |  Family: radial  |  Exposes: ['ring']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_20b',
+    'category': 'radial',
+    'family': 'radial',
+    'label': 'APPROVAL (b)',
+    'exposes': ['ring'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "ring": elem('radial_progress', 460, 120, w=360, pct=0.73, number='73%', label='APPROVAL', number_size=84, label_size=18),
+    }
+
+
+
+================================================================================
+[60/63] FILE: st_20_radial_c.py
+PATH: /content/Atlas/motion_templates/states/st_20_radial_c.py
+================================================================================
+"""APPROVAL - state C (radial family)
+
+Category: radial  |  Family: radial  |  Exposes: ['ring', 'desc']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_20c',
+    'category': 'radial',
+    'family': 'radial',
+    'label': 'APPROVAL (c)',
+    'exposes': ['ring', 'desc'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "ring": elem('radial_progress', 460, 120, w=360, pct=0.73, number='73%', label='APPROVAL', number_size=84, label_size=18),
+        "desc": elem('subtext', 320, 520, w=640, text='Among employees surveyed internally.', size=24, color='#ccc', align='center'),
+    }
+
+
+
+================================================================================
+[61/63] FILE: st_21_badge_a.py
+PATH: /content/Atlas/motion_templates/states/st_21_badge_a.py
+================================================================================
+"""Corner Badge Expand - state A (badge family)
+
+Category: badge  |  Family: badge  |  Exposes: ['chip']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_21a',
+    'category': 'badge',
+    'family': 'badge',
+    'label': 'Corner Badge Expand (a)',
+    'exposes': ['chip'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chip": elem('title_chip', 680, 80, label1='UPDATE', label2='', label1_size=30, border_w=8, padding='18px 28px'),
+    }
+
+
+
+================================================================================
+[62/63] FILE: st_21_badge_b.py
+PATH: /content/Atlas/motion_templates/states/st_21_badge_b.py
+================================================================================
+"""Corner Badge Expand - state B (badge family)
+
+Category: badge  |  Family: badge  |  Exposes: ['chip', 'detail']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_21b',
+    'category': 'badge',
+    'family': 'badge',
+    'label': 'Corner Badge Expand (b)',
+    'exposes': ['chip', 'detail'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chip": elem('title_chip', 680, 80, label1='UPDATE', label2='', label1_size=30, border_w=8, padding='18px 28px'),
+        "detail": elem('subtext', 680, 175, w=480, text='FILED 3 DAYS LATER', size=26, color='#fff'),
+    }
+
+
+
+================================================================================
+[63/63] FILE: st_21_badge_c.py
+PATH: /content/Atlas/motion_templates/states/st_21_badge_c.py
+================================================================================
+"""Corner Badge Expand - state C (badge family)
+
+Category: badge  |  Family: badge  |  Exposes: ['chip', 'detail', 'note']
+Auto-generated placeholder content - edit freely, keep the element NAMES
+stable if you want morphs into/out of this state to keep working.
+"""
+import sys, os
+_here = os.path.dirname(__file__)
+sys.path.append(os.path.join(_here, '..', 'engine'))
+from motion_engine import elem
+
+META = {
+    'id': 'st_21c',
+    'category': 'badge',
+    'family': 'badge',
+    'label': 'Corner Badge Expand (c)',
+    'exposes': ['chip', 'detail', 'note'],
+}
+
+def state(p: float) -> dict:
+    """Returns the steady/resting look of this state.
+    p is only meaningful if this state is used as the FIRST state in a
+    template's own Sequence (its own entrance) - every other landing is
+    reached via morph()/slide, which call this at p=1.0.
+    """
+    return {
+        "chip": elem('title_chip', 680, 80, label1='UPDATE', label2='', label1_size=30, border_w=8, padding='18px 28px'),
+        "detail": elem('subtext', 680, 175, w=480, text='FILED 3 DAYS LATER', size=26, color='#fff'),
+        "note": elem('subtext', 680, 235, w=480, text='The correction ran on page 14.', size=18, color='#888'),
+    }
+
+

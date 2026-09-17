@@ -8,23 +8,9 @@ import sys, os
 _here = os.path.dirname(__file__)
 sys.path.append(os.path.join(_here, '..', 'engine'))
 from motion_engine import elem
+META = {'id': 'st_10c', 'category': 'closing', 'family': 'closing', 'label': 'Outro / Closing Card (c)', 'exposes': ['logo_chip', 'tagline', 'accent_line']}
 
-META = {
-    'id': 'st_10c',
-    'category': 'closing',
-    'family': 'closing',
-    'label': 'Outro / Closing Card (c)',
-    'exposes': ['logo_chip', 'tagline', 'accent_line'],
-}
-
-def state(p: float) -> dict:
-    """Returns the steady/resting look of this state.
-    p is only meaningful if this state is used as the FIRST state in a
-    template's own Sequence (its own entrance) - every other landing is
-    reached via morph()/slide, which call this at p=1.0.
-    """
-    return {
-        "logo_chip": elem('logo_chip', 575, 160, size=76, padding='24px 28px', src=''),
-        "tagline": elem('subtext', 220, 330, w=840, text='More of this story next episode.', size=38, color='#fff', align='center'),
-        "accent_line": elem('bar', 540, 420, w=200, h=4),
-    }
+def state(p: float, content: dict=None) -> dict:
+    c = content or {}
+    "Returns the steady/resting look of this state.\n    p is only meaningful if this state is used as the FIRST state in a\n    template's own Sequence (its own entrance) - every other landing is\n    reached via morph()/slide, which call this at p=1.0.\n    "
+    return {'logo_chip': elem('logo_chip', 575, 160, size=76, padding='24px 28px', src=''), 'tagline': elem('subtext', 220, 330, w=840, text=c.get('text') or c.get('kicker') or c.get('headline') or c.get('quote') or c.get('body') or c.get('label') or 'More of this story next episode.', size=38, color='#fff', align='center'), 'accent_line': elem('bar', 540, 420, w=200, h=4)}

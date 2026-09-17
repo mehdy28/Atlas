@@ -8,21 +8,9 @@ import sys, os
 _here = os.path.dirname(__file__)
 sys.path.append(os.path.join(_here, '..', 'engine'))
 from motion_engine import elem
+META = {'id': 'st_14a', 'category': 'warning', 'family': 'warning', 'label': 'Warning / Alert Card (a)', 'exposes': ['badge']}
 
-META = {
-    'id': 'st_14a',
-    'category': 'warning',
-    'family': 'warning',
-    'label': 'Warning / Alert Card (a)',
-    'exposes': ['badge'],
-}
-
-def state(p: float) -> dict:
-    """Returns the steady/resting look of this state.
-    p is only meaningful if this state is used as the FIRST state in a
-    template's own Sequence (its own entrance) - every other landing is
-    reached via morph()/slide, which call this at p=1.0.
-    """
-    return {
-        "badge": elem('alert_badge', 160, 260, w=90, h=80),
-    }
+def state(p: float, content: dict=None) -> dict:
+    c = content or {}
+    "Returns the steady/resting look of this state.\n    p is only meaningful if this state is used as the FIRST state in a\n    template's own Sequence (its own entrance) - every other landing is\n    reached via morph()/slide, which call this at p=1.0.\n    "
+    return {'badge': elem('alert_badge', 160, 260, w=90, h=80)}

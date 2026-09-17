@@ -8,21 +8,9 @@ import sys, os
 _here = os.path.dirname(__file__)
 sys.path.append(os.path.join(_here, '..', 'engine'))
 from motion_engine import elem
+META = {'id': 'st_16a', 'category': 'credits', 'family': 'credits', 'label': 'Credits Roll (a)', 'exposes': ['heading']}
 
-META = {
-    'id': 'st_16a',
-    'category': 'credits',
-    'family': 'credits',
-    'label': 'Credits Roll (a)',
-    'exposes': ['heading'],
-}
-
-def state(p: float) -> dict:
-    """Returns the steady/resting look of this state.
-    p is only meaningful if this state is used as the FIRST state in a
-    template's own Sequence (its own entrance) - every other landing is
-    reached via morph()/slide, which call this at p=1.0.
-    """
-    return {
-        "heading": elem('subtext', 180, 160, w=800, text='REPORTING', size=22, color='#ff6a00'),
-    }
+def state(p: float, content: dict=None) -> dict:
+    c = content or {}
+    "Returns the steady/resting look of this state.\n    p is only meaningful if this state is used as the FIRST state in a\n    template's own Sequence (its own entrance) - every other landing is\n    reached via morph()/slide, which call this at p=1.0.\n    "
+    return {'heading': elem('subtext', 180, 160, w=800, text=c.get('text') or c.get('kicker') or c.get('headline') or c.get('quote') or c.get('body') or c.get('label') or 'REPORTING', size=22, color='#ff6a00')}

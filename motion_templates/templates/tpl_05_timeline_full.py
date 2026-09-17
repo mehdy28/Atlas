@@ -23,11 +23,11 @@ META = {
     'duration_s': 7.80,
 }
 
-def build_sequence() -> Sequence:
+def build_sequence(content: dict = None) -> Sequence:
     return Sequence([
         ('hold', state_a, 0.00, 2.00),
         ('morph', state_a, state_b, 2.00, 2.90),
         ('hold', state_b, 2.90, 4.90),
         ('morph', state_b, state_c, 4.90, 5.80),
         ('hold', state_c, 5.80, 7.80),
-    ])
+    ], content=content)

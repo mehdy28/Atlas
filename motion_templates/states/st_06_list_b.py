@@ -8,22 +8,9 @@ import sys, os
 _here = os.path.dirname(__file__)
 sys.path.append(os.path.join(_here, '..', 'engine'))
 from motion_engine import elem
+META = {'id': 'st_06b', 'category': 'list', 'family': 'list', 'label': 'Enumerated / Ranked List (b)', 'exposes': ['list_container', 'item_1']}
 
-META = {
-    'id': 'st_06b',
-    'category': 'list',
-    'family': 'list',
-    'label': 'Enumerated / Ranked List (b)',
-    'exposes': ['list_container', 'item_1'],
-}
-
-def state(p: float) -> dict:
-    """Returns the steady/resting look of this state.
-    p is only meaningful if this state is used as the FIRST state in a
-    template's own Sequence (its own entrance) - every other landing is
-    reached via morph()/slide, which call this at p=1.0.
-    """
-    return {
-        "list_container": elem('list_container', 160, 200, w=800, title='THREE THINGS THAT CHANGED'),
-        "item_1": elem('list_item', 160, 270, w=800, rank='01', text='Who reports to whom'),
-    }
+def state(p: float, content: dict=None) -> dict:
+    c = content or {}
+    "Returns the steady/resting look of this state.\n    p is only meaningful if this state is used as the FIRST state in a\n    template's own Sequence (its own entrance) - every other landing is\n    reached via morph()/slide, which call this at p=1.0.\n    "
+    return {'list_container': elem('list_container', 160, 200, w=800, title=c.get('title') or c.get('heading') or c.get('text') or 'THREE THINGS THAT CHANGED'), 'item_1': elem('list_item', 160, 270, w=800, rank='01', text=c.get('text') or c.get('kicker') or c.get('headline') or c.get('quote') or c.get('body') or c.get('label') or 'Who reports to whom')}
