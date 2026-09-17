@@ -1314,6 +1314,43 @@
         "st_21c"
       ],
       "duration_s": 7.8
+    },
+    {
+      "id": "tpl_22_stat_split_full",
+      "file": "templates/tpl_22_stat_split_full.py",
+      "category": "split",
+      "family": "split",
+      "states_used": [
+        "st_22_stat_split_b"
+      ],
+      "duration_s": 5.0
+    },
+    {
+      "id": "tpl_23_feature_to_split_world",
+      "file": "templates/tpl_23_feature_to_split_world.py",
+      "category": "feature",
+      "family": "world_sequence",
+      "states_used": [
+        "st_08_feature_c",
+        "st_22_stat_split_b"
+      ],
+      "duration_s": 12.0
+    },
+    {
+      "id": "tpl_24_breaking_ticker",
+      "file": "templates/tpl_24_breaking_ticker.py",
+      "category": "ticker",
+      "family": "overlay",
+      "states_used": [],
+      "duration_s": 6.0
+    },
+    {
+      "id": "tpl_25_broadcast_lowerthird",
+      "file": "templates/tpl_25_broadcast_lowerthird.py",
+      "category": "lowerthird",
+      "family": "overlay",
+      "states_used": [],
+      "duration_s": 5.0
     }
   ],
   "transition_rule": "same category/family between two templates -> morph; different -> slide or cut (author's choice)."
