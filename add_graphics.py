@@ -17,12 +17,8 @@ from config import (
     FINAL_VIDEO_PATH, PRODUCTION_DIR
 )
 from editor.overlay_renderer import render_all_graphics_single_pass
-from editor.movis_setup import ensure_fonts_registered, hex_from_rgba
-from editor.movis_styles import (
-    render_text_box, render_stat_callout, render_bar_chart,
-    render_list_reveal, render_comparison, render_line_chart, render_quote_card,
-)
-from editor.movis_renderer import export_alpha_clip
+from editor.template_renderer import MotionTemplateRenderer
+from editor.template_selector import select_and_build_sequence
 
 MOVIS_RENDERERS = {
     "text_box": render_text_box,
@@ -34,7 +30,7 @@ MOVIS_RENDERERS = {
     "quote_card": render_quote_card,
 }
 
-ensure_fonts_registered()
+# Fonts handled by HTML/CSS motion engine
 
 if os.path.exists(GRAPHICS_WORK_DIR):
     shutil.rmtree(GRAPHICS_WORK_DIR)
@@ -60,38 +56,41 @@ font_family = "Liberation Sans"
 prepared = []
 graphics_stage_start = time.time()
 
-for i, g in enumerate(graphics_plan):
-    _t0 = time.time()
-    g_type = g["type"]
+renderer = MotionTemplateRenderer(RENDER_WIDTH, RENDER_HEIGHT)
+renderer.start()
 
-    renderer_fn = MOVIS_RENDERERS.get(g_type)
-    if renderer_fn is None:
-        print("Skipping graphic " + str(i) + ": no Movis renderer for type '" + g_type + "'")
-        continue
+try:
+    for i, g in enumerate(graphics_plan):
+        _t0 = time.time()
+        g_type = g["type"]
 
-    mov_path = os.path.join(GRAPHICS_WORK_DIR, "gfx_" + str(i).zfill(3) + ".mov")
+        try:
+            sequence, meta = select_and_build_sequence(g)
+        except Exception as e:
+            print(f"FAILED selecting template for graphic {i} ({g_type}): {e}")
+            continue
 
-    try:
-        scene = renderer_fn(
-            g.get("content", {}), duration=GRAPHICS_DISPLAY_DURATION, palette=palette,
-            video_width=RENDER_WIDTH, video_height=RENDER_HEIGHT,
-            font_path=font_path, font_family=font_family,
-        )
-    except Exception as e:
-        print("FAILED building composition for graphic " + str(i) + " (" + g_type + "): " + str(e))
-        continue
+        mov_path = os.path.join(GRAPHICS_WORK_DIR, "gfx_" + str(i).zfill(3) + ".mov")
 
-    ok = export_alpha_clip(scene, mov_path, fps=RENDER_FPS)
-    if not ok:
-        print("FAILED exporting graphic " + str(i) + " (" + g_type + ")")
-        continue
+        try:
+            ok = renderer.render_sequence_to_mov(sequence, mov_path, fps=RENDER_FPS, transparent=True)
+        except Exception as e:
+            print(f"FAILED rendering graphic {i} ({g_type}): {e}")
+            continue
 
-    prepared.append({
-        "mov_path": mov_path,
-        "start_seconds": g["trigger_start_seconds"],
-        "duration_seconds": GRAPHICS_DISPLAY_DURATION,
-    })
-    print("Graphic " + str(i) + ": " + g_type + " at " + str(g["trigger_start_seconds"]) + "s (" + str(round(time.time()-_t0,1)) + "s)")
+        if not ok or not os.path.exists(mov_path):
+            print(f"FAILED exporting graphic {i} ({g_type})")
+            continue
+
+        actual_duration = sequence.duration
+        prepared.append({
+            "mov_path": mov_path,
+            "start_seconds": g["trigger_start_seconds"],
+            "duration_seconds": actual_duration,
+        })
+        print(f"Graphic {i}: {g_type} -> {meta.get('id')} at {g['trigger_start_seconds']}s, dur={round(actual_duration,1)}s ({round(time.time()-_t0,1)}s)")
+finally:
+    renderer.close()
 
 print("\nAll graphics rendered in " + str(round(time.time()-graphics_stage_start,1)) + "s total (" + str(len(prepared)) + "/" + str(len(graphics_plan)) + " succeeded)")
 
