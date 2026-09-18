@@ -19,6 +19,9 @@ print("Installing/verifying dependencies from requirements.txt...")
 subprocess.run(["pip", "install", "-q", "-r", os.path.join(ATLAS_DIR, "requirements.txt")], capture_output=True)
 subprocess.run(["apt-get", "-y", "-qq", "install", "ffmpeg", "libxcb-cursor0"], capture_output=True)
 
+print("Installing Playwright Chromium (first run only, cached after)...")
+subprocess.run(["playwright", "install", "--with-deps", "chromium"], capture_output=True)
+
 _project_prefixes = (
     "config", "director", "voice", "alignment", "timeline",
     "editor", "renderer", "search", "collectors", "splitter", "captioner",

@@ -16,3 +16,4 @@ movis
 imageio
 diffusers
 accelerate
+playwright
