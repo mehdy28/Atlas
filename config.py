@@ -147,3 +147,13 @@ IMAGE_PROMPTS_PATH = f"{PRODUCTION_DIR}/image_generation_prompts.json"
 IMAGE_GEN_STEPS = 4  # sd-turbo is designed for 1-4 steps, not 20-50
 IMAGE_GEN_WIDTH = 768
 IMAGE_GEN_HEIGHT = 512
+
+# Per-clip strict relevance gate. Any single candidate scoring below this
+# is rejected outright, even if it's the best available option - a
+# paragraph is better left partially covered (and later filled with a
+# generated image) than filled with an unrelated clip.
+STRICT_CLIP_RELEVANCE_MIN = 0.55
+
+# Paragraph-level target: with strict per-clip gating on, this drives
+# whether the boost/image-gen pipeline treats a paragraph as resolved.
+LOW_RELEVANCE_THRESHOLD = 0.55

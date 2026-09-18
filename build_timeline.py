@@ -37,7 +37,7 @@ for p in paragraphs:
     target_duration = end - start
 
     search_text = query_overrides.get(str(idx), text)
-    clips, covered = fill_paragraph_with_clips(
+    clips, covered, uncovered = fill_paragraph_with_clips(
         paragraph_text=search_text,
         target_duration=target_duration,
         max_clips=MAX_CLIPS_PER_PARAGRAPH,
@@ -65,6 +65,7 @@ for p in paragraphs:
         "narration_end_seconds": end,
         "target_duration_seconds": round(target_duration, 2),
         "covered_duration_seconds": round(covered, 2),
+        "uncovered_seconds": uncovered,
         "clips": clips,
         "avg_relevance": round(avg_relevance, 3),
     })
@@ -72,7 +73,10 @@ for p in paragraphs:
 with open(TIMELINE_OUTPUT_PATH, "w") as f:
     json.dump(timeline, f, indent=2)
 
-low_relevance = [p for p in timeline if p["avg_relevance"] < LOW_RELEVANCE_THRESHOLD]
+# Flag any paragraph with a real uncovered gap OR low average relevance -
+# strict per-clip gating means a gap can exist even when the clips that
+# WERE selected are individually high-quality.
+low_relevance = [p for p in timeline if p["uncovered_seconds"] > 0.5 or p["avg_relevance"] < LOW_RELEVANCE_THRESHOLD]
 with open(LOW_RELEVANCE_PARAGRAPHS_PATH, "w") as f:
     json.dump(low_relevance, f, indent=2)
 

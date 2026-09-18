@@ -1,19 +1,23 @@
 
 from search.query import search
+from config import STRICT_CLIP_RELEVANCE_MIN
 
 
 def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candidates_to_fetch, min_clip_duration):
     """
     Runs a semantic search for the paragraph text, then greedily selects
     clips (best-scoring first) until their combined duration covers the
-    target duration. The final clip is trimmed so total time matches
-    target_duration exactly (never runs long, never leaves a gap).
-    Marks each selected scene as used so future paragraphs naturally
-    rotate to different footage.
+    target duration - BUT any candidate scoring below
+    STRICT_CLIP_RELEVANCE_MIN is rejected outright, never selected, no
+    matter how much time remains uncovered. This intentionally allows a
+    paragraph to end up under-covered rather than filled with unrelated
+    footage; the uncovered gap becomes an explicit signal for the
+    image-generation fallback to handle.
     """
     candidates = search(paragraph_text, top_k=candidates_to_fetch, mark_used=False)
 
     selected = []
+    rejected_low_relevance = []
     time_covered = 0.0
 
     for candidate in candidates:
@@ -21,6 +25,10 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
             break
         if time_covered >= target_duration:
             break
+
+        if candidate["relevance"] < STRICT_CLIP_RELEVANCE_MIN:
+            rejected_low_relevance.append(candidate)
+            continue
 
         clip_duration = candidate["duration_seconds"]
         if clip_duration < min_clip_duration:
@@ -30,7 +38,6 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
         use_duration = min(clip_duration, remaining)
 
         if use_duration < min_clip_duration and selected:
-            # Too small a sliver to be worth a cut; let the previous clip run long instead
             continue
 
         selected.append({
@@ -46,34 +53,26 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
         })
         time_covered += use_duration
 
-    if not selected and candidates:
-        # Fallback: nothing met the duration threshold, just take the best match as-is
-        best = candidates[0]
-        selected.append({
-            "scene_id": best["scene_id"],
-            "video_path": best["video_path"],
-            "caption": best["caption"],
-            "relevance": best["relevance"],
-            "source_start_seconds": best["start_seconds"],
-            "source_end_seconds": best["end_seconds"],
-            "use_duration_seconds": best["duration_seconds"],
-        })
+    # No fallback-to-best-bad-match here anymore. If selected is empty or
+    # time_covered < target_duration, that gap is real and gets reported
+    # to the caller rather than silently papered over with a weak clip.
+    uncovered_seconds = round(max(0.0, target_duration - time_covered), 2)
 
-    # Now actually mark usage, only for clips we committed to
-    from search.query import _load_index  # ensures index/module already warm
+    from search.query import _load_index
     import sqlite3
     from datetime import datetime, timezone
     from config import DRIVE_DB_PATH
 
-    conn = sqlite3.connect(DRIVE_DB_PATH)
-    cur = conn.cursor()
-    now_str = datetime.now(timezone.utc).isoformat()
-    for clip in selected:
-        cur.execute(
-            "UPDATE scenes SET times_used = times_used + 1, last_used_at = ? WHERE id = ?",
-            (now_str, clip["scene_id"])
-        )
-    conn.commit()
-    conn.close()
+    if selected:
+        conn = sqlite3.connect(DRIVE_DB_PATH)
+        cur = conn.cursor()
+        now_str = datetime.now(timezone.utc).isoformat()
+        for clip in selected:
+            cur.execute(
+                "UPDATE scenes SET times_used = times_used + 1, last_used_at = ? WHERE id = ?",
+                (now_str, clip["scene_id"])
+            )
+        conn.commit()
+        conn.close()
 
-    return selected, time_covered
+    return selected, time_covered, uncovered_seconds

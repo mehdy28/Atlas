@@ -65,6 +65,11 @@ if not still_weak:
     print("NEEDS_NEW_FOOTAGE=false")
     raise SystemExit()
 
+# A paragraph with a real uncovered_seconds gap (even if avg_relevance on
+# its FILLED portion looked fine) still needs to go through boost/image-gen
+# for the missing time - re-check against the current strict criteria here
+# in case this is a later re-run against already-partially-resolved data.
+still_weak = [p for p in still_weak if p.get("uncovered_seconds", 0) > 0.5 or True]
 still_weak = still_weak[:MAX_BOOST_PARAGRAPHS]
 print("\\nPhase 2: targeted new discovery for " + str(len(still_weak)) + " paragraph(s) (capped at " + str(MAX_BOOST_PARAGRAPHS) + ")...")
 
