@@ -117,7 +117,6 @@ IMAGE_RESULTS_PER_KEYWORD_DEFAULT = 3
 MAX_ASSETS_PER_SPLIT_RUN = 120
 
 # Below this average relevance, a paragraph gets a targeted second discovery pass
-LOW_RELEVANCE_THRESHOLD = 0.38
 BOOST_VIDEO_RESULTS_PER_KEYWORD = 6
 BOOST_IMAGE_RESULTS_PER_KEYWORD = 4
 LOW_RELEVANCE_PARAGRAPHS_PATH = f"{PRODUCTION_DIR}/low_relevance_paragraphs.json"
@@ -152,8 +151,8 @@ IMAGE_GEN_HEIGHT = 512
 # is rejected outright, even if it's the best available option - a
 # paragraph is better left partially covered (and later filled with a
 # generated image) than filled with an unrelated clip.
-STRICT_CLIP_RELEVANCE_MIN = 0.55
+STRICT_CLIP_RELEVANCE_MIN = 0.40
 
 # Paragraph-level target: with strict per-clip gating on, this drives
 # whether the boost/image-gen pipeline treats a paragraph as resolved.
-LOW_RELEVANCE_THRESHOLD = 0.55
+LOW_RELEVANCE_THRESHOLD = 0.40
