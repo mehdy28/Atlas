@@ -20,15 +20,7 @@ from editor.overlay_renderer import render_all_graphics_single_pass
 from editor.template_renderer import MotionTemplateRenderer
 from editor.template_selector import select_and_build_sequence
 
-MOVIS_RENDERERS = {
-    "text_box": render_text_box,
-    "stat_callout": render_stat_callout,
-    "bar_chart": render_bar_chart,
-    "list_reveal": render_list_reveal,
-    "comparison": render_comparison,
-    "line_chart": render_line_chart,
-    "quote_card": render_quote_card,
-}
+# Movis renderers replaced by MotionTemplateRenderer
 
 # Fonts handled by HTML/CSS motion engine
 
@@ -43,15 +35,7 @@ if not os.path.exists(silent_video_path):
 with open(GRAPHICS_PLAN_TIMED_PATH) as f:
     graphics_plan = json.load(f)
 
-palette = {
-    "navy_hex": hex_from_rgba(NAVY_DEEP),
-    "white_hex": hex_from_rgba(GFX_WHITE),
-    "offwhite_hex": hex_from_rgba(GFX_OFFWHITE),
-    "orange_hex": hex_from_rgba(GFX_ORANGE),
-    "muted_blue_hex": "#5A78AA",
-}
-font_path = BODY_FONT_PATH
-font_family = "Liberation Sans"
+# Styling handled by MotionTemplateRenderer
 
 prepared = []
 graphics_stage_start = time.time()
