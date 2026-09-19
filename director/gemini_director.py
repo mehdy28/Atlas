@@ -92,28 +92,29 @@ Return ONLY valid JSON matching this exact structure, nothing else:
 """
 
 IMAGE_PROMPT_INSTRUCTIONS_TEMPLATE = """
-You are a visual director writing prompts for an AI image generator
-(Stable Diffusion). You are given a list of narration paragraphs that
-have NO good matching stock footage available - either because the
-scenario is invented/specific (e.g. "a CEO announcing layoffs"), or
-involves brand/logo concepts stock libraries do not carry.
+You are a visual director writing prompts for an AI image generator (Stable Diffusion).
+You are given a list of narration paragraphs that need custom visual B-roll images.
 
-For each paragraph below, write ONE concise, concrete, visually
-descriptive image prompt (documentary/photojournalism style, realistic,
-NOT illustration or cartoon) that would work as a still B-roll image
-for that moment. Keep prompts under 30 words, describe composition and
-mood, avoid text/logos/words appearing in the generated image itself
-(image models render text poorly), and avoid naming real living people
-or exact real company logos - describe the scene generically instead
-(e.g. "a corporate boardroom" not "the Uber logo").
+For each paragraph below, write ONE concise, visually concrete prompt (under 35 words)
+describing the specific scene, subjects, and setting.
+
+CRITICAL RULES:
+1. SEMANTIC MATCHING: The prompt is used for semantic search matching against the paragraph.
+   You MUST directly incorporate the key nouns, context, and subject matter from the paragraph
+   (e.g., specific concepts like "beef processing facility shutdown", "drought-stricken cattle pasture", "rising grain and feed costs", "cargo shipping containers at port").
+2. NO META FILLER: Do NOT append buzzwords like "photojournalism", "documentary style", "photorealistic",
+   or "hyperrealistic". Simply describe the actual visual scene directly.
+3. NO VISIBLE TEXT: Avoid text, signs with words, or letters appearing in the image.
+4. PARAGRAPH INDEX: In the output JSON, you MUST set "paragraph_index" to the EXACT integer ID
+   shown in brackets `[ID]` for that paragraph. Do NOT renumber from 0.
 
 PARAGRAPHS NEEDING GENERATED IMAGES:
 {numbered_paragraphs}
 
-Return ONLY valid JSON matching this exact structure, nothing else:
+Return ONLY valid JSON matching this exact structure:
 {{
   "image_prompts": [
-    {{"paragraph_index": 0, "prompt": "string"}},
+    {{"paragraph_index": 2, "prompt": "concrete descriptive prompt using key nouns from paragraph 2"}},
     ...
   ]
 }}

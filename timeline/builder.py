@@ -30,11 +30,13 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
             rejected_low_relevance.append(candidate)
             continue
 
-        clip_duration = candidate["duration_seconds"]
+        remaining = target_duration - time_covered
+        is_image = candidate.get("asset_type") == "image"
+        clip_duration = min(remaining, 15.0) if is_image else candidate["duration_seconds"]
+
         if clip_duration < min_clip_duration:
             continue
 
-        remaining = target_duration - time_covered
         use_duration = min(clip_duration, remaining)
 
         if use_duration < min_clip_duration and selected:

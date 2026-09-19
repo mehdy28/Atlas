@@ -26,6 +26,9 @@ def _score_candidates(candidates, now):
     scored = []
     for c in candidates:
         score = RELEVANCE_WEIGHT * c["relevance"]
+        # Give real video clips natural preference over still images when relevance is close
+        if c.get("asset_type") == "video":
+            score += 0.07
         score -= USAGE_PENALTY_WEIGHT * c["times_used"]
 
         if c["last_used_at"]:
