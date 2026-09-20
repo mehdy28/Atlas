@@ -1,3 +1,7 @@
+
+from transformers import BlipProcessor
+BlipProcessor.image_processor_class = "BlipImageProcessor"
+
 import torch
 import transformers.modeling_utils as mu
 import transformers.pytorch_utils as pu
@@ -40,7 +44,10 @@ def load_model():
     global _processor, _model
     if _model is None:
         print(f"Loading BLIP captioning model onto {_device}...")
-        _processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        from transformers import BlipImageProcessor, AutoTokenizer
+        img_proc = BlipImageProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        tok = AutoTokenizer.from_pretrained("Salesforce/blip-image-captioning-base")
+        _processor = BlipProcessor(image_processor=img_proc, tokenizer=tok)
         _model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
         _model.to(_device)
         if _device == "cuda":

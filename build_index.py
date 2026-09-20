@@ -17,6 +17,8 @@ from search.embedder import embed_texts
 
 
 def sync_to_drive():
+    if os.path.abspath(DRIVE_DB_PATH) == os.path.abspath(LOCAL_DB_PATH):
+        return
     tmp_path = DRIVE_DB_PATH + ".tmp"
     shutil.copy2(LOCAL_DB_PATH, tmp_path)
     os.replace(tmp_path, DRIVE_DB_PATH)
@@ -36,7 +38,8 @@ def safe_load_db():
         print(f"WARNING: local ({local_size/1024:.1f}KB) > Drive ({drive_size/1024:.1f}KB). Keeping local.")
         return
 
-    shutil.copy2(DRIVE_DB_PATH, LOCAL_DB_PATH)
+    if os.path.abspath(DRIVE_DB_PATH) != os.path.abspath(LOCAL_DB_PATH):
+            shutil.copy2(DRIVE_DB_PATH, LOCAL_DB_PATH)
     print(f"Loaded Drive copy to local ({drive_size/1024:.1f} KB).")
 
 
