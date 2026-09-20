@@ -1,3 +1,8 @@
+import json
+from config import FOOTAGE_KEYWORDS_PATH
+try:
+    with open(FOOTAGE_KEYWORDS_PATH) as _fk: footage_keywords = json.load(_fk)
+except: footage_keywords = []
 
 import sys
 import json
@@ -38,6 +43,7 @@ for p in paragraphs:
     target_duration = end - start
 
     search_text = query_overrides.get(str(idx), text)
+    search_text = query_overrides.get(str(idx), text)
     clips, covered, uncovered = fill_paragraph_with_clips(
         paragraph_text=search_text,
         target_duration=target_duration,
@@ -46,6 +52,22 @@ for p in paragraphs:
         min_clip_duration=MIN_CLIP_DURATION_SECONDS,
         exclude_scene_ids=global_used_scenes,
     )
+
+    # Fallback to visual keywords if the abstract sentence found no clips
+    if covered < 2.0 and "footage_keywords" in globals():
+        fallback_kw = footage_keywords[idx % len(footage_keywords)]
+        extra_clips, extra_cov, _ = fill_paragraph_with_clips(
+            paragraph_text=fallback_kw,
+            target_duration=target_duration - covered,
+            max_clips=MAX_CLIPS_PER_PARAGRAPH - len(clips),
+            candidates_to_fetch=SEARCH_CANDIDATES_PER_PARAGRAPH,
+            min_clip_duration=MIN_CLIP_DURATION_SECONDS,
+            exclude_scene_ids=global_used_scenes,
+        )
+        clips.extend(extra_clips)
+        covered += extra_cov
+        uncovered = max(0.0, target_duration - covered)
+
     for c in clips:
         global_used_scenes.add(c["scene_id"])
 

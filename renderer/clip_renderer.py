@@ -38,7 +38,7 @@ def render_clip(video_path, source_start, use_duration, motion, output_path, wid
     ).format(w=width, h=height)
 
     grade = build_grade_filter(grade_contrast, grade_saturation, grade_brightness, grade_vignette)
-    vf = f"scale=w='iw*max({width}/iw,{height}/ih)':h='ih*max({width}/iw,{height}/ih)',crop={width}:{height}," + zoompan + "," + grade + ",format=yuv420p"
+    vf = "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080," + zoompan + "," + grade + ",format=yuv420p"
 
     cmd = ["ffmpeg", "-y", "-loglevel", "error",
            "-ss", str(source_start), "-t", str(use_duration), "-i", video_path,
@@ -83,7 +83,7 @@ def render_image_clip(image_path, use_duration, motion, output_path, width, heig
     ).format(w=width, h=height)
 
     grade = build_grade_filter(grade_contrast, grade_saturation, grade_brightness, grade_vignette)
-    vf = f"scale=w='iw*max({width}/iw,{height}/ih)':h='ih*max({width}/iw,{height}/ih)',crop={width}:{height}," + zoompan + "," + grade + ",format=yuv420p"
+    vf = "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080," + zoompan + "," + grade + ",format=yuv420p"
 
     cmd = ["ffmpeg", "-y", "-loglevel", "error",
            "-loop", "1", "-t", str(use_duration), "-i", image_path,

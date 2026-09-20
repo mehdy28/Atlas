@@ -23,7 +23,7 @@ TYPE_TO_TEMPLATES_FULL = {
 
 TYPE_TO_TEMPLATES = {
     "stat_callout": ["tpl_02_stat_intro", "tpl_11_progress_intro", "tpl_21_badge_intro"],
-    "text_box": ["tpl_08_feature_intro", "tpl_13_definition_intro", "tpl_18_lowerthird_intro", "tpl_24_breaking_ticker", "tpl_25_broadcast_lowerthird"],
+    "text_box": ["tpl_08_feature_intro", "tpl_13_definition_intro", "tpl_18_lowerthird_intro", "tpl_18_lowerthird_intro"],
     "bar_chart": ["tpl_09_chart_intro"],
     "line_chart": ["tpl_09_chart_intro", "tpl_05_timeline_intro"],
     "comparison": ["tpl_03_compare_intro", "tpl_12_versus_intro", "tpl_19_split_intro"],
@@ -46,7 +46,7 @@ TYPE_TO_TEMPLATES_FULL = {
 # than force-fit into the state/build_sequence contract.
 LEGACY_TEMPLATES = {
     "comparison": ["tpl_22_stat_split_full"],
-    "text_box": ["tpl_24_breaking_ticker", "tpl_25_broadcast_lowerthird"],
+    "text_box": ["tpl_18_lowerthird_intro"],
 }
 
 # Content key mapping: our Gemini content dicts use generic keys
