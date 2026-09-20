@@ -1,11 +1,9 @@
-
 import os
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import sys
 import subprocess
 import json
 import io
-from contextlib import redirect_stdout
 
 ATLAS_DIR = "/content/Atlas"
 
@@ -31,27 +29,62 @@ for mod_name in list(sys.modules.keys()):
         del sys.modules[mod_name]
 
 
+# Custom stream to capture output while simultaneously printing to the screen
+class TeeStream:
+    def __init__(self, original_stream):
+        self.original_stream = original_stream
+        self.buffer = io.StringIO()
+
+    def write(self, data):
+        self.original_stream.write(data)
+        self.buffer.write(data)
+
+    def flush(self):
+        self.original_stream.flush()
+
+    def getvalue(self):
+        return self.buffer.getvalue()
+
+
 def run_step(fname, capture=False):
     path = os.path.join(ATLAS_DIR, fname)
-    print("\\n" + "="*70 + "\\nRUNNING: " + fname + "\\n" + "="*70)
+    print("\n" + "="*70 + "\nRUNNING: " + fname + "\n" + "="*70)
     with open(path) as f:
         code = f.read()
-    if capture:
-        buf = io.StringIO()
-        with redirect_stdout(buf):
+
+    output = ""
+    try:
+        if capture:
+            tee = TeeStream(sys.stdout)
+            old_stdout = sys.stdout
+            sys.stdout = tee
+            try:
+                exec(compile(code, path, "exec"), {"__name__": "__main__"})
+            finally:
+                sys.stdout = old_stdout
+            output = tee.getvalue()
+        else:
             exec(compile(code, path, "exec"), {"__name__": "__main__"})
-        output = buf.getvalue()
-        print(output)
-        return output
-    else:
-        exec(compile(code, path, "exec"), {"__name__": "__main__"})
-        return ""
+    except SystemExit as e:
+        # Prevent sys.exit() inside sub-scripts from killing the runner pipeline
+        if e.code not in (0, None):
+            print(f"\n[WARNING] {fname} exited with non-zero exit code: {e.code}")
+    except Exception as e:
+        print(f"\n[ERROR] Step {fname} failed with exception: {e}")
+        raise e
+
+    return output
 
 
 def do_boost_and_rebuild():
     """Runs boost footage, generates AI images for any remaining gaps, and rebuilds timeline."""
     import json
     from config import LOW_RELEVANCE_PARAGRAPHS_PATH
+    
+    if not os.path.exists(LOW_RELEVANCE_PARAGRAPHS_PATH):
+        print("\nNo low relevance file found - skipping boost.")
+        return
+
     with open(LOW_RELEVANCE_PARAGRAPHS_PATH) as f:
         low_relevance = json.load(f)
 
@@ -83,7 +116,10 @@ def do_boost_and_rebuild():
     else:
         print("\nAll paragraphs resolved from footage - no AI images needed.")
 
-# Ordered pipeline: (label shown in resume menu, callable)
+    print("\n[INFO] Step 9 (boost + rebuild) completed successfully.")
+
+
+# Ordered pipeline
 PIPELINE = [
     ("generate_script.py",        lambda: run_step("generate_script.py")),
     ("discover_footage.py",       lambda: run_step("discover_footage.py")),
@@ -100,11 +136,11 @@ PIPELINE = [
     ("add_graphics.py",           lambda: run_step("add_graphics.py")),
 ]
 
-print("\\nPipeline steps:")
+print("\nPipeline steps:")
 for i, (label, _) in enumerate(PIPELINE):
     print("  " + str(i) + ". " + label)
 
-resume_input = input("\\nResume from step number (press Enter to start from the beginning): ").strip()
+resume_input = input("\nResume from step number (press Enter to start from the beginning): ").strip()
 start_index = int(resume_input) if resume_input else 0
 
 if start_index < 0 or start_index >= len(PIPELINE):
@@ -113,6 +149,6 @@ if start_index < 0 or start_index >= len(PIPELINE):
 for label, fn in PIPELINE[start_index:]:
     fn()
 
-print("\\n" + "="*70)
+print("\n" + "="*70)
 print("DONE. Final video: /content/AtlasData/production/video.mp4")
 print("="*70)
