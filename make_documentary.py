@@ -49,30 +49,43 @@ def run_step(fname, capture=False):
 
 
 def do_boost_and_rebuild():
-    """Runs the boost/relevance-repair block: boost footage (incl. AI image
-    generation fallback), conditionally reprocess, rebuild the timeline."""
+    """Runs boost footage, generates AI images for any remaining gaps, and rebuilds timeline."""
     from config import LOW_RELEVANCE_PARAGRAPHS_PATH
     with open(LOW_RELEVANCE_PARAGRAPHS_PATH) as f:
         low_relevance = json.load(f)
 
     if not low_relevance:
-        print("\\nNo boost needed - footage matched well across all paragraphs.")
+        print("
+No boost needed - footage matched well across all paragraphs.")
         return
 
-    print("\\n" + "="*70)
+    print("
+" + "="*70)
     print(str(len(low_relevance)) + " paragraph(s) below relevance threshold. Trying to resolve smartly...")
     print("="*70)
+    
+    # 1. Try stock footage boost first
     boost_output = run_step("boost_footage.py", capture=True)
-
     if "NEEDS_NEW_FOOTAGE=true" in boost_output:
-        print("\\nNew footage was discovered - reprocessing (split/caption/index)...")
+        print("
+New stock footage was discovered - reprocessing (split/caption/index)...")
         run_step("split_scenes.py")
         run_step("caption_scenes.py")
         run_step("build_index.py")
-    else:
-        print("\\nAll paragraphs resolved from existing footage - no reprocessing needed.")
+        run_step("build_timeline.py")
+        with open(LOW_RELEVANCE_PARAGRAPHS_PATH) as f:
+            low_relevance = json.load(f)
 
-    run_step("build_timeline.py")
+    # 2. AI Image Gen Fallback for any paragraphs STILL uncovered
+    if low_relevance:
+        print(f"
+Generating targeted conceptual AI images for {len(low_relevance)} remaining paragraph(s)...")
+        run_step("generate_images_for_gaps.py")
+        run_step("build_index.py")
+        run_step("build_timeline.py")
+    else:
+        print("
+All paragraphs resolved from footage - no AI images needed.")
 
 
 # Ordered pipeline: (label shown in resume menu, callable)

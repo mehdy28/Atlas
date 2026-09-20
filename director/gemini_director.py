@@ -11,34 +11,35 @@ GRAPHIC_TYPES = [
 ]
 
 SCRIPT_INSTRUCTIONS_TEMPLATE = """
-You are the lead investigative writer and creative director for a premier US everyday economics YouTube channel (in the style of Vox, Economics Explained, and Johnny Harris).
+You are the senior investigative writer and showrunner for a premier US everyday economics YouTube channel (in the style of Vox, Economics Explained, and Johnny Harris).
 Given a topic, write ONLY the spoken narration script and footage keywords.
 
 TARGET LENGTH: approximately {target_minutes} minutes of spoken narration at ~{wpm} words per minute (~{target_words} words total).
 
-MANDATORY EVERYDAY ECONOMICS SCRIPT FORMULA:
+MANDATORY SCRIPT STRUCTURE & PACING:
+- Break into {min_paragraphs}-{max_paragraphs} punchy paragraphs (each 10 to 18 seconds of spoken audio, ~25-45 words each).
+- NEVER write long, slow monologue blocks. Write with rapid rhythm, curiosity, and conversational punch.
 
-1. ACT 1: THE TENSION HOOK (Paragraph 0):
-   - Start immediately with a tangible, relatable everyday consumer sticker shock (a supermarket receipt, a gas pump total, a rent bill, or credit card statement).
-   - Establish the PARADOX: Consumers are paying record-high prices, yet the workers or producers (farmers, line cooks, drivers) are barely breaking even.
-   - Ask the central investigative question: "If the people making it aren't seeing this money, where is that extra cash actually going?"
+ACT 1: THE DRIVE-THRU / STICKER SHOCK (Paragraph 0):
+- Start at the point of purchase (the receipt, the drive-thru menu board, the credit card chime).
+- Hit the paradox immediately: Consumers are paying sit-down dinner prices for cardboard-wrapped fast food, while franchise owners claim their margins are razor thin.
+- Hook question: "If the food is cheaper to produce than ever, where did your $18 actually go?"
 
-2. ACT 2: THE EVIDENCE & THE TWIST (Middle ~70%):
-   - Structure as modular investigative beats ({min_paragraphs}-{max_paragraphs} paragraphs total).
-   - For short videos (2m): Follow 1 sharp investigation into the hidden structural bottleneck (e.g. corporate oligopolies, supply chain tollbooths, algorithmic pricing).
-   - For long videos (10-20m): Cascade across multiple structural layers (Layer 1: The Raw Materials, Layer 2: The Middlemen Cartel, Layer 3: Wall Street Financialization).
-   - Alternate between vivid storytelling and sharp economic math (e.g. "margins surged 300% while input costs only grew 12%").
+ACT 2: THE SYSTEMIC INVESTIGATION (Middle paragraphs):
+- Each paragraph uncovers ONE specific structural mechanism:
+  * Beat A: The Dollar Menu illusion & commodity costs.
+  * Beat B: The Franchise Trap (royalty fees, mandatory software, and corporate landlord rent).
+  * Beat C: Dynamic Pricing & App Extraction (how loyalty apps test how much pain your wallet can take).
+  * Beat D: Private Equity consolidation & debt servicing.
+- Use concrete numbers and vivid contrasts in every beat.
 
-3. ACT 3: THE BOTTOM LINE (Final 1-2 paragraphs):
-   - Reveal who captured the margin and what it means for everyday Americans.
-   - End with a lingering, thought-provoking conclusion on why this is the new normal.
+ACT 3: THE VERDICT (Final paragraph):
+- Reveal why the $5 combo is dead forever and how fast food quietly pivoted from a volume business to a luxury margin trap.
 
 RULES:
-- Short, punchy, conversational spoken sentences with natural pauses and rhythmic variation.
-- No robotic corporate narration. Speak with curiosity, urgency, and precision.
-- No headers, timestamps, scene directions, or speaker labels—ONLY words spoken aloud.
+- Pure spoken words only. No headers, timestamps, scene directions, or speaker labels.
 
-Also provide "footage_keywords": 15-25 concrete, visual search phrases (2-4 words each) focusing on real everyday items, store aisles, factory lines, freight, receipts, and workers.
+Provide "footage_keywords": 20-30 short, concrete phrases (2-3 words) covering both real-world items (drive thru window, digital receipt, frying fries, POS terminal) and economic visuals.
 
 Return ONLY valid JSON:
 {{
@@ -52,30 +53,28 @@ Return ONLY valid JSON:
 """
 
 GRAPHICS_INSTRUCTIONS_TEMPLATE = """
-You are the motion-graphics director for a high-end YouTube economics documentary.
-Below is the finalized narration script, broken into numbered paragraphs.
-Your job is ONLY to design the motion graphics plan for it.
+You are the motion-graphics director for a high-retention YouTube economics documentary.
+Below is the narration script broken into numbered paragraphs.
 
-Rules for the graphics plan:
-- DYNAMIC PACING: In high-retention news documentaries, visual stimuli must occur every 8 to 12 seconds.
-  Add 2 to 3 graphic cues per paragraph.
-  Freely use "breaking_ticker", "warning", "stat_callout", "comparison", and "text_box".
-  Alternate frequently between "layout": "full" (warm brown background takeover) and "layout": "overlay" (transparent lower-third).
-- Every graphic MUST specify a "layout":
-  * "full": Full-screen takeover with our signature warm brown canvas. Use this whenever explaining deep economic concepts, charts, timelines, or big stat reveals to give visual contrast and cut away from B-roll.
-  * "overlay": Transparent lower-third or corner graphic that floats on top of B-roll footage.
-- Choose "type" from: stat_callout, text_box, bar_chart, line_chart, comparison, list_reveal, quote_card.
-- Each graphic cue MUST include a "trigger_phrase": an exact, verbatim substring copied from that paragraph's text.
-- "content" structure:
-  - stat_callout: {{"stat": "85%", "label": "Market controlled by 4 firms"}}
-  - text_box: {{"heading": "The Bottleneck", "body": "Four processors dictate cattle prices."}}
-  - bar_chart: {{"title": "Profit Margin Surge", "categories": ["2019", "2024"], "values": [12, 48], "unit": "%"}}
-  - line_chart: {{"title": "Beef Price vs Rancher Pay", "x_labels": ["2019","2021","2024"], "values": [100, 140, 195], "unit": "index"}}
-  - comparison: {{"left_label": "Supermarket Price", "left_value": "+54%", "right_label": "Rancher Cut", "right_value": "-8%"}}
-  - list_reveal: {{"heading": "The Big 4 Processors", "items": ["Tyson Foods", "JBS", "Cargill", "National Beef"]}}
-  - quote_card: {{"quote": "...", "attribution": "..."}}
+CRITICAL PACING RULE:
+High-retention documentaries require a visual event (graphic) every 7 to 10 seconds.
+You MUST generate 2 to 3 graphic cues per paragraph. Never leave the viewer on plain footage for more than 8 seconds.
 
-SCRIPT (numbered paragraphs):
+LAYOUT MODES:
+- "full": FULL-SCREEN TAKEOVER with our warm brown signature canvas. Use this for charts, definitions, timelines, and major stat reveals to cut away from B-roll completely.
+- "overlay": Transparent lower-third, corner badge, or crawler that overlays on top of B-roll.
+
+TEMPLATES & TYPES:
+- stat_callout: {{"stat": "+140%", "label": "Fast food price surge since 2014"}}
+- comparison: {{"left_label": "2019 Combo", "left_value": "$6.49", "right_label": "2024 Combo", "right_value": "$17.89"}}
+- bar_chart: {{"title": "Where The $18 Goes", "categories": ["Ingredients", "Labor", "Franchise Rent", "Corporate Profit"], "values": [18, 25, 30, 27], "unit": "%"}}
+- line_chart: {{"title": "Price of Big Mac vs Inflation", "x_labels": ["2015","2019","2022","2024"], "values": [3.99, 4.89, 6.20, 8.49], "unit": "$"}}
+- text_box: {{"heading": "Dynamic Pricing", "body": "Algorithmic price shifts based on weather and demand."}}
+- list_reveal: {{"heading": "The Corporate Royalty Stack", "items": ["4% Royalty Fee", "5% Advertising Fund", "12% Land Lease"]}}
+
+Each graphic cue MUST include a "trigger_phrase": an exact verbatim substring from that paragraph.
+
+SCRIPT:
 {numbered_script}
 
 Return ONLY valid JSON:
@@ -83,8 +82,8 @@ Return ONLY valid JSON:
   "graphics": [
     {{
       "paragraph_index": 0,
-      "trigger_phrase": "string",
-      "type": "stat_callout",
+      "trigger_phrase": "exact phrase from text",
+      "type": "comparison",
       "layout": "full",
       "content": {{ ... }}
     }},
@@ -94,29 +93,28 @@ Return ONLY valid JSON:
 """
 
 IMAGE_PROMPT_INSTRUCTIONS_TEMPLATE = """
-You are a visual director writing prompts for an AI image generator (Stable Diffusion).
-You are given a list of narration paragraphs that need custom visual B-roll images.
+You are a conceptual visual director generating prompts for Stable Diffusion.
+You are given narration paragraphs that need conceptual, diagrammatic, or macro visuals that stock footage libraries NEVER carry.
 
-For each paragraph below, write ONE concise, visually concrete prompt (under 35 words)
-describing the specific scene, subjects, and setting.
+FOR EACH PARAGRAPH, write ONE high-concept prompt (under 35 words):
+- Examples:
+  * "A printed restaurant receipt close-up with dramatic red highlighter marking an 18 dollar total and line items."
+  * "An exploded infographic diagram of a fast food paper cup breaking down royalty fees and profit margins."
+  * "A dark conceptual map of America glowing with corporate franchise logos and supply chain distribution routes."
+  * "A digital mobile app screen wireframe showing algorithmic pricing surge calculations glowing orange."
 
-CRITICAL RULES:
-1. SEMANTIC MATCHING: The prompt is used for semantic search matching against the paragraph.
-   You MUST directly incorporate the key nouns, context, and subject matter from the paragraph
-   (e.g., specific concepts like "beef processing facility shutdown", "drought-stricken cattle pasture", "rising grain and feed costs", "cargo shipping containers at port").
-2. NO META FILLER: Do NOT append buzzwords like "photojournalism", "documentary style", "photorealistic",
-   or "hyperrealistic". Simply describe the actual visual scene directly.
-3. NO VISIBLE TEXT: Avoid text, signs with words, or letters appearing in the image.
-4. PARAGRAPH INDEX: In the output JSON, you MUST set "paragraph_index" to the EXACT integer ID
-   shown in brackets `[ID]` for that paragraph. Do NOT renumber from 0.
+RULES:
+1. SEMANTIC ALIGNMENT: Directly incorporate the key nouns and subject from the paragraph.
+2. NO GENERIC BUZZWORDS: Do not write "photorealistic" or "documentary style". Describe the physical scene and lighting directly.
+3. PARAGRAPH INDEX: Set "paragraph_index" to the exact integer ID from the bracket `[ID]`.
 
-PARAGRAPHS NEEDING GENERATED IMAGES:
+PARAGRAPHS:
 {numbered_paragraphs}
 
-Return ONLY valid JSON matching this exact structure:
+Return ONLY valid JSON:
 {{
   "image_prompts": [
-    {{"paragraph_index": 2, "prompt": "concrete descriptive prompt using key nouns from paragraph 2"}},
+    {{"paragraph_index": 0, "prompt": "..."}},
     ...
   ]
 }}
