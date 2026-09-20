@@ -192,8 +192,8 @@ elif 'ease_inout' in globals():
     in_out = ease_inout
 else:
     def in_out(t, b=0, c=1, d=1):
-    t = t / (d / 2.0)
-    if t < 1:
-        return c / 2.0 * t * t + b
-    t -= 1
-    return -c / 2.0 * (t * (t - 2) - 1) + b
+        t = t / (d / 2.0)
+        if t < 1:
+            return c / 2.0 * t * t + b
+        t -= 1
+        return -c / 2.0 * (t * (t - 2) - 1) + b
