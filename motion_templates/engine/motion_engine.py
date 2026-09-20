@@ -184,3 +184,11 @@ class Sequence:
     def html_at(self, t):
         _, info = self.resolve(t)
         return render_elements(info.get("elements", {}))
+
+# Backward-compatibility alias for template imports
+if 'ease_in_out' in globals():
+    in_out = ease_in_out
+elif 'ease_inout' in globals():
+    in_out = ease_inout
+else:
+    def in_out(t): return t * t * (3 - 2 * t)

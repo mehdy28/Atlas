@@ -67,3 +67,12 @@ generate_narration(
 )
 
 print("\nDone. Narration saved to " + NARRATION_OUTPUT_PATH)
+
+# Free GPU memory after narration completes
+import gc, torch
+try:
+    del model
+except NameError:
+    pass
+gc.collect()
+torch.cuda.empty_cache()

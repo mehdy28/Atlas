@@ -15,11 +15,10 @@ _scene_ids = None
 
 
 def _load_index():
-    global _index, _scene_ids
-    if _index is None:
-        _index = faiss.read_index(FAISS_INDEX_PATH)
-        _scene_ids = np.load(FAISS_IDS_PATH)
-    return _index, _scene_ids
+    # Always read the latest index and ID mapping from disk
+    index = faiss.read_index(FAISS_INDEX_PATH)
+    scene_ids = np.load(FAISS_IDS_PATH)
+    return index, scene_ids
 
 
 def _score_candidates(candidates, now):

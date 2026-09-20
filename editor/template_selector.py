@@ -10,14 +10,35 @@ if TEMPLATES_ROOT + "/templates" not in sys.path:
     sys.path.append(TEMPLATES_ROOT + "/templates")
 
 # Standard family: state()/build_sequence(content=...) driven, Sequence-based.
+
+TYPE_TO_TEMPLATES_FULL = {
+    "stat_callout": ["tpl_02_stat_full"],
+    "bar_chart": ["tpl_09_chart_full"],
+    "line_chart": ["tpl_09_chart_full", "tpl_05_timeline_full"],
+    "comparison": ["tpl_03_compare_full", "tpl_22_stat_split_full"],
+    "list_reveal": ["tpl_06_list_full"],
+    "quote_card": ["tpl_04_quote_full"],
+    "text_box": ["tpl_08_feature_full", "tpl_17_takeover_full"],
+}
+
 TYPE_TO_TEMPLATES = {
     "stat_callout": ["tpl_02_stat_intro", "tpl_11_progress_intro", "tpl_21_badge_intro"],
-    "text_box": ["tpl_08_feature_intro", "tpl_13_definition_intro", "tpl_18_lowerthird_intro"],
+    "text_box": ["tpl_08_feature_intro", "tpl_13_definition_intro", "tpl_18_lowerthird_intro", "tpl_24_breaking_ticker", "tpl_25_broadcast_lowerthird"],
     "bar_chart": ["tpl_09_chart_intro"],
     "line_chart": ["tpl_09_chart_intro", "tpl_05_timeline_intro"],
-    "comparison": ["tpl_03_compare_intro", "tpl_12_versus_intro"],
+    "comparison": ["tpl_03_compare_intro", "tpl_12_versus_intro", "tpl_19_split_intro"],
     "list_reveal": ["tpl_06_list_intro", "tpl_15_grid_intro"],
     "quote_card": ["tpl_04_quote_intro"],
+}
+
+TYPE_TO_TEMPLATES_FULL = {
+    "stat_callout": ["tpl_02_stat_full", "tpl_11_progress_full", "tpl_21_badge_full"],
+    "bar_chart": ["tpl_09_chart_full"],
+    "line_chart": ["tpl_09_chart_full", "tpl_05_timeline_full"],
+    "comparison": ["tpl_03_compare_full", "tpl_12_versus_full", "tpl_19_split_full", "tpl_22_stat_split_full"],
+    "list_reveal": ["tpl_06_list_full", "tpl_15_grid_full"],
+    "quote_card": ["tpl_04_quote_full"],
+    "text_box": ["tpl_08_feature_full", "tpl_13_definition_full", "tpl_14_warning_full", "tpl_17_takeover_full"],
 }
 
 # Legacy family: render_html(t, duration, **content_kwargs) directly, no
@@ -79,7 +100,11 @@ def select_and_build_sequence(graphic):
 
     # Combine both pools so legacy templates are genuinely in rotation,
     # not bolted on as an always-second-choice fallback.
-    standard_candidates = TYPE_TO_TEMPLATES.get(g_type, [])
+    layout = graphic.get("layout", "overlay")
+    if layout == "full":
+        standard_candidates = TYPE_TO_TEMPLATES_FULL.get(g_type, []) or TYPE_TO_TEMPLATES.get(g_type, [])
+    else:
+        standard_candidates = TYPE_TO_TEMPLATES.get(g_type, [])
     legacy_candidates = LEGACY_TEMPLATES.get(g_type, [])
     all_candidates = [("standard", n) for n in standard_candidates] + [("legacy", n) for n in legacy_candidates]
 

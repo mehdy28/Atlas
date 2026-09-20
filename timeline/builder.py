@@ -3,7 +3,9 @@ from search.query import search
 from config import STRICT_CLIP_RELEVANCE_MIN
 
 
-def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candidates_to_fetch, min_clip_duration):
+def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candidates_to_fetch, min_clip_duration, exclude_scene_ids=None):
+    if exclude_scene_ids is None:
+        exclude_scene_ids = set()
     """
     Runs a semantic search for the paragraph text, then greedily selects
     clips (best-scoring first) until their combined duration covers the
@@ -26,6 +28,8 @@ def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candid
         if time_covered >= target_duration:
             break
 
+        if candidate["scene_id"] in exclude_scene_ids:
+            continue
         if candidate["relevance"] < STRICT_CLIP_RELEVANCE_MIN:
             rejected_low_relevance.append(candidate)
             continue

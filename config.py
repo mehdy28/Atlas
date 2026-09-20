@@ -156,3 +156,8 @@ STRICT_CLIP_RELEVANCE_MIN = 0.40
 # Paragraph-level target: with strict per-clip gating on, this drives
 # whether the boost/image-gen pipeline treats a paragraph as resolved.
 LOW_RELEVANCE_THRESHOLD = 0.40
+
+# YouTube integration settings
+YOUTUBE_TOKEN_PATH = f"{CONFIG_DIR}/youtube_refresh_token.json"
+YOUTUBE_DEFAULT_PRIVACY = "private"
+YOUTUBE_DEFAULT_CATEGORY = "27"  # Education

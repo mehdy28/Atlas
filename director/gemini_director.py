@@ -11,29 +11,36 @@ GRAPHIC_TYPES = [
 ]
 
 SCRIPT_INSTRUCTIONS_TEMPLATE = """
-You are the creative director and scriptwriter for a high-production
-documentary/news-style YouTube channel. Given a topic, write ONLY the
-narration script and footage keywords - not the graphics plan yet.
+You are the lead investigative writer and creative director for a premier US everyday economics YouTube channel (in the style of Vox, Economics Explained, and Johnny Harris).
+Given a topic, write ONLY the spoken narration script and footage keywords.
 
-TARGET LENGTH: approximately {target_minutes} minutes of spoken narration
-at ~{wpm} words per minute (~{target_words} words total).
+TARGET LENGTH: approximately {target_minutes} minutes of spoken narration at ~{wpm} words per minute (~{target_words} words total).
 
-Rules for the script:
-- Natural spoken narration voice, documentary/long-form explainer style.
-- Break into {min_paragraphs}-{max_paragraphs} short paragraphs, each a
-  self-contained narration beat of roughly 2-4 sentences (12-25 seconds
-  of spoken audio).
-- Vary pacing and rhythm - mix short punchy beats with longer explanatory
-  ones, the way a real documentary editor paces a script.
-- No stage directions, headers, or scene descriptions - only words to be
-  spoken aloud.
+MANDATORY EVERYDAY ECONOMICS SCRIPT FORMULA:
 
-Also provide "footage_keywords": 15-25 short, concrete, visually
-searchable phrases (2-4 words each) covering every visual concept the
-script touches - things a stock-footage/photo site would have results
-for. Prefer concrete nouns and scenes over abstract concepts.
+1. ACT 1: THE TENSION HOOK (Paragraph 0):
+   - Start immediately with a tangible, relatable everyday consumer sticker shock (a supermarket receipt, a gas pump total, a rent bill, or credit card statement).
+   - Establish the PARADOX: Consumers are paying record-high prices, yet the workers or producers (farmers, line cooks, drivers) are barely breaking even.
+   - Ask the central investigative question: "If the people making it aren't seeing this money, where is that extra cash actually going?"
 
-Return ONLY valid JSON matching this exact structure, nothing else:
+2. ACT 2: THE EVIDENCE & THE TWIST (Middle ~70%):
+   - Structure as modular investigative beats ({min_paragraphs}-{max_paragraphs} paragraphs total).
+   - For short videos (2m): Follow 1 sharp investigation into the hidden structural bottleneck (e.g. corporate oligopolies, supply chain tollbooths, algorithmic pricing).
+   - For long videos (10-20m): Cascade across multiple structural layers (Layer 1: The Raw Materials, Layer 2: The Middlemen Cartel, Layer 3: Wall Street Financialization).
+   - Alternate between vivid storytelling and sharp economic math (e.g. "margins surged 300% while input costs only grew 12%").
+
+3. ACT 3: THE BOTTOM LINE (Final 1-2 paragraphs):
+   - Reveal who captured the margin and what it means for everyday Americans.
+   - End with a lingering, thought-provoking conclusion on why this is the new normal.
+
+RULES:
+- Short, punchy, conversational spoken sentences with natural pauses and rhythmic variation.
+- No robotic corporate narration. Speak with curiosity, urgency, and precision.
+- No headers, timestamps, scene directions, or speaker labels—ONLY words spoken aloud.
+
+Also provide "footage_keywords": 15-25 concrete, visual search phrases (2-4 words each) focusing on real everyday items, store aisles, factory lines, freight, receipts, and workers.
+
+Return ONLY valid JSON:
 {{
   "title": "string",
   "footage_keywords": ["string", ...],
@@ -45,46 +52,41 @@ Return ONLY valid JSON matching this exact structure, nothing else:
 """
 
 GRAPHICS_INSTRUCTIONS_TEMPLATE = """
-You are the motion-graphics director for a documentary video editor.
+You are the motion-graphics director for a high-end YouTube economics documentary.
 Below is the finalized narration script, broken into numbered paragraphs.
-Your job is ONLY to design the motion graphics plan for it - do not
-rewrite or alter the script text.
+Your job is ONLY to design the motion graphics plan for it.
 
-Rules for the graphics plan (this editor has a rich motion-graphics
-system with MANY distinct animated visual treatments per type, so lean
-toward MORE graphics, not fewer - the goal is to break up long stretches
-of plain footage regularly, like a real news/documentary broadcast does):
-- Add a graphic cue to roughly 60-70% of paragraphs. Do not go more than
-  2 consecutive paragraphs without a graphic cue.
-- Do not use the exact same "type" more than 2 times in a row - vary
-  between stat_callout, text_box, bar_chart, line_chart, comparison,
-  list_reveal, and quote_card.
-- Each graphic cue MUST include a "trigger_phrase": an exact, verbatim
-  substring copied from that paragraph's text (case can differ, but
-  words and order must match exactly).
-- Choose graphic "type" from exactly this list: stat_callout, text_box,
-  bar_chart, line_chart, comparison, list_reveal, quote_card.
-- "content" must match the type:
-  - stat_callout: {{"stat": "30%", "label": "short description"}}
-  - text_box: {{"heading": "short heading", "body": "one short sentence"}}
-  - bar_chart: {{"title": "...", "categories": ["A","B"], "values": [10,20], "unit": "%"}}
-  - line_chart: {{"title": "...", "x_labels": ["2010","2020"], "values": [5,15], "unit": "%"}}
-  - comparison: {{"left_label": "...", "left_value": "...", "right_label": "...", "right_value": "..."}}
-  - list_reveal: {{"heading": "...", "items": ["item 1", "item 2", "item 3"]}}
+Rules for the graphics plan:
+- DYNAMIC PACING: In high-retention news documentaries, visual stimuli must occur every 8 to 12 seconds.
+  Add 2 to 3 graphic cues per paragraph.
+  Freely use "breaking_ticker", "warning", "stat_callout", "comparison", and "text_box".
+  Alternate frequently between "layout": "full" (warm brown background takeover) and "layout": "overlay" (transparent lower-third).
+- Every graphic MUST specify a "layout":
+  * "full": Full-screen takeover with our signature warm brown canvas. Use this whenever explaining deep economic concepts, charts, timelines, or big stat reveals to give visual contrast and cut away from B-roll.
+  * "overlay": Transparent lower-third or corner graphic that floats on top of B-roll footage.
+- Choose "type" from: stat_callout, text_box, bar_chart, line_chart, comparison, list_reveal, quote_card.
+- Each graphic cue MUST include a "trigger_phrase": an exact, verbatim substring copied from that paragraph's text.
+- "content" structure:
+  - stat_callout: {{"stat": "85%", "label": "Market controlled by 4 firms"}}
+  - text_box: {{"heading": "The Bottleneck", "body": "Four processors dictate cattle prices."}}
+  - bar_chart: {{"title": "Profit Margin Surge", "categories": ["2019", "2024"], "values": [12, 48], "unit": "%"}}
+  - line_chart: {{"title": "Beef Price vs Rancher Pay", "x_labels": ["2019","2021","2024"], "values": [100, 140, 195], "unit": "index"}}
+  - comparison: {{"left_label": "Supermarket Price", "left_value": "+54%", "right_label": "Rancher Cut", "right_value": "-8%"}}
+  - list_reveal: {{"heading": "The Big 4 Processors", "items": ["Tyson Foods", "JBS", "Cargill", "National Beef"]}}
   - quote_card: {{"quote": "...", "attribution": "..."}}
-- Never invent statistics not implied by the script text.
 
 SCRIPT (numbered paragraphs):
 {numbered_script}
 
-Return ONLY valid JSON matching this exact structure, nothing else:
+Return ONLY valid JSON:
 {{
   "graphics": [
     {{
       "paragraph_index": 0,
       "trigger_phrase": "string",
-      "type": "one of the allowed types",
-      "content": {{ ... fields matching the type ... }}
+      "type": "stat_callout",
+      "layout": "full",
+      "content": {{ ... }}
     }},
     ...
   ]

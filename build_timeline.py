@@ -23,6 +23,7 @@ with open(PARAGRAPH_TIMINGS_PATH) as f:
 
 timeline = []
 total_gap = 0.0
+global_used_scenes = set()
 
 for p in paragraphs:
     idx = p["paragraph_index"]
@@ -43,7 +44,10 @@ for p in paragraphs:
         max_clips=MAX_CLIPS_PER_PARAGRAPH,
         candidates_to_fetch=SEARCH_CANDIDATES_PER_PARAGRAPH,
         min_clip_duration=MIN_CLIP_DURATION_SECONDS,
+        exclude_scene_ids=global_used_scenes,
     )
+    for c in clips:
+        global_used_scenes.add(c["scene_id"])
 
     gap = target_duration - covered
     total_gap += max(0, gap)

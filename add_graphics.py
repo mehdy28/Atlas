@@ -57,7 +57,9 @@ try:
         mov_path = os.path.join(GRAPHICS_WORK_DIR, "gfx_" + str(i).zfill(3) + ".mov")
 
         try:
-            ok = renderer.render_sequence_to_mov(sequence, mov_path, fps=RENDER_FPS, transparent=True)
+            ok = is_full = meta.get("id", "").endswith("_full") or g.get("layout") == "full"
+            is_transparent = not is_full
+            ok = renderer.render_sequence_to_mov(sequence, mov_path, fps=RENDER_FPS, transparent=is_transparent)
         except Exception as e:
             print(f"FAILED rendering graphic {i} ({g_type}): {e}")
             continue
