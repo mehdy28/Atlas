@@ -1,3 +1,8 @@
+import transformers.utils
+import transformers.utils.import_utils as imp_u
+if not hasattr(transformers.utils, "is_tf_available"):
+    transformers.utils.is_tf_available = getattr(imp_u, "is_tf_available", lambda: False)
+
 
 from sentence_transformers import SentenceTransformer
 

@@ -1,92 +1,138 @@
-
-from transformers import BlipProcessor
-BlipProcessor.image_processor_class = "BlipImageProcessor"
-
-import torch
-import transformers.modeling_utils as mu
-import transformers.pytorch_utils as pu
-
-if hasattr(pu, "apply_chunking_to_forward"):
-    mu.apply_chunking_to_forward = pu.apply_chunking_to_forward
-if hasattr(pu, "prune_linear_layer"):
-    mu.prune_linear_layer = pu.prune_linear_layer
-
-def find_pruneable_heads_and_indices(heads, n_heads, head_size, already_pruned_heads):
-    mask = torch.ones(n_heads, head_size)
-    heads = set(heads) - already_pruned_heads
-    for head in heads:
-        head = head - sum(1 if h < head else 0 for h in already_pruned_heads)
-        mask[head] = 0
-    mask = mask.view(-1).contiguous().eq(1)
-    index = torch.arange(len(mask))[mask].long()
-    return heads, index
-
-mu.find_pruneable_heads_and_indices = find_pruneable_heads_and_indices
-pu.find_pruneable_heads_and_indices = find_pruneable_heads_and_indices
-
-import transformers.pytorch_utils
-import transformers.modeling_utils
-if not hasattr(transformers.modeling_utils, "apply_chunking_to_forward"):
-    transformers.modeling_utils.apply_chunking_to_forward = transformers.pytorch_utils.apply_chunking_to_forward
-
-
 import torch
 from PIL import Image
-from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import (
+    BlipProcessor,
+    BlipForConditionalGeneration,
+    BlipTextModel,
+)
 
 _device = "cuda" if torch.cuda.is_available() else "cpu"
 _processor = None
 _model = None
 
 
+# ============================================================
+# Compatibility patch for BLIP + newer Transformers
+# ============================================================
+#
+# Some newer Transformers versions no longer expose
+# get_head_mask() on BlipTextModel, while the BLIP generation
+# implementation still calls it.
+#
+# BLIP does not use a custom head mask in our captioning path,
+# so returning [None] for each transformer layer is sufficient.
+#
+if not hasattr(BlipTextModel, "get_head_mask"):
+
+    def _blip_get_head_mask(self, head_mask, num_hidden_layers):
+        if head_mask is None:
+            return [None] * num_hidden_layers
+
+        # Basic compatibility for an explicitly supplied mask.
+        if head_mask.dim() == 1:
+            head_mask = head_mask[None, None, :, None, None]
+        elif head_mask.dim() == 2:
+            head_mask = head_mask[:, None, :, None, None]
+
+        return head_mask.to(
+            dtype=self.dtype,
+            device=self.device,
+        ).unbind(dim=0)
+
+    BlipTextModel.get_head_mask = _blip_get_head_mask
+
+
+# ============================================================
+# Model loading
+# ============================================================
+
 def load_model():
     """Loads the BLIP captioning model once and keeps it warm in memory."""
+
     global _processor, _model
+
     if _model is None:
+
         print(f"Loading BLIP captioning model onto {_device}...")
-        from transformers import BlipImageProcessor, AutoTokenizer
-        img_proc = BlipImageProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-        tok = AutoTokenizer.from_pretrained("Salesforce/blip-image-captioning-base")
-        _processor = BlipProcessor(image_processor=img_proc, tokenizer=tok)
-        _model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+        _processor = BlipProcessor.from_pretrained(
+            "Salesforce/blip-image-captioning-base"
+        )
+
+        _model = BlipForConditionalGeneration.from_pretrained(
+            "Salesforce/blip-image-captioning-base"
+        )
+
         _model.to(_device)
+
         if _device == "cuda":
             _model = _model.half()
+
         _model.eval()
+
         print("Model loaded.")
+
     return _processor, _model
 
 
+# ============================================================
+# Caption generation
+# ============================================================
+
 def caption_batch(image_paths, max_new_tokens=30):
-    """
-    Captions a batch of images in one forward pass.
-    Returns a list of captions (or None for images that failed to load),
-    same length and order as image_paths.
-    """
+
     processor, model = load_model()
 
     images = []
     valid_indices = []
+
     for i, path in enumerate(image_paths):
+
         try:
             img = Image.open(path).convert("RGB")
             images.append(img)
             valid_indices.append(i)
-        except Exception:
-            pass
+
+        except Exception as e:
+            print(f"Skipping image {path}: {e}")
 
     results = [None] * len(image_paths)
+
     if not images:
         return results
 
-    inputs = processor(images=images, return_tensors="pt").to(_device)
+    inputs = processor(
+        images=images,
+        return_tensors="pt"
+    )
+
+    inputs = {
+        k: v.to(_device)
+        for k, v in inputs.items()
+    }
+
+    # Keep image tensors in FP16 on CUDA.
     if _device == "cuda":
-        inputs = {k: (v.half() if v.dtype.is_floating_point else v) for k, v in inputs.items()}
+        inputs = {
+            k: (
+                v.half()
+                if v.dtype.is_floating_point
+                else v
+            )
+            for k, v in inputs.items()
+        }
 
     with torch.no_grad():
-        out = model.generate(**inputs, max_new_tokens=max_new_tokens)
 
-    captions = processor.batch_decode(out, skip_special_tokens=True)
+        out = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+        )
+
+    captions = processor.batch_decode(
+        out,
+        skip_special_tokens=True
+    )
 
     for idx, caption in zip(valid_indices, captions):
         results[idx] = caption.strip()
