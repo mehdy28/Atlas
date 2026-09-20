@@ -4,6 +4,7 @@ from config import STRICT_CLIP_RELEVANCE_MIN
 
 
 def fill_paragraph_with_clips(paragraph_text, target_duration, max_clips, candidates_to_fetch, min_clip_duration, exclude_scene_ids=None):
+    if exclude_scene_ids is None: exclude_scene_ids = set()
     if exclude_scene_ids is None:
         exclude_scene_ids = set()
     """

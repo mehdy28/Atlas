@@ -42,7 +42,7 @@ def safe_load_db():
 
 safe_load_db()
 
-conn = sqlite3.connect(LOCAL_DB_PATH)
+conn = sqlite3.connect(DRIVE_DB_PATH)
 cur = conn.cursor()
 
 cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scenes'")

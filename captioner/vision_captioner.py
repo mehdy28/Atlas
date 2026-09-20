@@ -1,3 +1,30 @@
+import torch
+import transformers.modeling_utils as mu
+import transformers.pytorch_utils as pu
+
+if hasattr(pu, "apply_chunking_to_forward"):
+    mu.apply_chunking_to_forward = pu.apply_chunking_to_forward
+if hasattr(pu, "prune_linear_layer"):
+    mu.prune_linear_layer = pu.prune_linear_layer
+
+def find_pruneable_heads_and_indices(heads, n_heads, head_size, already_pruned_heads):
+    mask = torch.ones(n_heads, head_size)
+    heads = set(heads) - already_pruned_heads
+    for head in heads:
+        head = head - sum(1 if h < head else 0 for h in already_pruned_heads)
+        mask[head] = 0
+    mask = mask.view(-1).contiguous().eq(1)
+    index = torch.arange(len(mask))[mask].long()
+    return heads, index
+
+mu.find_pruneable_heads_and_indices = find_pruneable_heads_and_indices
+pu.find_pruneable_heads_and_indices = find_pruneable_heads_and_indices
+
+import transformers.pytorch_utils
+import transformers.modeling_utils
+if not hasattr(transformers.modeling_utils, "apply_chunking_to_forward"):
+    transformers.modeling_utils.apply_chunking_to_forward = transformers.pytorch_utils.apply_chunking_to_forward
+
 
 import torch
 from PIL import Image

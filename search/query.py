@@ -15,11 +15,9 @@ _scene_ids = None
 
 
 def _load_index():
-    # Always read the latest index and ID mapping from disk
     index = faiss.read_index(FAISS_INDEX_PATH)
     scene_ids = np.load(FAISS_IDS_PATH)
     return index, scene_ids
-
 
 def _score_candidates(candidates, now):
     scored = []
